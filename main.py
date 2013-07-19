@@ -16,12 +16,14 @@ import imp
 from time import sleep
 
 from logging import d, log
+from eventlistener import eventlistener
 
 class botti:
 
     ircsock = None
     modules = {}
-
+    eventlistener = eventlistener()
+    
     def parse_config(self):
         try:
             settings_f = open("config.txt")
@@ -63,24 +65,25 @@ class botti:
 
 
     def connect(self, params):
-            global ircsock
+        try:
+            self.ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             
-            ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.ircsock.connect((params[0], 6667))
             
-            ircsock.connect((params[0], 6667))
-            
-            ircsock.setblocking(0)
+            self.ircsock.setblocking(0)
 
-            ircsock.send("Pass %s\n" % (params[2]))
-            ircsock.send("NICK %s\n" % (params[1]))
-            ircsock.send("JOIN %s\n" % (params[3]))
-
+            self.ircsock.send("Pass %s\n" % (params[2]))
+            self.ircsock.send("NICK %s\n" % (params[1]))
+            self.ircsock.send("JOIN %s\n" % (params[3]))
+        except Exception, e:
+            log("Error connecting: %s" % e)
+            sys.exit()
+            
     def getData(self):
-        global ircsock
         data = None
         
         try:
-            data = ircsock.recv(1024)
+            data = self.ircsock.recv(1024)
             data = data.strip('\r\n')
             return data
         except socket.error, e:
@@ -116,10 +119,8 @@ class botti:
         self.getModules()
         self.initModules()
 
-        try:
-            self.connect(settings)
-        except Exception as e:
-            print e
+        self.connect(settings)
+
 
         sleep(1)
 
