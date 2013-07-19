@@ -1,0 +1,4 @@
+host:<hostname or ip for irc server>
+user:<username of the bot>
+pass:<password of the bot>
+chnl:<channel to connect to>
