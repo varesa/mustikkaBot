@@ -30,17 +30,20 @@ def parse_config():
     passwd = None
     channel = None
 
-
-    for line in settings_f:
-        line = line.strip("\n\r")
-	if line.find('host') != -1:
-	    host = line.split(":")[1]
-        if line.find('user') != -1:
-	    username = line.split(":")[1]
-	if line.find('pass') != -1:
-	    passwd = line.split(":")[1]
-        if line.find('chnl') != -1:
-	    channel = line.split(":")[1]
+    try:
+	for line in settings_f:
+    	    line = line.strip("\n\r")
+	    if line.find('host') != -1:
+		host = line.split(":")[1]
+    	    if line.find('user') != -1:
+		username = line.split(":")[1]
+	    if line.find('pass') != -1:
+		passwd = line.split(":")[1]
+    	    if line.find('chnl') != -1:
+		channel = line.split(":")[1]
+    except IndexError:
+	print("Malformed config file, please fix")
+	sys.exit()
 
     settings_f.close()
 
