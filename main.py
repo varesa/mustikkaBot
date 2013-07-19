@@ -5,7 +5,13 @@
 # Author: Esa Varemo
 #
 
-import re, socket, json, threading, sys
+import re
+import socket
+import json
+import threading
+import sys
+import errno
+from time import sleep
 
 from logging import d, log
 
@@ -53,9 +59,11 @@ def connect(params):
 	global ircsock
 	
 	ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	
+	ircsock.connect((params[0], 6667))
+	
 	ircsock.setblocking(0)
 
-	ircsock.connect((params[0], 6667))
 	ircsock.send("Pass %s\n" % (params[2]))
 	ircsock.send("NICK %s\n" % (params[1]))
 	ircsock.send("JOIN %s\n" % (params[3]))
@@ -70,23 +78,32 @@ def main():
 	except Exception as e:
 		print e
 
+	sleep(1)
+
 	while True:
-		ircmsg = ircsock.recv(1024)
-		ircmsg = ircmsg.strip('\r\n')
+		ircmsg = ""
+		try:
+		    ircmsg = ircsock.recv(1024)
+		    ircmsg = ircmsg.strip('\r\n')
+		except socket.error, e:
+		    err = e.args[0]
+		    if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
+			pass # no data
 
-		print ircmsg
+		if not len(ircmsg) == 0:
+		    print ircmsg
 
-		if ircmsg.find('PING ') != -1:
+		    if ircmsg.find('PING ') != -1:
 			ircsock.send('PING :Pong\n')
 
-		#if ircmsg.find(' JOIN ') != -1:
-		#	print("join found")
-		#	msg = "PRIVMSG #herramustikka test?\n"
-		#	print("Sending: " + msg)
-		#	ircsock.send(msg)
+		    #if ircmsg.find(' JOIN ') != -1:
+		    #	print("join found")
+		    #	msg = "PRIVMSG #herramustikka test?\n"
+		    #	print("Sending: " + msg)
+		    #	ircsock.send(msg)
 		
-		result = re.search(':(.*)!.* JOIN #herramustikka', ircmsg)
-		if not result == None:
+		    result = re.search(':(.*)!.* JOIN #herramustikka', ircmsg)
+		    if not result == None:
 			nick = result.group(1)
 			print("Found a viewer joining: " + nick + "\n")
 			#print("\n\n" + result.group(1) + "\n\n")
@@ -94,8 +111,7 @@ def main():
 			print("SENDING: " + msg)
 			#ircsock.send(msg)
 		
-
-		if ircmsg.find(' PRIVMSG ') != -1:
+		    if ircmsg.find(' PRIVMSG ') != -1:
 			nick = ircmsg.split('!')[0][1:]
 			msg = ircmsg.split(' PRIVMSG ')[-1].split(' :')[1]
 
