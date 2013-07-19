@@ -9,47 +9,55 @@ import re, socket, json, threading, sys
 
 from logging import d, log
 
-ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# Globals
+ircsock = None
 
-try:
-    settings_f = open("config.txt")
-except IOError:
-    print("Config not found, please make a copy of \"config.txt.template\" as \"config.txt\"")
-    sys.exit()
+def parse_config():
+    try:
+	settings_f = open("config.txt")
+    except IOError:
+        print("Config not found, please make a copy of \"config.txt.template\" as \"config.txt\"")
+        sys.exit()
 
-host = None
-username = None
-passwd = None
-channel = None
+    host = None
+    username = None
+    passwd = None
+    channel = None
 
 
-for line in settings_f:
-    line = line.strip("\n\r")
-    if line.find('host') != -1:
-	host = line.split(":")[1]
-    if line.find('user') != -1:
-	username = line.split(":")[1]
-    if line.find('pass') != -1:
-	passwd = line.split(":")[1]
-    if line.find('chnl') != -1:
-	channel = line.split(":")[1]
+    for line in settings_f:
+        line = line.strip("\n\r")
+	if line.find('host') != -1:
+	    host = line.split(":")[1]
+        if line.find('user') != -1:
+	    username = line.split(":")[1]
+	if line.find('pass') != -1:
+	    passwd = line.split(":")[1]
+        if line.find('chnl') != -1:
+	    channel = line.split(":")[1]
 
-settings_f.close()
+    settings_f.close()
 
-passwd_hidden = ""
+    passwd_hidden = ""
 
-i = 0
-while i < len(passwd):
-    passwd_hidden += "*"
-    i += 1
+    i = 0
+    while i < len(passwd):
+	passwd_hidden += "*"
+	i += 1
 
-log("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" % (host, username, passwd_hidden, channel))
+    log("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" % (host, username, passwd_hidden, channel))
+    return (host, username, passwd_hidden, channel)
 
-def connect(server, port):
-	ircsock.connect((server, port))
-	ircsock.send("Pass %s\n" % ("legolego"))
-	ircsock.send("NICK %s\n" % ("mustikkaBot"))
-	ircsock.send("JOIN %s\n" % ("#herramustikka"))
+
+def connect(params):
+	global ircsock
+	
+	ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+	ircsock.connect((params[0], 6667))
+	ircsock.send("Pass %s\n" % (params[2]))
+	ircsock.send("NICK %s\n" % (params[1]))
+	ircsock.send("JOIN %s\n" % (params[3]))
 
 
 
@@ -60,8 +68,10 @@ host = "199.9.250.229"
 
 def main():
 
+	settings = parse_config()
+
 	try:
-		connect(host, 6667)
+		connect(settings)
 	except Exception as e:
 		print e
 
