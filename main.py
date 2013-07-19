@@ -46,24 +46,19 @@ def parse_config():
 	i += 1
 
     log("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" % (host, username, passwd_hidden, channel))
-    return (host, username, passwd_hidden, channel)
+    return (host, username, passwd, channel)
 
 
 def connect(params):
 	global ircsock
 	
 	ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	ircsock.setblocking(0)
 
 	ircsock.connect((params[0], 6667))
 	ircsock.send("Pass %s\n" % (params[2]))
 	ircsock.send("NICK %s\n" % (params[1]))
 	ircsock.send("JOIN %s\n" % (params[3]))
-
-
-
-#host = "herramustikka.jtvirc.com"
-#host = "199.9.253.199"
-host = "199.9.250.229"
 
 
 def main():
