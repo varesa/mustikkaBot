@@ -1,7 +1,49 @@
 #!/usr/bin/env python
-import re, socket, json, threading
+#
+# Main class for twitch/irc bot MustikkaBot
+#
+# Author: Esa Varemo
+#
+
+import re, socket, json, threading, sys
+
+from logging import d, log
 
 ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+try:
+    settings_f = open("config.txt")
+except IOError:
+    print("Config not found, please make a copy of \"config.txt.template\" as \"config.txt\"")
+    sys.exit()
+
+host = None
+username = None
+passwd = None
+channel = None
+
+
+for line in settings_f:
+    line = line.strip("\n\r")
+    if line.find('host') != -1:
+	host = line.split(":")[1]
+    if line.find('user') != -1:
+	username = line.split(":")[1]
+    if line.find('pass') != -1:
+	passwd = line.split(":")[1]
+    if line.find('chnl') != -1:
+	channel = line.split(":")[1]
+
+settings_f.close()
+
+passwd_hidden = ""
+
+i = 0
+while i < len(passwd):
+    passwd_hidden += "*"
+    i += 1
+
+log("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" % (host, username, passwd_hidden, channel))
 
 def connect(server, port):
 	ircsock.connect((server, port))
@@ -12,7 +54,8 @@ def connect(server, port):
 
 
 #host = "herramustikka.jtvirc.com"
-host = "199.9.253.199"
+#host = "199.9.253.199"
+host = "199.9.250.229"
 
 
 def main():
@@ -44,7 +87,7 @@ def main():
 			#print("\n\n" + result.group(1) + "\n\n")
 			msg = 'PRIVMSG #herramustikka :Tervetuloa ' + nick + "\n"
 			print("SENDING: " + msg)
-			ircsock.send(msg)
+			#ircsock.send(msg)
 		
 
 		if ircmsg.find(' PRIVMSG ') != -1:
