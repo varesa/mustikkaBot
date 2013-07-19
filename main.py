@@ -10,13 +10,16 @@ import socket
 import json
 import threading
 import sys
+import os
 import errno
+import imp
 from time import sleep
 
 from logging import d, log
 
 # Globals
 ircsock = None
+modules = {}
 
 def parse_config():
     try:
@@ -78,13 +81,42 @@ def getData():
     try:
 	data = ircsock.recv(1024)
 	data = data.strip('\r\n')
+	return data
     except socket.error, e:
         err = e.args[0]
         if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
-    	    pass # no data
+    	    return "" # no data
+    	    
     
+
+def loadModule(file):
+    fpath = os.path.normpath(os.path.join(os.path.dirname(__file__), file))
+    dir, fname = os.path.split(fpath)
+    mname, ext = os.path.splitext(fname)
+
+    return imp.load_source(mname, fpath)
+
+def getModules():
+    global modules
+    
+    files = os.listdir("modules/")
+    for file in files:
+	if not file.find(".py") == -1:
+	    module = loadModule("modules/" + file)
+	    id = module.getId()
+	    modules[id] = module
+
+def initModules():
+    global modules
+    
+    for name, module in modules.iteritems():
+	module.init()
+
 def main():
     settings = parse_config()
+
+    getModules()
+    initModules()
 
     try:
 	connect(settings)
@@ -116,4 +148,3 @@ def main():
 		msg = ircmsg.split(' PRIVMSG ')[-1].split(' :')[1]
 
 main()
-
