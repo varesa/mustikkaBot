@@ -136,7 +136,6 @@ class botti:
                 if not result == None:
                     nick = result.group(1)
                     print("Found a viewer joining: " + nick + "\n")
-                    #print("\n\n" + result.group(1) + "\n\n")
                     msg = 'PRIVMSG #herramustikka :Tervetuloa ' + nick + "\n"
                     print("SENDING: " + msg)
                     #ircsock.send(msg)
