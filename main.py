@@ -68,7 +68,17 @@ def connect(params):
 	ircsock.send("NICK %s\n" % (params[1]))
 	ircsock.send("JOIN %s\n" % (params[3]))
 
-
+def getData():
+    global ircsock
+    data = None
+    
+    try:
+	data = ircsock.recv(1024)
+	data = data.strip('\r\n')
+    except socket.error, e:
+        err = e.args[0]
+        if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
+    
 def main():
 
 	settings = parse_config()
@@ -81,14 +91,7 @@ def main():
 	sleep(1)
 
 	while True:
-		ircmsg = ""
-		try:
-		    ircmsg = ircsock.recv(1024)
-		    ircmsg = ircmsg.strip('\r\n')
-		except socket.error, e:
-		    err = e.args[0]
-		    if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
-			pass # no data
+		ircmsg = getData()
 
 		if not len(ircmsg) == 0:
 		    print ircmsg
@@ -96,12 +99,6 @@ def main():
 		    if ircmsg.find('PING ') != -1:
 			ircsock.send('PING :Pong\n')
 
-		    #if ircmsg.find(' JOIN ') != -1:
-		    #	print("join found")
-		    #	msg = "PRIVMSG #herramustikka test?\n"
-		    #	print("Sending: " + msg)
-		    #	ircsock.send(msg)
-		
 		    result = re.search(':(.*)!.* JOIN #herramustikka', ircmsg)
 		    if not result == None:
 			nick = result.group(1)
