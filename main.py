@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/bin/env python
 #
 # Main class for twitch/irc bot MustikkaBot
 #
