@@ -14,7 +14,7 @@ class eventlistener:
         self.specialRegistered.append(module)
 
     def handleMessage(self, text):
-        result = re.search(":(.*?)!.* PRIVMSG #(.*?) :(.*)", text)
+        result = re.search(":(.*?)!.* PRIVMSG (.*?) :(.*)", text)
 
         user = None
         msg  = None
@@ -23,7 +23,7 @@ class eventlistener:
             user = result.group(1)
             msg = result.group(3)
         else:
-            d("Invalid message")
+            d("Invalid message: " + text)
             return # Invalid message
         
         for module in self.messageRegistered:
