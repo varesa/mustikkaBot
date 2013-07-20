@@ -96,7 +96,7 @@ class botti:
     def sendData(self, data):
         if not data == "" or data == None:
             log("SEND: " + data)
-            self.ircsocket.send(data)
+            self.ircsock.send(data)
         
 
     def loadModule(self, file):
