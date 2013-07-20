@@ -4,13 +4,18 @@ class eventlistener:
     specialRegistered = []
 
     def registerMessage(self, module):
-        pass
+        self.messageRegistered.append(module)
 
     def registerSpecial(self, module):
-        pass
+        self.specialRegistered.append(module)
 
-    def handleMessage(self, msg):
-        pass
+    def handleMessage(self, text):
+        for module in self.messageRegistered:
+            user = "?"
+            msg = "?"
 
-    def handleSpecial(self, msg):
-        pass
+            module.handleMessage(text, user, msg)
+
+    def handleSpecial(self, text):
+        for module in self.specialRegistered:
+            module.handleSpecial(text)
