@@ -1,5 +1,6 @@
 def getId():
     return "commands"
 
-def init():
-    pass
+class commands:
+    def init(self, bot):
+        bot.eventlistener.registerMessage(self)

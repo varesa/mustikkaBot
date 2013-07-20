@@ -107,11 +107,11 @@ class botti:
             if not file.find(".py") == -1:
                 module = self.loadModule("modules/" + file)
                 id = module.getId()
-                self.modules[id] = module
+                self.modules[id] = getattr(module, id)()
 
     def initModules(self):
         for name, module in self.modules.iteritems():
-            module.init()
+            module.init(self)
 
     def main(self):
         settings = self.parse_config()
@@ -131,7 +131,7 @@ class botti:
                 log(ircmsg)
 
                 if ircmsg.find('PING ') != -1:
-                    ircsock.send('PING :Pong\n')
+                    self.ircsock.send('PING :Pong\n')
 
                 result = re.search(':(.*)!.* JOIN #herramustikka', ircmsg)
                 if not result == None:
@@ -139,7 +139,7 @@ class botti:
                     print("Found a viewer joining: " + nick + "\n")
                     msg = 'PRIVMSG #herramustikka :Tervetuloa ' + nick + "\n"
                     print("SENDING: " + msg)
-                    #ircsock.send(msg)
+                    #self.ircsock.send(msg)
                     
                 if ircmsg.find(' PRIVMSG ') != -1:
                     nick = ircmsg.split('!')[0][1:]

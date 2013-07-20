@@ -3,10 +3,10 @@ class eventlistener:
     messageRegistered = []
     specialRegistered = []
 
-    def registerMessage(self):
+    def registerMessage(self, module):
         pass
 
-    def registerSpecial(self):
+    def registerSpecial(self, module):
         pass
 
     def handleMessage(self, msg):

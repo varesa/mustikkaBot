@@ -1,5 +1,6 @@
 def getId():
     return "core"
 
-def init():
-    print("abc")
+class core:
+    def init(self, bot):
+        bot.eventlistener.registerSpecial(self)
