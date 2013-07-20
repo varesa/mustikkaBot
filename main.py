@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 #
 # Main class for twitch/irc bot MustikkaBot
 #
@@ -21,6 +21,10 @@ from eventlistener import eventlistener
 class botti:
 
     ircsock = None
+
+    user = None
+    channel = None
+    
     modules = {}
     eventlistener = eventlistener()
     
@@ -85,8 +89,8 @@ class botti:
         try:
             data = self.ircsock.recv(1024)
             data = data.strip('\r\n')
-            
-            log("RECV: " + data)
+            if not len(data) == 0:
+                log("RECV: <>" + data + "<>")
             return data
         except socket.error, e:
             err = e.args[0]
@@ -96,9 +100,11 @@ class botti:
     def sendData(self, data):
         if not data == "" or data == None:
             log("SEND: " + data)
-            self.ircsock.send(data)
+            self.ircsock.send(data + "\n")
         
-
+    def sendMessage(self, msg):
+        self.sendData("PRIVMSG " + self.channel + " :" + msg)
+    
     def loadModule(self, file):
         fpath = os.path.normpath(os.path.join(os.path.dirname(__file__), file))
         dir, fname = os.path.split(fpath)
@@ -121,6 +127,9 @@ class botti:
 
     def main(self):
         settings = self.parse_config()
+
+        self.user = settings[1]
+        self.channel = settings[3]
 
         self.getModules()
         self.initModules()
