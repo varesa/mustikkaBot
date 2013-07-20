@@ -147,7 +147,11 @@ class botti:
                     #self.ircsock.send(msg)
                     
                 if ircmsg.find(' PRIVMSG ') != -1:
-                    nick = ircmsg.split('!')[0][1:]
-                    msg = ircmsg.split(' PRIVMSG ')[-1].split(' :')[1]
-b = botti()
+                    #nick = ircmsg.split('!')[0][1:]
+                    #msg = ircmsg.split(' PRIVMSG ')[-1].split(' :')[1]
+                    self.eventlistener.handleMessage(ircmsg)
+                else:
+                    self.eventlistener.handleSpecial(ircmsg)
+                    
+b = botti()         
 b.main()
