@@ -10,6 +10,7 @@ import socket
 import json
 import threading
 import sys
+import signal
 import os
 import errno
 import imp
@@ -27,6 +28,8 @@ class botti:
     
     modules = {}
     eventlistener = eventlistener()
+
+    run = True
     
     def parse_config(self):
         try:
@@ -125,6 +128,10 @@ class botti:
         for name, module in self.modules.iteritems():
             module.init(self)
 
+    def sigint(self, signal, frame):
+        log("^C received, stopping")
+        self.run = False;
+
     def main(self):
         settings = self.parse_config()
 
@@ -136,10 +143,11 @@ class botti:
 
         self.connect(settings)
 
-
+        signal.signal(signal.SIGINT, self.sigint)
+        
         sleep(1)
 
-        while True:
+        while self.run:
             ircmsg = self.getData()
 
             if not len(ircmsg) == 0:
