@@ -128,7 +128,7 @@ class botti:
             ircmsg = self.getData()
 
             if not len(ircmsg) == 0:
-                log(ircmsg)
+                log("RECV: " + ircmsg)
 
                 if ircmsg.find('PING ') != -1:
                     self.ircsock.send('PING :Pong\n')
