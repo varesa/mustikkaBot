@@ -134,24 +134,24 @@ class botti:
             ircmsg = self.getData()
 
             if not len(ircmsg) == 0:
+                for line in ircmsg.split('\n'):
+                    #if ircmsg.find('PING ') != -1:
+                    #    self.sendData('PING :Pong\n')
 
-                if ircmsg.find('PING ') != -1:
-                    self.sendData('PING :Pong\n')
-
-                result = re.search(':(.*)!.* JOIN #herramustikka', ircmsg)
-                if not result == None:
-                    nick = result.group(1)
-                    print("Found a viewer joining: " + nick + "\n")
-                    msg = 'PRIVMSG #herramustikka :Tervetuloa ' + nick + "\n"
-                    print("SENDING: " + msg)
-                    #self.ircsock.send(msg)
-                    
-                if ircmsg.find(' PRIVMSG ') != -1:
-                    #nick = ircmsg.split('!')[0][1:]
-                    #msg = ircmsg.split(' PRIVMSG ')[-1].split(' :')[1]
-                    self.eventlistener.handleMessage(ircmsg)
-                else:
-                    self.eventlistener.handleSpecial(ircmsg)
+                    #result = re.search(':(.*)!.* JOIN #herramustikka', ircmsg)
+                    #if not result == None:
+                    #    nick = result.group(1)
+                    #    print("Found a viewer joining: " + nick + "\n")
+                    #    msg = 'PRIVMSG #herramustikka :Tervetuloa ' + nick + "\n"
+                    #    print("SENDING: " + msg)
+                    #    #self.ircsock.send(msg)
+                        
+                    if line.find(' PRIVMSG ') != -1:
+                        #nick = ircmsg.split('!')[0][1:]
+                        #msg = ircmsg.split(' PRIVMSG ')[-1].split(' :')[1]
+                        self.eventlistener.handleMessage(line)
+                    else:
+                        self.eventlistener.handleSpecial(line)
                     
 b = botti()         
 b.main()
