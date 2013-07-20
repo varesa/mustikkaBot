@@ -85,12 +85,18 @@ class botti:
         try:
             data = self.ircsock.recv(1024)
             data = data.strip('\r\n')
+            
+            log("RECV: " + data)
             return data
         except socket.error, e:
             err = e.args[0]
             if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
                 return "" # no data
                 
+    def sendData(self, data):
+        if not data == "" or data == None:
+            log("SEND: " + data)
+            self.ircsocket.send(data)
         
 
     def loadModule(self, file):
@@ -128,10 +134,9 @@ class botti:
             ircmsg = self.getData()
 
             if not len(ircmsg) == 0:
-                log("RECV: " + ircmsg)
 
                 if ircmsg.find('PING ') != -1:
-                    self.ircsock.send('PING :Pong\n')
+                    self.sendData('PING :Pong\n')
 
                 result = re.search(':(.*)!.* JOIN #herramustikka', ircmsg)
                 if not result == None:
