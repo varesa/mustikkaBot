@@ -19,13 +19,15 @@ class commands:
 
     def handleMessage(self, data, user, msg):
         msg = tools.stripPrefix(msg)
-        if msg.find('!commands') != -1:
-    	    d('[COMMANDS].cmd received: ' + msg)
-
-    """def createFile(self):
-	file = open(self.jsonfile, "w")
-	file.write("")
-	file.close()"""
+	args = msg.split()
+	if args[0] != "!commands":
+	    return
+	
+	if args[1] == "add":
+	    self.addCommand(args[2])
+	
+	if args[1] == "set":
+	    self.setCommand(args[2], ' '.join(args[3:]))
 
     def readJSON(self):
 	jsondata = None
@@ -38,7 +40,6 @@ class commands:
 	    if e.errno == errno.ENOENT:
 		log("[COMMANDS] file does not exist, creating")
 		self.writeJSON()
-		"""self.createFile()"""
 	
 	try:
 	    self.commands = json.loads(jsondata)
@@ -52,8 +53,12 @@ class commands:
 	file.write(data)
 	file.close()
 
-    def addCmd(self, cmd):
-	pass
+    def addCommand(self, cmd):
+	self.commands.append({"name":cmd})
+	self.writeJSON()
 
-    def setCmd(self, cmd, text):
-	pass
+    def setCommand(self, cmd, text):
+	for command in self.commands:
+	    if command['name'] == cmd:
+		command['value'] = text
+	self.writeJSON()
