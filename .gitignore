@@ -1,2 +1,3 @@
 *.pyc
-config.txtcommands.json
+config.txt
+commands.json
