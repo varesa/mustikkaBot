@@ -47,7 +47,6 @@ class commands:
 
     def readJSON(self):
 	jsondata = None
-	created = False
 	try:
 	    file = open(self.jsonfile, "r")
 	    jsondata = file.read()
