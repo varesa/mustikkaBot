@@ -10,24 +10,39 @@ def getId():
 
 class commands:
     
+    bot = None
+    
     commands = []
     jsonfile = "commands.json"
 
     def init(self, bot):
+	self.bot = bot
 	self.readJSON()
         bot.eventlistener.registerMessage(self)
 
     def handleMessage(self, data, user, msg):
         msg = tools.stripPrefix(msg)
 	args = msg.split()
-	if args[0] != "!commands":
-	    return
 	
+	if args[0] == "!commands":
+	    self.setupCommands(user, args)
+	else:
+	    self.runCommands(user, args)
+
+    def setupCommands(self, user, args):
 	if args[1] == "add":
 	    self.addCommand(args[2])
 	
 	if args[1] == "set":
 	    self.setCommand(args[2], ' '.join(args[3:]))
+
+    def runCommands(self, user, args):
+	for command in self.commands:
+	    if "!" + command['name'] == args[0]:
+		self.runCommand(command, args)
+
+    def runCommand(self, command, args):
+	self.bot.sendMessage(command['value'])
 
     def readJSON(self):
 	jsondata = None
