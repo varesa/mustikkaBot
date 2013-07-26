@@ -1,0 +1,22 @@
+Mustikkabot uses a modular system, where you can just put new modules in a folder to add new features.
+
+There are a few guidelines a module must follow:
+
+- The (main) file for the module must end in .py
+- The .py file must contain a method getId() which returns an unique string
+- The .py file must contain a class with the same name as the string returned by getId()
+- The class must contain a method called init(self, bot)
+
+An Example (example.py):
+
+def getId():
+    return "example"
+
+class example:
+    
+    def init():
+        pass # Do whatever we want
+
+(End of example)
+
+The module-loader calls the init() method upon loading. In it is possible to register event callbacks and other actions (setup threads, call other python modules, ...). 
