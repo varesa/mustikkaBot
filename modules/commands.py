@@ -19,6 +19,7 @@ class commands:
 	self.bot = bot
 	self.readJSON()
         bot.eventlistener.registerMessage(self)
+        log("[COMMANDS] Init complete")
 
     def handleMessage(self, data, user, msg):
         msg = tools.stripPrefix(msg)

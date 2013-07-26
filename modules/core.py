@@ -11,6 +11,7 @@ class core:
     def init(self, bot):
         self.bot = bot
         bot.eventlistener.registerSpecial(self)
+        log("[CORE] Init complete")
 
     def handleSpecial(self, msg):
         result = re.search("PING (.*)", msg)

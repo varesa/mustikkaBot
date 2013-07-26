@@ -12,6 +12,7 @@ class reload:
     def init(self, bot):
         self.bot = bot
         #bot.eventlistener.registerMessage(self)
+        log("[RELOAD] Init complete")
 
     def handleMessage(self, msg):
         msg = tools.stripPrefix(msg)
