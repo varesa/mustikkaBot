@@ -9,7 +9,6 @@ class test:
         bot.eventlistener.registerSpecial(self)
 
     def handleMessage(self, data, user, msg):
-        #log("[TESTMODULE] Received message: " + data)
         log("[TESTMODULE] " + user + " said: " + msg)
 
     def handleSpecial(self, data):

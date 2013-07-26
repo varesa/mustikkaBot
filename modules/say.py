@@ -1,6 +1,7 @@
 import re
 
 from logging import d, log
+import tools
 
 def getId():
     return "say"
@@ -14,7 +15,7 @@ class say:
 	self.bot.eventlistener.registerMessage(self)
 	
     def handleMessage(self, data, user, msg):
-        msg = re.sub(r'!(mustikkabot)? (.*)',r'!\2',msg)
+        msg = tools.stripPrefix(msg)
         
         result = re.search(r'^!say (.*)', msg) 
         if result != None:

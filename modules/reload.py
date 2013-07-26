@@ -1,6 +1,7 @@
 import re
 
 from logging import d, log
+import tools
 
 def getId():
     return "reload"
@@ -13,7 +14,7 @@ class reload:
         #bot.eventlistener.registerMessage(self)
 
     def handleMessage(self, msg):
-        msg = re.sub(r'!(mustikkabot)? (.*)',r'!\2',msg)
+        msg = tools.stripPrefix(msg)
         
         result = re.search("^!reload", msg)
         if result != None:
