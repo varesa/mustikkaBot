@@ -2,6 +2,7 @@ import re
 import json
 import errno
 
+import tools
 from logging import log, d
 
 def getId():
@@ -17,7 +18,9 @@ class commands:
         bot.eventlistener.registerMessage(self)
 
     def handleMessage(self, data, user, msg):
-        pass
+        msg = tools.stripPrefix(msg)
+        if msg.find('!commands') != -1:
+    	    d('[COMMANDS].cmd received: ' + msg)
 
     """def createFile(self):
 	file = open(self.jsonfile, "w")
