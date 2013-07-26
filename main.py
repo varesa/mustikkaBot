@@ -18,6 +18,7 @@ from time import sleep
 
 from logging import d, log
 from eventlistener import eventlistener
+from modulemanager import modulemanager
 
 class botti:
 
@@ -26,8 +27,8 @@ class botti:
     user = None
     channel = None
     
-    modules = {}
     eventlistener = eventlistener()
+    modulemanager = modulemanager()
 
     run = True
     
@@ -108,27 +109,6 @@ class botti:
     def sendMessage(self, msg):
         self.sendData("PRIVMSG " + self.channel + " :" + msg)
     
-    def loadModule(self, file):
-        fpath = os.path.normpath(os.path.join(os.path.dirname(__file__), file))
-        dir, fname = os.path.split(fpath)
-        mname, ext = os.path.splitext(fname)
-
-        (file, filename, data) = imp.find_module(mname, [dir])
-        return imp.load_module(mname, file, filename, data)
-
-    def getModules(self):        
-        files = os.listdir("modules/")
-        for file in files:
-    	    result = re.search(r'\.py$', file)
-    	    if result != None:
-                module = self.loadModule("modules/" + file)
-                id = module.getId()
-                self.modules[id] = getattr(module, id)()
-
-    def initModules(self):
-        for name, module in self.modules.iteritems():
-            module.init(self)
-
     def sigint(self, signal, frame):
         log("^C received, stopping")
         self.run = False;
@@ -139,8 +119,7 @@ class botti:
         self.user = settings[1]
         self.channel = settings[3]
 
-        self.getModules()
-        self.initModules()
+        self.modulemanager.init(self)
 
         self.connect(settings)
 
