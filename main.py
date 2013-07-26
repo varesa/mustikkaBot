@@ -150,7 +150,7 @@ class botti:
         while self.run:
             ircmsg = self.getData()
 
-            if not len(ircmsg) == 0:
+            if not ( ircmag == None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
                     #if ircmsg.find('PING ') != -1:
                     #    self.sendData('PING :Pong\n')
