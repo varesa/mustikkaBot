@@ -119,7 +119,8 @@ class botti:
     def getModules(self):        
         files = os.listdir("modules/")
         for file in files:
-            if not file.find(".py") == -1:
+    	    result = re.search(r'\.py$', file)
+    	    if result != None:
                 module = self.loadModule("modules/" + file)
                 id = module.getId()
                 self.modules[id] = getattr(module, id)()
