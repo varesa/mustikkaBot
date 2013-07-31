@@ -78,7 +78,7 @@ class botti:
             self.ircsock.send("Pass %s\n" % (params[2]))
             self.ircsock.send("NICK %s\n" % (params[1]))
             self.ircsock.send("JOIN %s\n" % (params[3]))
-        except Exception, e:
+        except Exception as e:
             log("Error connecting: %s" % e)
             sys.exit()
 
@@ -91,7 +91,7 @@ class botti:
             if not len(data) == 0:
                 log("RECV: <>" + data + "<>")
             return data
-        except socket.error, e:
+        except socket.error as e:
             err = e.args[0]
             if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
                 return "" # no data
