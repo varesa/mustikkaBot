@@ -24,7 +24,7 @@ class eventlistener:
             msg = result.group(3)
         else:
             d("Invalid message: " + text)
-            return  # Invalid message
+            return # Invalid message
 
         for module in self.messageRegistered:
             module.handleMessage(text, user, msg)
