@@ -40,7 +40,7 @@ class modulemanager:
         self.modules.pop(id, None)
 
     def initModules(self):
-        for name, module in self.modules.iteritems():
+        for name, module in self.modules.items():
             module.init(self.bot)
 
     def getModule(self, name):
