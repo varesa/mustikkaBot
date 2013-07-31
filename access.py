@@ -18,7 +18,7 @@ class access:
         log("[ACCESS] Init complete")
 
     def readJSON(self):
-        jsondata = None
+        jsondata = ""
         try:
             file = open(self.jsonfile, "r")
             jsondata = file.read()
