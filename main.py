@@ -100,7 +100,7 @@ class botti:
         except socket.error as e:
             err = e.args[0]
             if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
-                return "" # no data
+                return ""  # no data
 
     def sendData(self, data, dontLog = False):
         if not (data is "" or data is None):
@@ -132,7 +132,7 @@ class botti:
         while self.run:
             ircmsg = self.getData()
 
-            if not ( ircmsg == None or len(ircmsg) == 0):
+            if not ( ircmsg is None or len(ircmsg) is 0):
                 for line in ircmsg.split('\n'):
                     #if ircmsg.find('PING ') != -1:
                     #    self.sendData('PING :Pong\n')
