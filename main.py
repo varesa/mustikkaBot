@@ -17,8 +17,10 @@ import imp
 from time import sleep
 
 from logging import d, log
+
 from eventlistener import eventlistener
 from modulemanager import modulemanager
+from access import access
 
 class botti:
 
@@ -29,6 +31,7 @@ class botti:
     
     eventlistener = eventlistener()
     modulemanager = modulemanager()
+    accessmanager = access()
 
     run = True
     
@@ -120,6 +123,7 @@ class botti:
         self.channel = settings[3]
 
         self.modulemanager.init(self)
+        self.accessmanager.init(self)
 
         self.connect(settings)
 
