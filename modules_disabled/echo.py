@@ -1,12 +1,11 @@
-from logging import d, log
-
 def getId():
     return "echo"
+
 
 class echo:
     bot = None
 
-    def init(self,bot):
+    def init(self, bot):
         self.bot = bot
         bot.eventlistener.registerMessage(self)
 
@@ -20,6 +19,6 @@ class echo:
             for arg in args[1:]:
                 msg += " " + arg
             self.bot.sendMessage("Echo:" + msg)
-                
+
         else:
             self.bot.sendMessage("Echo!")

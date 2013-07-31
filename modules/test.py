@@ -1,7 +1,9 @@
-from logging import log, d
+from logging import log
+
 
 def getId():
     return "test"
+
 
 class test:
     def init(self, bot):

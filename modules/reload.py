@@ -1,14 +1,16 @@
 import re
 
-from logging import d, log
+from logging import log
 import tools
+
 
 def getId():
     return "reload"
 
+
 class reload:
     bot = None
-    
+
     def init(self, bot):
         self.bot = bot
         #bot.eventlistener.registerMessage(self)
@@ -16,7 +18,7 @@ class reload:
 
     def handleMessage(self, msg):
         msg = tools.stripPrefix(msg)
-        
+
         result = re.search("^!reload", msg)
         if result != None:
             log("[RELOAD] !Reload received")
