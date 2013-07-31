@@ -5,29 +5,36 @@
 # Author: Esa Varemo
 #
 
+import re
 import socket
+import json
+import threading
 import sys
 import signal
+import os
 import errno
+import imp
 from time import sleep
-import traceback
 
-from logging import log
+from logging import d, log
+
 from eventlistener import eventlistener
 from modulemanager import modulemanager
-
+from access import access
 
 class botti:
+
     ircsock = None
 
     user = None
     channel = None
-
+    
     eventlistener = eventlistener()
     modulemanager = modulemanager()
+    accessmanager = access()
 
     run = True
-
+    
     def parse_config(self):
         try:
             settings_f = open("config.txt")
@@ -71,9 +78,9 @@ class botti:
     def connect(self, params):
         try:
             self.ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+            
             self.ircsock.connect((params[0], 6667))
-
+            
             self.ircsock.setblocking(0)
 
             """self.ircsock.send("Pass %s\n" % (params[2]))
@@ -87,10 +94,10 @@ class botti:
 
             log("\n\nError connecting: %s" % e)
             sys.exit()
-
+            
     def getData(self):
         data = None
-
+        
         try:
             data = self.ircsock.recv(1024)
             data = data.decode("UTF-8").strip('\r\n')
@@ -110,7 +117,7 @@ class botti:
 
     def sendMessage(self, msg):
         self.sendData("PRIVMSG " + self.channel + " :" + msg)
-
+    
     def sigint(self, signal, frame):
         log("^C received, stopping")
         self.run = False;
@@ -122,17 +129,18 @@ class botti:
         self.channel = settings[3]
 
         self.modulemanager.init(self)
+        self.accessmanager.init(self)
 
         self.connect(settings)
 
         signal.signal(signal.SIGINT, self.sigint)
-
+        
         sleep(1)
 
         while self.run:
             ircmsg = self.getData()
 
-            if not ( ircmsg is None or len(ircmsg) is 0):
+            if not ( ircmsg == None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
                     #if ircmsg.find('PING ') != -1:
                     #    self.sendData('PING :Pong\n')
@@ -144,14 +152,13 @@ class botti:
                     #    msg = 'PRIVMSG #herramustikka :Tervetuloa ' + nick + "\n"
                     #    print("SENDING: " + msg)
                     #    #self.ircsock.send(msg)
-
+                        
                     if line.find(' PRIVMSG ') != -1:
                         #nick = ircmsg.split('!')[0][1:]
                         #msg = ircmsg.split(' PRIVMSG ')[-1].split(' :')[1]
                         self.eventlistener.handleMessage(line)
                     else:
                         self.eventlistener.handleSpecial(line)
-
-
-b = botti()
+                    
+b = botti()         
 b.main()
