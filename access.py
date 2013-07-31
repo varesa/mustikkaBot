@@ -24,6 +24,9 @@ class access:
             self.addGroup("%moderators")
             self.writeJSON()
 
+        self.addToGroup("%owner", "Herramustikka")
+        self.addToGroup("%owner", "varesa")
+
     def readJSON(self):
         jsondata = ""
         try:
@@ -88,13 +91,33 @@ class access:
         self.acls[acl]['members'].append(user)
         self.writeJSON()
 
+    def expandGroups(self, groups):
+        expanded = []
+        expanded.append(groups)
+        for group in groups.keys():
+            if group is "%operators":
+                if "%owner" not in expanded:
+                    expanded.append("%owner")
+            elif group is "%moderators":
+                if "%owner" not in expanded:
+                    expanded.append("%owner")
+                if "%operators" not in expanded:
+                    expanded.append("%operators")
+            elif group is not "%owner":
+                if "%owner" not in expanded:
+                    expanded.append("%owner")
+                if "%operators" not in expanded:
+                    expanded.append("%operators")
+                if "%moderators" not in expanded:
+                    expanded.append("%moderators")
+
     def isInAcl(self, acl, user):
         if user in self.acls[acl].members:
             return True
 
-        for group in self.acls[acl].groups:
+        groups = self.expandGroups(self.acls[acl].groups)
+        for group in groups:
             if user in self.groups[group]['members']:
                 return True
 
         return False
-    
