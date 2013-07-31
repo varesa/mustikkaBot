@@ -46,7 +46,7 @@ class commands:
         self.bot.sendMessage(command['value'])
 
     def readJSON(self):
-        jsondata = None
+        jsondata = ""
         try:
             file = open(self.jsonfile, "r")
             jsondata = file.read()
