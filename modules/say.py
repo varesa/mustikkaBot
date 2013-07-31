@@ -13,6 +13,7 @@ class say:
     def init(self, bot):
 	self.bot = bot
 	self.bot.eventlistener.registerMessage(self)
+	self.bot.accessmanager.registerAcl("!say")
 	log("[SAY] Init complete")
 	
     def handleMessage(self, data, user, msg):
