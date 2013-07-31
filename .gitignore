@@ -2,3 +2,4 @@
 config.txt*
 !config.txt.template
 *.json
+.idea/*
