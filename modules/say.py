@@ -20,6 +20,6 @@ class say:
         msg = tools.stripPrefix(msg)
 
         result = re.search(r'^!say (.*)', msg)
-        if result != None:
+        if result is not None:
             self.bot.sendMessage(' '.join(result.groups(1)))
 

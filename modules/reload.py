@@ -20,7 +20,7 @@ class reload:
         msg = tools.stripPrefix(msg)
 
         result = re.search("^!reload", msg)
-        if result != None:
+        if result is not None:
             log("[RELOAD] !Reload received")
             self.bot.sendData("Reloadin")
             

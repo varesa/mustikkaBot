@@ -24,7 +24,7 @@ class modulemanager:
         files = os.listdir("modules/")
         for file in files:
             result = re.search(r'\.py$', file)
-            if result != None:
+            if result is not None:
                 module = self.importModule("modules/" + file)
                 id = module.getId()
                 self.modules[id] = getattr(module, id)()

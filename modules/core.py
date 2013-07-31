@@ -17,6 +17,6 @@ class core:
 
     def handleSpecial(self, msg):
         result = re.search("PING (.*)", msg)
-        if result != None:
+        if result is not None:
             log("[CORE] Ping received")
             self.bot.sendData("PONG " + result.group(1))
