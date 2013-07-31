@@ -10,11 +10,12 @@ def getId():
 
 class say:
     bot = None
+    acl = "!say"
 
     def init(self, bot):
         self.bot = bot
         self.bot.eventlistener.registerMessage(self)
-        self.bot.accessmanager.registerAcl("!say")
+        self.bot.accessmanager.registerAcl(self.acl)
         log("[SAY] Init complete")
 
     def handleMessage(self, data, user, msg):
@@ -22,5 +23,6 @@ class say:
 
         result = re.search(r'^!say (.*)', msg)
         if result is not None:
-            self.bot.sendMessage(' '.join(result.groups(1)))
+            if self.bot.accessmanager.isInAcl(user, self.acl):
+                self.bot.sendMessage(' '.join(result.groups(1)))
 
