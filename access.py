@@ -25,7 +25,7 @@ class access:
             self.writeJSON()
 
     def readJSON(self):
-        jsondata = None
+        jsondata = ""
         try:
             file = open(self.jsonfile, "r")
             jsondata = file.read()
@@ -67,7 +67,7 @@ class access:
         self.writeJSON()
 
     def createAcl(self, acl):
-        self.acls[acl] = {}
+        self.acls[acl] = {"groups":[], "members":[]}
         self.writeJSON()
 
     def registerAcl(self, acl, defaults=None):
@@ -78,7 +78,7 @@ class access:
         self.writeJSON()
 
     def addGroupToAcl(self, acl, group):
-        if not group in self.groups:
+        if not group in self.groups.keys():
             log("[ACCESS] group does not exist")
             return
         self.acls[acl]['groups'].append(group)
