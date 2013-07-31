@@ -10,6 +10,7 @@ import sys
 import signal
 import errno
 from time import sleep
+import traceback
 
 from logging import log
 from eventlistener import eventlistener
@@ -75,11 +76,16 @@ class botti:
 
             self.ircsock.setblocking(0)
 
-            self.ircsock.send("Pass %s\n" % (params[2]))
+            """self.ircsock.send("Pass %s\n" % (params[2]))
             self.ircsock.send("NICK %s\n" % (params[1]))
-            self.ircsock.send("JOIN %s\n" % (params[3]))
+            self.ircsock.send("JOIN %s\n" % (params[3]))"""
+            self.sendData("PASS %s" % (params[2]), dontLog=True)
+            self.sendData("NICK %s" % (params[1]))
+            self.sendData("JOIN %s" % (params[3]))
         except Exception as e:
-            log("Error connecting: %s" % e)
+            traceback.print_exc()
+
+            log("\n\nError connecting: %s" % e)
             sys.exit()
 
     def getData(self):
@@ -87,7 +93,7 @@ class botti:
 
         try:
             data = self.ircsock.recv(1024)
-            data = data.strip('\r\n')
+            data = data.decode("UTF-8").strip('\r\n')
             if not len(data) == 0:
                 log("RECV: <>" + data + "<>")
             return data
@@ -96,10 +102,11 @@ class botti:
             if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
                 return "" # no data
 
-    def sendData(self, data):
-        if not data == "" or data == None:
-            log("SEND: " + data)
-            self.ircsock.send(data + "\n")
+    def sendData(self, data, dontLog = False):
+        if not (data is "" or data is None):
+            if not dontLog:
+                log("SEND: " + data)
+            self.ircsock.send(bytes(data + "\n", "UTF-8"))
 
     def sendMessage(self, msg):
         self.sendData("PRIVMSG " + self.channel + " :" + msg)
