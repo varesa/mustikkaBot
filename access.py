@@ -18,6 +18,12 @@ class access:
         self.readJSON()
         log("[ACCESS] Init complete")
 
+        if len(self.groups) is 0:
+            self.addGroup("%owner")
+            self.addGroup("%operators")
+            self.addGroup("%moderators")
+            self.writeJSON()
+
     def readJSON(self):
         jsondata = None
         try:
@@ -64,8 +70,11 @@ class access:
         self.acls[acl] = {}
         self.writeJSON()
 
-    def registerAcl(self, acl):
+    def registerAcl(self, acl, defaults=None):
         self.createAcl(acl)
+        if defaults is None:
+            self.addGroupToAcl(acl, "%owner")
+            self.addGroupToAcl(acl, "%operators")
         self.writeJSON()
 
     def addGroupToAcl(self, acl, group):
