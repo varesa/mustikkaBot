@@ -123,8 +123,8 @@ class botti:
         self.user = settings[1]
         self.channel = settings[3]
 
-        self.modulemanager.init(self)
         self.accessmanager.init(self)
+        self.modulemanager.init(self)
 
         self.connect(settings)
 
