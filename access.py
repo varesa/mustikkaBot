@@ -49,7 +49,7 @@ class access:
     def writeJSON(self):
         jsondata = {"groups": self.groups, "acls": self.acls}
         file = open(self.jsonfile, "w")
-        data = json.dumps(jsondata)
+        data = json.dumps(jsondata, sort_keys=True, indent=4, separators=(',', ': '))
         file.write(data)
         file.close()
 
