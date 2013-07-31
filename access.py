@@ -46,30 +46,38 @@ class access:
 
     def addGroup(self, name, members=[]):
 	self.groups[name] = {"members":members}
+	self.writeJSON()
 
     def removeGroup(self, name):
 	self.groups.pop(name,None)
+	self.writeJSON()
 
     def addToGroup(self, group, name):
 	self.groups[group]['members'].append(name)
+	self.writeJSON()
 
     def removeFromGroup(self, group, name):
 	self.groups[group]['members'].pop(name, None)
+	self.writeJSON()
 
     def createAcl(self, acl):
 	self.acls[acl] = {}
+	self.writeJSON()
 
     def registerAcl(self, acl):
 	self.createAcl(acl)
+	self.writeJSON()
 
     def addGroupToAcl(self, acl, group):
 	if not group in self.groups:
 	    log("[ACCESS] group does not exist")
 	    return
 	self.acls[acl]['groups'].append(group)
+	self.writeJSON()
 
     def addUserToAcl(self, acl, user):
 	self.acls[acl]['members'].append(user)
+	self.writeJSON()
 
     def isInAcl(self, acl, user):
 	if user in self.acls[acl].members:
