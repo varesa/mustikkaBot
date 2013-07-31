@@ -1,4 +1,4 @@
 *.pyc
 config.txt*
 !config.txt.template
-commands.json
+*.json
