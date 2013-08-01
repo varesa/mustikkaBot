@@ -53,7 +53,9 @@ class access:
         file.write(data)
         file.close()
 
-    def addGroup(self, name, members=[]):
+    def addGroup(self, name, members=None):
+        if members is None:
+            members = []
         self.groups[name] = {"members": members}
         self.writeJSON()
 
@@ -93,8 +95,9 @@ class access:
 
     def expandGroups(self, groups):
         expanded = []
-        expanded.append(groups)
-        for group in groups.keys():
+        expanded += groups
+
+        for group in groups:
             if group is "%operators":
                 if "%owner" not in expanded:
                     expanded.append("%owner")
@@ -111,11 +114,13 @@ class access:
                 if "%moderators" not in expanded:
                     expanded.append("%moderators")
 
-    def isInAcl(self, acl, user):
-        if user in self.acls[acl].members:
+        return expanded
+
+    def isInAcl(self, user, acl):
+        if user in self.acls[acl]['members']:
             return True
 
-        groups = self.expandGroups(self.acls[acl].groups)
+        groups = self.expandGroups(self.acls[acl]['groups'])
         for group in groups:
             if user in self.groups[group]['members']:
                 return True
