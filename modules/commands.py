@@ -9,7 +9,7 @@ def getId():
     return "commands"
 
 
-class commands: # TODO: Make more verbose. eg. "command already exists", "command succesfully created"
+class commands:
     bot = None
 
     commands = []
@@ -44,6 +44,7 @@ class commands: # TODO: Make more verbose. eg. "command already exists", "comman
 
     def runCommand(self, command, args):
         self.bot.sendMessage(command['value'])
+        log("[COMMANDS] Running command " + command['name'] + ": " + command['value'])
 
     def readJSON(self):
         jsondata = ""
@@ -68,13 +69,38 @@ class commands: # TODO: Make more verbose. eg. "command already exists", "comman
         file.write(data)
         file.close()
 
+    def existsCommand(self, cmd):
+        """
+        :param cmd: Name of a command
+        :type cmd: str
+        :return: does command exist
+        :rtype: bool
+
+        Check if a command exists
+        """
+        for command in self.commands:
+            if command == cmd:
+                return True
+        return False
+
     def addCommand(self, cmd):
-        self.commands.append({"name": cmd})
-        self.bot.accessmanager.registerAcl("commands.!" + cmd)
-        self.writeJSON()
+        if not self.existsCommand(cmd):
+            self.commands.append({"name": cmd})
+            self.bot.accessmanager.registerAcl("commands.!" + cmd)
+            self.writeJSON()
+            self.bot.sendMessage("Added command " + cmd)
+            log("[ACCESS] Added new command:" + cmd)
+        else:
+            self.bot.sendMessage("Command " + cmd + " already exists")
+            log("[ACCESS] Tried to create a command " + cmd + " that already exists")
 
     def setCommand(self, cmd, text):
         for command in self.commands:
             if command['name'] == cmd:
                 command['value'] = text
-        self.writeJSON()
+                self.writeJSON()
+                self.bot.sendMessage("New message for command " + cmd + ": " + text)
+                log("[COMMANDS] Modified the value of command " + cmd + " to: " + text)
+                return
+        self.bot.sendMessage("Command " + cmd + " not found")
+        log("[COMMANDS] tried to change the text of a nonexisting command: " + cmd)
