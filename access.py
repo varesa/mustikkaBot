@@ -230,8 +230,9 @@ class access:
 
         Add a user to the acl
         """
-        self.acls[acl]['members'].append(user) # TODO: Check if user is already in acl
-        self.writeJSON()
+        if not user in self.acls[acl]['members']:
+            self.acls[acl]['members'].append(user)
+            self.writeJSON()
 
     def expandGroups(self, groups):
         """
