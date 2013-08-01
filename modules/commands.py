@@ -70,6 +70,7 @@ class commands:
 
     def addCommand(self, cmd):
         self.commands.append({"name": cmd})
+        self.bot.accessmanager.registerAcl("commands.!" + cmd)
         self.writeJSON()
 
     def setCommand(self, cmd, text):

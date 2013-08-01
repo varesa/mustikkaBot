@@ -78,9 +78,6 @@ class bot:
 
             self.ircsock.setblocking(0)
 
-            """self.ircsock.send("Pass %s\n" % (params[2]))
-            self.ircsock.send("NICK %s\n" % (params[1]))
-            self.ircsock.send("JOIN %s\n" % (params[3]))"""
             self.sendData("PASS %s" % (params[2]), dontLog=True)
             self.sendData("NICK %s" % (params[1]))
             self.sendData("JOIN %s" % (params[3]))
@@ -137,20 +134,8 @@ class bot:
 
             if not ( ircmsg is None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
-                    #if ircmsg.find('PING ') != -1:
-                    #    self.sendData('PING :Pong\n')
-
-                    #result = re.search(':(.*)!.* JOIN #herramustikka', ircmsg)
-                    #if not result == None:
-                    #    nick = result.group(1)
-                    #    print("Found a viewer joining: " + nick + "\n")
-                    #    msg = 'PRIVMSG #herramustikka :Tervetuloa ' + nick + "\n"
-                    #    print("SENDING: " + msg)
-                    #    #self.ircsock.send(msg)
 
                     if line.find(' PRIVMSG ') != -1:
-                        #nick = ircmsg.split('!')[0][1:]
-                        #msg = ircmsg.split(' PRIVMSG ')[-1].split(' :')[1]
                         self.eventlistener.handleMessage(line)
                     else:
                         self.eventlistener.handleSpecial(line)
