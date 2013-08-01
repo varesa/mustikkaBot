@@ -64,7 +64,7 @@ class commands:
 
     def writeJSON(self):
         file = open(self.jsonfile, "w")
-        data = json.dumps(self.commands)
+        data = json.dumps(self.commands, sort_keys=True, indent=4, separators=(',', ': '))
         file.write(data)
         file.close()
 
