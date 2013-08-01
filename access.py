@@ -5,6 +5,19 @@ import errno
 from logging import log, d
 
 
+class group:
+    accessm = None
+
+    name = None
+
+    def __init__(self, accessm, name):
+        self.name = name
+        self.accessm = accessm
+
+    def getMembers(self):
+        return self.accessm.groups[self.name]['members']
+
+
 class access:
     bot = None
 
@@ -45,7 +58,6 @@ class access:
         except ValueError:
             log("[COMMANDS] commands-file malformed")
 
-
     def writeJSON(self):
         jsondata = {"groups": self.groups, "acls": self.acls}
         file = open(self.jsonfile, "w")
@@ -63,13 +75,26 @@ class access:
         self.groups.pop(name, None)
         self.writeJSON()
 
+    def existsGroup(self, name):
+        if name in self.groups.keys():
+            return True
+        else:
+            return False
+
+    def getGroup(self, name):
+        if self.existsGroup(name):
+            return group(name)
+        else:
+            return None
+
     def addToGroup(self, group, name):
-        if name not in self.groups[group]['members']:
-            self.groups[group]['members'].append(name)
+        members = self.getGroup(group).getMembers()
+        if name not in members:
+            members.append(name)
             self.writeJSON()
 
     def removeFromGroup(self, group, name):
-        self.groups[group]['members'].pop(name, None)
+        self.getGroup(group).getMembers().pop(name, None)
         self.writeJSON()
 
     def createAcl(self, acl):
@@ -84,7 +109,7 @@ class access:
         self.writeJSON()
 
     def addGroupToAcl(self, acl, group):
-        if not group in self.groups.keys():
+        if not self.existsGroup(group):
             log("[ACCESS] group does not exist")
             return
         self.acls[acl]['groups'].append(group)
