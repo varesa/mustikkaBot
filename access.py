@@ -165,6 +165,20 @@ class access:
         self.acls[acl] = {"groups":[], "members":[]}
         self.writeJSON()
 
+    def existsAcl(self, acl):
+        """
+        :param acl: Name of the ACL
+        :type acl: str
+        :return: does the acl exist?
+        :rtype: bool
+
+        Check if the ACL exists
+        """
+        if acl in self.acls.keys():
+            return True
+        else:
+            return False
+
     def registerAcl(self, acl, defaultGroups=None,defaultMembers=None):
         """
         :param acl: name of the acl
@@ -176,18 +190,19 @@ class access:
 
         Register an acl. Create a new one with the defaults if it does not exist
         """
-        self.createAcl(acl) # TODO: Only create if does not exist
-        if defaultGroups is None and defaultMembers is None:
-            self.addGroupToAcl(acl, "%owner")
-            self.addGroupToAcl(acl, "%operators")
-        else:
-            if defaultGroups:
-                for group in defaultGroups:
-                    self.addGroupToAcl(self,acl, group)
-            if defaultMembers:
-                for member in defaultMembers:
-                    self.addUserToAcl(acl, member)
-        self.writeJSON()
+        if not self.existsAcl(acl):
+            self.createAcl(acl)
+            if defaultGroups is None and defaultMembers is None:
+                self.addGroupToAcl(acl, "%owner")
+                self.addGroupToAcl(acl, "%operators")
+            else:
+                if defaultGroups:
+                    for group in defaultGroups:
+                        self.addGroupToAcl(self,acl, group)
+                if defaultMembers:
+                    for member in defaultMembers:
+                        self.addUserToAcl(acl, member)
+            self.writeJSON()
 
     def addGroupToAcl(self, acl, group):
         """
