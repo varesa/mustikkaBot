@@ -18,7 +18,7 @@ from modulemanager import modulemanager
 from access import access
 
 
-class botti:
+class bot:
     ircsock = None
 
     user = None
@@ -156,5 +156,5 @@ class botti:
                         self.eventlistener.handleSpecial(line)
 
 
-b = botti()
+b = bot()
 b.main()
