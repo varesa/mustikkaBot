@@ -125,7 +125,7 @@ class access:
         Return an instance of the :class:group describing the specified group
         """
         if self.existsGroup(name):
-            return group(name)
+            return group(self, name)
         else:
             return None
 
