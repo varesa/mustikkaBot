@@ -31,11 +31,12 @@ class commands:
             self.runCommands(user, args)
 
     def setupCommands(self, user, args):
-        if args[1] == "add":
-            self.addCommand(args[2])
+        if len(args) > 1:
+            if args[1] == "add":
+                self.addCommand(args[2])
 
-        if args[1] == "set":
-            self.setCommand(args[2], ' '.join(args[3:]))
+            if args[1] == "set":
+                self.setCommand(args[2], ' '.join(args[3:]))
 
     def runCommands(self, user, args):
         for command in self.commands:
