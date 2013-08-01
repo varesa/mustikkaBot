@@ -64,8 +64,9 @@ class access:
         self.writeJSON()
 
     def addToGroup(self, group, name):
-        self.groups[group]['members'].append(name)
-        self.writeJSON()
+        if name not in self.groups[group]['members']:
+            self.groups[group]['members'].append(name)
+            self.writeJSON()
 
     def removeFromGroup(self, group, name):
         self.groups[group]['members'].pop(name, None)
