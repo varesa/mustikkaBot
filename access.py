@@ -101,11 +101,18 @@ class access:
         self.acls[acl] = {"groups":[], "members":[]}
         self.writeJSON()
 
-    def registerAcl(self, acl, defaults=None):
+    def registerAcl(self, acl, defaultGroups=None,defaultMembers=None):
         self.createAcl(acl)
-        if defaults is None:
+        if defaultGroups is None and defaultMembers is None:
             self.addGroupToAcl(acl, "%owner")
             self.addGroupToAcl(acl, "%operators")
+        else:
+            if defaultGroups:
+                for group in defaultGroups:
+                    self.addGroupToAcl(self,acl, group)
+            if defaultMembers:
+                for member in defaultMembers:
+                    self.addUserToAcl(acl, member)
         self.writeJSON()
 
     def addGroupToAcl(self, acl, group):
