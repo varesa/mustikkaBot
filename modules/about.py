@@ -20,5 +20,5 @@ class about:
 
         if args[0] == "!about" or args[0] == "!bot":
             log("[ABOUT] Printing \"about\"")
-            self.bot.sendMessage("MustikkaBot is a IRC/Twitch chatbot created in python" +
+            self.bot.sendMessage("MustikkaBot is a IRC/Twitch chatbot created in python " +
                             "for the awesome youtuber/streamer Mustikka. Author: Esa Varemo")
