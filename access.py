@@ -216,7 +216,9 @@ class access:
         if not self.existsGroup(group):
             log("[ACCESS] group does not exist")
             return
-        self.acls[acl]['groups'].append(group) #TODO: Check if group already is there
+        if not group in self.acls[acl]['groups']:
+            self.acls[acl]['groups'].append(group)
+            log("[ACCESS] group is already in acl")
         self.writeJSON()
 
     def addUserToAcl(self, acl, user):
