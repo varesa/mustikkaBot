@@ -9,7 +9,7 @@ def getId():
     return "commands"
 
 
-class commands:
+class commands: # TODO: Make more verbose. eg. "command already exists", "command succesfully created"
     bot = None
 
     commands = []
