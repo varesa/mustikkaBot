@@ -27,6 +27,12 @@ class access:
     jsonfile = "acls.json"
 
     def init(self, bot):
+        """
+        :param bot: Reference to the main bot instance
+        :type bot: bot
+
+        Initialize the access-module
+        """
         self.bot = bot
         self.readJSON()
         log("[ACCESS] Init complete")
@@ -41,6 +47,9 @@ class access:
         self.addToGroup("%owner", "varesa")
 
     def readJSON(self):
+        """
+        Read the access-data from a JSON file
+        """
         jsondata = ""
         try:
             file = open(self.jsonfile, "r")
@@ -59,6 +68,9 @@ class access:
             log("[COMMANDS] commands-file malformed")
 
     def writeJSON(self):
+        """
+        Write the access-data to a JSON file
+        """
         jsondata = {"groups": self.groups, "acls": self.acls}
         file = open(self.jsonfile, "w")
         data = json.dumps(jsondata, sort_keys=True, indent=4, separators=(',', ': '))
@@ -66,43 +78,105 @@ class access:
         file.close()
 
     def addGroup(self, name, members=None):
+        """
+        :param name: Name of the group to be created
+        :type name: str
+        :param members: Optional list of members to initialize the group with
+        :type members: list(str)
+
+        Create a new group and optionally add members to it
+        """
         if members is None:
             members = []
         self.groups[name] = {"members": members}
         self.writeJSON()
 
     def removeGroup(self, name):
+        """
+        :param name: Name of the group to be removed
+        :type name: str
+
+        Remove a group if it exists
+        """
         self.groups.pop(name, None)
         self.writeJSON()
 
     def existsGroup(self, name):
+        """
+        :param name: Name of the group to check
+        :type name: str
+        :return: Does the group exists
+        :rtype: bool
+
+        Check if a group exists
+        """
         if name in self.groups.keys():
             return True
         else:
             return False
 
     def getGroup(self, name):
+        """
+        :param name: Name of the group
+        :type name: str
+        :return: An instance of the group specified
+        :rtype: group
+
+        Return an instance of the :class:group describing the specified group
+        """
         if self.existsGroup(name):
             return group(name)
         else:
             return None
 
     def addToGroup(self, group, name):
+        """
+        :param group: Name of the group
+        :type group: str
+        :param name: Name of the person
+        :type name: str
+
+        Add a person to a group
+        """
         members = self.getGroup(group).getMembers()
         if name not in members:
             members.append(name)
             self.writeJSON()
 
     def removeFromGroup(self, group, name):
+        """
+        :param group: Name of the group
+        :type group: str
+        :param name: Name of the person
+        :type name: str
+
+        Remove a person from a group
+        """
         self.getGroup(group).getMembers().pop(name, None)
         self.writeJSON()
 
     def createAcl(self, acl):
+        """
+        :param acl: Name of the acl
+        :type acl: str
+
+        Create a new acl
+        """
         self.acls[acl] = {"groups":[], "members":[]}
         self.writeJSON()
 
     def registerAcl(self, acl, defaultGroups=None,defaultMembers=None):
-        self.createAcl(acl)
+        """
+        :param acl: name of the acl
+        :type acl: str
+        :param defaultGroups: optional list of groups to add to the acl
+        :type defaultGroups: list(str)
+        :param defaultMembers: optional list of members to add to the acl
+        :type defaultMembers: list(str)
+
+        Register an acl. Create a new one with the defaults if it does not exist
+        """
+        self.createAcl(acl) # TODO: Only create if does not exist
         if defaultGroups is None and defaultMembers is None:
             self.addGroupToAcl(acl, "%owner")
             self.addGroupToAcl(acl, "%operators")
@@ -116,17 +190,42 @@ class access:
         self.writeJSON()
 
     def addGroupToAcl(self, acl, group):
+        """
+        :param acl: name of the acl
+        :type acl: str
+        :param group: name of the group
+        :type group: str
+
+        Add a group to the acl
+        """
         if not self.existsGroup(group):
             log("[ACCESS] group does not exist")
             return
-        self.acls[acl]['groups'].append(group)
+        self.acls[acl]['groups'].append(group) #TODO: Check if group already is there
         self.writeJSON()
 
     def addUserToAcl(self, acl, user):
-        self.acls[acl]['members'].append(user)
+        """
+        :param acl: name of the acl
+        :type acl: str
+        :param user: name of the user
+        :type user; str
+
+        Add a user to the acl
+        """
+        self.acls[acl]['members'].append(user) # TODO: Check if user is already in acl
         self.writeJSON()
 
     def expandGroups(self, groups):
+        """
+        :param groups: list of the groups
+        :type groups: list(str)
+        :return: expanded list of groups
+        :rtype: list(str)
+
+        Expand a list of groups, so that all groups with higher level of privileges get permissions,
+        if a lower group has them
+        """
         expanded = []
         expanded += groups
 
@@ -150,6 +249,16 @@ class access:
         return expanded
 
     def isInAcl(self, user, acl):
+        """
+        :param user: name of the user
+        :type user: str
+        :param acl: name of the acl
+        :type acl: str
+        :return: has the user permissions
+        :rtype: bool
+
+        Check if a user is in an acl, either directly or through a group
+        """
         if user in self.acls[acl]['members']:
             return True
 
