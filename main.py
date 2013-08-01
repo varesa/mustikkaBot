@@ -31,6 +31,12 @@ class bot:
     run = True
 
     def parse_config(self):
+        """
+        :return: list of strings describing parameters
+        :rtype: list(string, string, string, string)
+
+        Parse the config file, and read the different defined parameters. Return them as a list
+        """
         try:
             settings_f = open("config.txt")
         except IOError:
@@ -71,6 +77,12 @@ class bot:
 
 
     def connect(self, params):
+        """
+        :param params: A list of the params to be used to connect
+        :type params: list(string, string, string, string)
+
+        Try to connect to the IRC server using the provided parameters
+        """
         try:
             self.ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -88,6 +100,12 @@ class bot:
             sys.exit()
 
     def getData(self):
+        """
+        :return: Data received from the socket
+        :rtype: str
+
+        Return any data that has been received
+        """
         data = None
 
         try:
@@ -102,19 +120,42 @@ class bot:
                 return ""  # no data
 
     def sendData(self, data, dontLog=False):
+        """
+        :param data: String to be sent
+        :type data: str
+        :param dontLog: Will the string be logged?
+        :type dontLog: bool
+
+        Send data appended with a newline
+        """
         if not (data is "" or data is None):
             if not dontLog:
                 log("SEND: " + data)
             self.ircsock.send(bytes(data + "\n", "UTF-8"))
 
     def sendMessage(self, msg):
+        """
+        :param msg: Message to be sent
+        :type msg: str
+
+        Send a message to the channel
+        """
         self.sendData("PRIVMSG " + self.channel + " :" + msg)
 
     def sigint(self, signal, frame):
+        """
+        :param signal: Signal received
+        :param frame: ...
+
+        A signal handler to trap ^C
+        """
         log("^C received, stopping")
         self.run = False;
 
     def main(self):
+        """
+        The startpoint of the bot
+        """
         settings = self.parse_config()
 
         self.user = settings[1]
