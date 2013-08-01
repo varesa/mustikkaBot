@@ -10,9 +10,11 @@ class group:
 
     name = None
 
-    def __init__(self, accessm, name):
+    def __init__(self, name):
         self.name = name
-        self.accessm = accessm
+
+        global accessmodule
+        self.accessm = accessmodule
 
     def getMembers(self):
         return self.accessm.groups[self.name]['members']
@@ -33,7 +35,12 @@ class access:
 
         Initialize the access-module
         """
+
         self.bot = bot
+
+        global accessmodule
+        accessmodule = self
+
         self.readJSON()
         log("[ACCESS] Init complete")
 
@@ -125,7 +132,7 @@ class access:
         Return an instance of the :class:group describing the specified group
         """
         if self.existsGroup(name):
-            return group(self, name)
+            return group(name)
         else:
             return None
 
