@@ -1,6 +1,6 @@
 import re
 
-from logging import log, d
+from log import log, d
 
 
 class eventlistener:

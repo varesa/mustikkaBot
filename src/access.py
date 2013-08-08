@@ -2,7 +2,7 @@ import re
 import json
 import errno
 
-from logging import log, d
+from log import log, d
 
 
 class group:

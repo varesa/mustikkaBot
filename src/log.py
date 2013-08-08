@@ -1,6 +1,6 @@
 #!/bin/env python
 #
-# A logging utility class for twitch/irc bot MustikkaBot
+# A log utility class for twitch/irc bot MustikkaBot
 #
 # Author: Esa Varemo
 #

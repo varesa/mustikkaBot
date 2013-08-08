@@ -1,4 +1,4 @@
-from logging import d,log
+from log import d,log
 import tools
 
 def getId():

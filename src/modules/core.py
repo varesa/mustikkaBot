@@ -1,6 +1,6 @@
 import re
 
-from logging import log
+from log import log
 
 
 def getId():

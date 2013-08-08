@@ -2,7 +2,7 @@ import json
 import errno
 
 import tools
-from logging import log
+from log import log
 
 
 def getId():

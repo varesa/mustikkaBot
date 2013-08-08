@@ -11,7 +11,7 @@ import signal
 import errno
 from time import sleep
 
-from logging import log
+from log import log
 
 from eventlistener import eventlistener
 from modulemanager import modulemanager
