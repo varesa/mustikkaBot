@@ -184,6 +184,6 @@ class bot:
                     else:
                         self.eventlistener.handleSpecial(line)
 
-
-b = bot()
-b.main()
+if __name__ == "__main__": # Do not start on import
+    b = bot()
+    b.main()
