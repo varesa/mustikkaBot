@@ -54,6 +54,7 @@ class modules:
                 self.bot.sendMessage("Module does not exist")
                 return
             self.bot.modulemanager.enableModule(args[2])
+            self.bot.sendMessage("Module " + args[2] + " enabled")
 
         elif args[1].lower() == "disable":
             if len(args) < 3:
@@ -66,6 +67,7 @@ class modules:
                 self.bot.sendMessage("Module does not exist")
                 return
             self.bot.modulemanager.disableModule(args[2])
+            self.bot.sendMessage("Module " + args[2] + " disabled")
 
         elif args[1].lower() == "list":
             enabled = list()
@@ -90,3 +92,4 @@ class modules:
                 self.bot.sendMessage("Module " + args[2] + " does not exists or is not enabled")
                 return
             self.bot.modulemanager.reloadModule(args[2])
+            self.bot.sendMessage("Module " + args[2] + " reloaded")
