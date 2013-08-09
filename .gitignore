@@ -3,3 +3,5 @@ config.txt*
 !config.txt.template
 *.json
 .idea/*
+docs_build/*
+src/modules_enabled/*
