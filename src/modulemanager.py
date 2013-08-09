@@ -7,8 +7,9 @@ class modulemanager:
     modules = {}
     bot = None
 
+    coreModulesPath = "core_modules/"
     enabledModulesPath = "modules_enabled/"
-    availableModulesPath = "modules"
+    availableModulesPath = "modules/"
 
     def init(self, bot):
         """
@@ -38,16 +39,21 @@ class modulemanager:
         (file, filename, data) = imp.find_module(mname, [dir])
         return imp.load_module(mname, file, filename, data)
 
-    def loadModule(self, name):
+    def loadModule(self, name, path=None):
         """
         :param name: Name of the module
         :type name: str
+        :param path: optional path to search for the module, defaults to the availableModules variable
+        :type path: str
 
         Load a module given the filename. This does not initialize the module. Do not call directly, but use
         :meth:enableModule
         """
-        module = self.importModule(os.path.join(self.enabledModulesPath, name + ".py"))
-        self.modules[id] = getattr(module, name)()
+        if path is None:
+            path = self.enabledModulesPath
+
+        module = self.importModule(os.path.join(path, name + ".py"))
+        self.modules[name] = getattr(module, name)()
 
     def unloadModule(self,name):
         """
@@ -65,9 +71,14 @@ class modulemanager:
         """
         files = os.listdir(self.enabledModulesPath)
         for file in files:
-            result = re.search(r'\.py$', file)
+            result = re.search(r'(.*)\.py$', file)
             if result is not None:
-                self.loadModule(file)
+                self.loadModule(result.group(1))
+        corefiles = os.listdir(self.coreModulesPath)
+        for file in corefiles:
+            result = re.search(r'(.*)\.py$', file)
+            if result is not None:
+                self.loadModule(result.group(1), "core_modules/")
 
     def enableModule(self, name):
         """
@@ -84,7 +95,8 @@ class modulemanager:
         if not name in modules:
             return
 
-        os.symlink(os.path.join(self.availableModulesPath, name+".py"), os.path.join(self.enabledModulesPath, name))
+        os.symlink(os.path.abspath(os.path.join(self.availableModulesPath, name + ".py")),
+                   os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
         self.loadModule(name)
         self.initModule(name)
 
@@ -122,7 +134,7 @@ class modulemanager:
         to allow the modules to do some preparations (like open files and load data), register callbacks and etc.
         """
         for module in self.modules:
-            self.startModule(module)
+            self.initModule(module)
 
     def disposeModules(self):
         """
@@ -137,7 +149,7 @@ class modulemanager:
 
         Call a module's init(), if it has it. Allows the module to do some preparations like register callbacks
         """
-        self.modules[name].init()
+        self.modules[name].init(self.bot)
 
     def disposeModule(self, name):
         """
