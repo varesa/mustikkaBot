@@ -7,6 +7,8 @@ class modulemanager:
     modules = {}
     bot = None
 
+    modulesPath = "modules_enabled/"
+
     def init(self, bot):
         """
         :param bot:  Reference to the main bot instance
@@ -38,11 +40,11 @@ class modulemanager:
         """
         Go through the modules on disk importing them
         """
-        files = os.listdir("modules/")
+        files = os.listdir(self.modulesPath)
         for file in files:
             result = re.search(r'\.py$', file)
             if result is not None:
-                module = self.importModule("modules/" + file)
+                module = self.importModule(os.path.join(self.modulesPath, file))
                 id = module.getId()
                 self.modules[id] = getattr(module, id)()
 
@@ -53,7 +55,7 @@ class modulemanager:
 
         Load a module by name
         """
-        file = "modules/" + name + ".py"
+        file = self.modulesPath + name + ".py"
         if os.path.exists(file):
             module = self.importModule(file)
             id = module.getId()
