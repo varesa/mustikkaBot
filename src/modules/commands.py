@@ -4,11 +4,6 @@ import errno
 import tools
 from log import log
 
-
-def getId():
-    return "commands"
-
-
 class commands:
     bot = None
 

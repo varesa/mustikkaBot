@@ -3,11 +3,6 @@ import re
 from log import log
 import tools
 
-
-def getId():
-    return "say"
-
-
 class say:
     bot = None
     acl = "!say"

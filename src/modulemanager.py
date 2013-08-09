@@ -37,30 +37,30 @@ class modulemanager:
         (file, filename, data) = imp.find_module(mname, [dir])
         return imp.load_module(mname, file, filename, data)
 
-    def loadModule(self, file):
+    def loadModule(self, name):
         """
-        :param file: Name of the file of the module
-        :type file: str
+        :param name: Name of the module
+        :type name: str
 
         Load a module given the filename. This does not initialize the module. Do not call directly, but use
         :meth:enableModule
         """
-        module = self.importModule(os.path.join(self.enabledModulesPath, file))
-        id = module.getId()
-        self.modules[id] = getattr(module, id)()
+        module = self.importModule(os.path.join(self.enabledModulesPath, name + ".py"))
+        self.modules[id] = getattr(module, name)()
 
     def unloadModule(self,name):
         """
-        :param file: Name of the module
-        :type file: str
+        :param name: Name of the module
+        :type name: str
 
         Unload a module. This does not tell the module it is being unloaded, and it can stay in the memory. Do not call
         directly, but use :meth:disableModule!
         """
+        self.modules.pop(name)
 
     def setupModules(self):
         """
-        Go through the modules on disk importing them
+        Go through the enabled modules on disk importing them
         """
         files = os.listdir(self.enabledModulesPath)
         for file in files:
@@ -80,11 +80,11 @@ class modulemanager:
 
         modules = self.getAvailableModules()
 
-        if not name in modules.keys():
+        if not name in modules:
             return
 
-        os.symlink(os.path.join(self.availableModulesPath, modules[name]), os.path.join(self.enabledModulesPath, modules[name]))
-        self.loadModule(modules[name])
+        os.symlink(os.path.join(self.availableModulesPath, name+".py"), os.path.join(self.enabledModulesPath, name))
+        self.loadModule(name)
         self.initModule(name)
 
     def disableModule(self, name):
@@ -165,13 +165,14 @@ class modulemanager:
 
         Get a list of modules available, whether they are enabled or not
         """
-        modules = dict()
+        modules = list()
 
         files = os.listdir(self.availableModulesPath)
         for file in files:
-            result = re.search(r'\.py$', file)
+            result = re.search(r'(.*)\.py$', file)
             if result is not None:
-                modules[self.importModule(os.path.join(self.availableModulesPath,file)).getId()] = file
+                modules.append(result.group(1))
+
         return modules
 
     def isModuleEnabled(self, module):

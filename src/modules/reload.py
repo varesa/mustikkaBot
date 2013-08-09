@@ -3,11 +3,6 @@ import re
 from log import log
 import tools
 
-
-def getId():
-    return "reload"
-
-
 class reload:
     bot = None
 

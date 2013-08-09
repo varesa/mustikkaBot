@@ -2,11 +2,6 @@ import re
 
 from log import log
 
-
-def getId():
-    return "core"
-
-
 class core:
     bot = None
 

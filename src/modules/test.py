@@ -1,10 +1,5 @@
 from log import log
 
-
-def getId():
-    return "test"
-
-
 class test:
     def init(self, bot):
         bot.eventlistener.registerMessage(self)

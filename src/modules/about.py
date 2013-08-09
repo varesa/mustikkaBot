@@ -1,10 +1,6 @@
 from log import d,log
 import tools
 
-def getId():
-    return "about"
-
-
 class about:
 
     bot = None
