@@ -149,7 +149,10 @@ class modulemanager:
 
         Call a module's init(), if it has it. Allows the module to do some preparations like register callbacks
         """
-        self.modules[name].init(self.bot)
+        try:
+            self.modules[name].init(self.bot)
+        except AttributeError:
+            pass # Only call init if it is implemented
 
     def disposeModule(self, name):
         """
@@ -159,7 +162,10 @@ class modulemanager:
         Call a module's dispose(), if it has it. Allows the module to prepare to be shut down like close any open
         resources or save data.
         """
-        self.modules[name].dispose()
+        try:
+            self.modules[name].dispose()
+        except AttributeError:
+            pass # Only call dispose if it is implemented
 
     def getModule(self, name):
         """
