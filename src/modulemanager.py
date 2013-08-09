@@ -113,3 +113,17 @@ class modulemanager:
             if result is not None:
                 modules.append(file)
         return modules
+
+    def isModuleEnabled(self, module):
+        """
+        :param module: name of the module
+        :type module: str
+        :return: is module enabled
+        :rtype: bool
+
+        Checks if a module is enabled
+        """
+        if module in self.modules.keys():
+            return True
+        else:
+            return False
