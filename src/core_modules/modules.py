@@ -75,8 +75,12 @@ class modules:
                     enabled.append(module)
                 else:
                     disabled.append(module)
-            self.bot.sendMessage("Currently enabled modules: " + " ".join(enabled))
-            self.bot.sendMessage("Currently disabled modules: " + " ".join(disabled))
+            if len(enabled) == 0:
+                enabled.append("None")
+            if len(disabled) == 0:
+                disabled.append("None")
+            self.bot.sendMessage("Currently enabled modules: " + ", ".join(enabled))
+            self.bot.sendMessage("Currently disabled modules: " + ", ".join(disabled))
 
         elif args[1].lower() == "reload":
             if len(args) < 3:
