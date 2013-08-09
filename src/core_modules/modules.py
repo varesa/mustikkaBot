@@ -2,16 +2,34 @@ import tools
 from log import log
 
 class modules:
+    """
+    Modules is a core-module that handles the chat frontend to managing non-core modules.
+    """
 
     bot = None
 
     def init(self, bot):
+        """
+        :param bot: Reference to the main bot instance
+        :type bot: bot
+
+        Initialize the modules-module. Register callback to the message received event.
+        Called by the modulemanager when loading the module
+        """
         self.bot = bot
         bot.eventlistener.registerMessage(self)
         log("[MODULES] Init complete")
 
 
     def handleMessage(self, data, user, msg):
+        """
+        :param data: full IRC command
+        :param user: user that sent the message
+        :param msg: the chat-message the user sent
+
+        Look for any commands that the command-module should handle and handle any found commands.
+        Called by the eventlistener/dispatcher when a message is received
+        """
         msg = tools.stripPrefix(msg)
         args = msg.split()
 
