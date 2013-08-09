@@ -7,7 +7,8 @@ class modulemanager:
     modules = {}
     bot = None
 
-    modulesPath = "modules_enabled/"
+    enabledModulesPath = "modules_enabled/"
+    availableModulesPath = "modules"
 
     def init(self, bot):
         """
@@ -40,11 +41,11 @@ class modulemanager:
         """
         Go through the modules on disk importing them
         """
-        files = os.listdir(self.modulesPath)
+        files = os.listdir(self.enabledModulesPath)
         for file in files:
             result = re.search(r'\.py$', file)
             if result is not None:
-                module = self.importModule(os.path.join(self.modulesPath, file))
+                module = self.importModule(os.path.join(self.enabledModulesPath, file))
                 id = module.getId()
                 self.modules[id] = getattr(module, id)()
 
@@ -55,7 +56,7 @@ class modulemanager:
 
         Load a module by name
         """
-        file = self.modulesPath + name + ".py"
+        file = self.enabledModulesPath + name + ".py"
         if os.path.exists(file):
             module = self.importModule(file)
             id = module.getId()
@@ -88,7 +89,7 @@ class modulemanager:
         """
         return self.modules[name]
 
-    def getModules(self):
+    def getEnabledModules(self):
         """
         :return: A dict of all loaded modules
         :rtype: dict(str:module)
@@ -96,3 +97,19 @@ class modulemanager:
         Return a dictionary of all the loaded modules {"id":module,...}
         """
         return self.modules
+
+    def getAvailableModules(self):
+        """
+        :return: list of available modules
+        :rtype: list of strings
+
+        Get a list of modules available, whether they are enabled or not
+        """
+        modules = list()
+
+        files = os.listdir(self.availableModulesPath)
+        for file in files:
+            result = re.search(r'\.py$', file)
+            if result is not None:
+                modules.append(file)
+        return modules
