@@ -105,6 +105,16 @@ class modulemanager:
 
         os.remove(os.path.join(self.enabledModulesPath, file))
 
+    def reloadModule(self, name):
+        """
+        :param name: name of the module
+        :type name: str
+
+        Reload a module. Same as :meth:enableModule() && :meth:disableModule()
+        """
+        self.disableModule(name)
+        self.enableModule(name)
+
     def initModules(self):
         """
         Go through loaded modules initializing them. To be used for example when initially starting up the bot in order
