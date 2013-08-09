@@ -37,6 +37,27 @@ class modulemanager:
         (file, filename, data) = imp.find_module(mname, [dir])
         return imp.load_module(mname, file, filename, data)
 
+    def loadModule(self, file):
+        """
+        :param file: Name of the file of the module
+        :type file: str
+
+        Load a module given the filename. This does not initialize the module. Do not call directly, but use
+        :meth:enableModule
+        """
+        module = self.importModule(os.path.join(self.enabledModulesPath, file))
+        id = module.getId()
+        self.modules[id] = getattr(module, id)()
+
+    def unloadModule(self,name):
+        """
+        :param file: Name of the module
+        :type file: str
+
+        Unload a module. This does not tell the module it is being unloaded, and it can stay in the memory. Do not call
+        directly, but use :meth:disableModule!
+        """
+
     def setupModules(self):
         """
         Go through the modules on disk importing them
@@ -45,38 +66,77 @@ class modulemanager:
         for file in files:
             result = re.search(r'\.py$', file)
             if result is not None:
-                module = self.importModule(os.path.join(self.enabledModulesPath, file))
-                id = module.getId()
-                self.modules[id] = getattr(module, id)()
+                self.loadModule(file)
 
-    def addModule(self, name):
+    def enableModule(self, name):
         """
-        :param name: Name of the module
+        :param name: name of the module
         :type name: str
 
-        Load a module by name
+        Permanently enable a module
         """
-        file = self.enabledModulesPath + name + ".py"
-        if os.path.exists(file):
-            module = self.importModule(file)
-            id = module.getId()
-            self.modules[id] = getattr(module, id)()
+        if self.isModuleEnabled(name):
+            return
 
-    def removeModule(self, id):
-        """
-        :param id: Id of the module
-        :type id: str
+        modules = self.getAvailableModules()
 
-        Unload a module by name
+        if not name in modules.keys():
+            return
+
+        os.symlink(os.path.join(self.availableModulesPath, modules[name]), os.path.join(self.enabledModulesPath, modules[name]))
+        self.loadModule(modules[name])
+        self.initModule(name)
+
+    def disableModule(self, name):
         """
-        self.modules.pop(id, None)
+        :param name: name of the module
+        :type name: str
+
+        Permanently disable a module
+        """
+        if not self.isModuleEnabled(name):
+            return
+
+        self.disposeModule(name)
+        self.unloadModule(name)
+
+        allmodules = self.getAvailableModules()
+        file = allmodules[name]
+
+        os.remove(os.path.join(self.enabledModulesPath, file))
 
     def initModules(self):
         """
-        Go through loaded modules initializing them
+        Go through loaded modules initializing them. To be used for example when initially starting up the bot in order
+        to allow the modules to do some preparations (like open files and load data), register callbacks and etc.
         """
-        for name, module in self.modules.items():
-            module.init(self.bot)
+        for module in self.modules:
+            self.startModule(module)
+
+    def disposeModules(self):
+        """
+        Go through loaded modules and dispose them. To be used for example when shutting down the bot in order to allow
+        the modules to close any open resources, save data and etc.
+        """
+
+    def initModule(self, name):
+        """
+        :param name: Name of module
+        :type name: str
+
+        Call a module's init(), if it has it. Allows the module to do some preparations like register callbacks
+        """
+        self.modules[name].init()
+
+    def disposeModule(self, name):
+        """
+        :param name: Name of module
+        :type name: str
+
+        Call a module's dispose(), if it has it. Allows the module to prepare to be shut down like close any open
+        resources or save data.
+        """
+        self.modules[name].dispose()
 
     def getModule(self, name):
         """
@@ -100,18 +160,18 @@ class modulemanager:
 
     def getAvailableModules(self):
         """
-        :return: list of available modules
-        :rtype: list of strings
+        :return: dictionary of available modules and their filenames
+        :rtype: dictionary of strings
 
         Get a list of modules available, whether they are enabled or not
         """
-        modules = list()
+        modules = dict()
 
         files = os.listdir(self.availableModulesPath)
         for file in files:
             result = re.search(r'\.py$', file)
             if result is not None:
-                modules.append(file)
+                modules[self.importModule(os.path.join(self.availableModulesPath,file)).getId()] = file
         return modules
 
     def isModuleEnabled(self, module):
