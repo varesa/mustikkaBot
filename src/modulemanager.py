@@ -25,6 +25,7 @@ class modulemanager:
         """
         :param file: path to the module to be imported
         :type file: str
+
         :return: imported module
         :rtype: module
 
@@ -152,6 +153,7 @@ class modulemanager:
         """
         :param name: name of the module
         :type name: str
+
         :return: reference to the module
         :rtype: module
 
@@ -189,6 +191,7 @@ class modulemanager:
         """
         :param module: name of the module
         :type module: str
+
         :return: is module enabled
         :rtype: bool
 

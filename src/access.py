@@ -112,6 +112,7 @@ class access:
         """
         :param name: Name of the group to check
         :type name: str
+
         :return: Does the group exists
         :rtype: bool
 
@@ -126,6 +127,7 @@ class access:
         """
         :param name: Name of the group
         :type name: str
+
         :return: An instance of the group specified
         :rtype: group
 
@@ -176,6 +178,7 @@ class access:
         """
         :param acl: Name of the ACL
         :type acl: str
+
         :return: does the acl exist?
         :rtype: bool
 
@@ -245,6 +248,7 @@ class access:
         """
         :param groups: list of the groups
         :type groups: list(str)
+
         :return: expanded list of groups
         :rtype: list(str)
 
@@ -279,6 +283,7 @@ class access:
         :type user: str
         :param acl: name of the acl
         :type acl: str
+
         :return: has the user permissions
         :rtype: bool
 
