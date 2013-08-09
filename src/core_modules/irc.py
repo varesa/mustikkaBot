@@ -2,7 +2,7 @@ import re
 
 from log import log
 
-class core:
+class irc:
     bot = None
 
     def init(self, bot):
