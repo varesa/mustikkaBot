@@ -110,13 +110,14 @@ class modulemanager:
         if not self.isModuleEnabled(name):
             return
 
+        if self.isCoreModule(name):
+            raise Exception("Cannot disable a core-module")
+
         self.disposeModule(name)
         self.unloadModule(name)
 
-        allmodules = self.getAvailableModules()
-        file = allmodules[name]
 
-        os.remove(os.path.join(self.enabledModulesPath, file))
+        os.remove(os.path.join(self.enabledModulesPath, name + ".py"))
 
     def reloadModule(self, name):
         """
@@ -216,6 +217,21 @@ class modulemanager:
         Checks if a module is enabled
         """
         if module in self.modules.keys():
+            return True
+        else:
+            return False
+
+    def isCoreModule(self, name):
+        """
+        :param name: name of the module
+        :type name: str
+
+        :return: is the module "core"?
+        :rtype: bool
+
+        Checks if a module belongs to the unloadable core-modules
+        """
+        if name + ".py" in os.listdir(self.coreModulesPath):
             return True
         else:
             return False
