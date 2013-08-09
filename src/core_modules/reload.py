@@ -11,7 +11,7 @@ class reload:
         #bot.eventlistener.registerMessage(self)
         log("[RELOAD] Init complete")
 
-    def handleMessage(self, msg):
+    def handleMessage(self, data, user, msg):
         msg = tools.stripPrefix(msg)
 
         result = re.search("^!reload", msg)
