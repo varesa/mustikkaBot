@@ -7,6 +7,7 @@ class modules:
     """
 
     bot = None
+    acl = "!modules"
 
     def init(self, bot):
         """
@@ -17,6 +18,7 @@ class modules:
         Called by the modulemanager when loading the module
         """
         self.bot = bot
+        bot.accessmanager.registerAcl(self.acl, defaultGroups="%operators")
         bot.eventlistener.registerMessage(self)
         log("[MODULES] Init complete")
 
@@ -33,10 +35,14 @@ class modules:
         msg = tools.stripPrefix(msg)
         args = msg.split()
 
+
         if len(args) < 1:
             return
 
         if not args[0].lower() == "!modules":
+            return
+
+        if not self.bot.accessmanager.isInAcl(user, self.acl):
             return
 
         if len(args) == 1:
