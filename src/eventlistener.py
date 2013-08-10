@@ -13,7 +13,16 @@ class eventlistener:
 
         Registers a module to receive events on incoming messages
         """
-        self.messageRegistered.append(module)
+        if not module in self.messageRegistered:
+            self.messageRegistered.append(module)
+
+    def unregisterMessage(self, module):
+        """
+        :param module: instance of the module
+
+        Unregister a module to stop it from receiving events on incoming messages
+        """
+        self.messageRegistered.pop(module, default=None)
 
     def registerSpecial(self, module):
         """
@@ -21,7 +30,16 @@ class eventlistener:
 
         Registers a module to receive events on incoming "special" (non message) data
         """
-        self.specialRegistered.append(module)
+        if not module in self.specialRegistered:
+            self.specialRegistered.append(module)
+
+    def unregisterSpecial(self, module):
+        """
+        :param module: instance of the module
+
+        Unregister a module to stop it from receiving events on incoming "special" (non message) data
+        """
+        self.specialRegistered.pop(module, default=None)
 
     def handleMessage(self, text):
         """
