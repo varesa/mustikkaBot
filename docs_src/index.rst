@@ -2,7 +2,7 @@ Documentation for MustikkaBot
 =============================
 
 .. toctree::
-    :hidden:
+   :hidden:
 
    for_users/index
    for_developers/index
