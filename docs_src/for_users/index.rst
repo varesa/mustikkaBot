@@ -2,6 +2,7 @@ Documentation for users
 =======================
 
 .. toctree::
-    installation
-    setup
-    usage
+    :maxdepth: 2
+    installation/index
+    setup/index
+    usage/index
