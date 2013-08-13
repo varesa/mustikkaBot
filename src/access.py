@@ -312,7 +312,7 @@ class access:
         Check if a user is in an acl, either directly or through a group
         """
         if not acl in self.acls.keys():
-            raise Exception("No ACL for command")
+            raise Exception("ACL does not exist")
 
         if user in self.acls[acl]['members']:
             return True
