@@ -36,6 +36,9 @@ class commands:
             if args[1] == "set":
                 self.setCommand(args)
 
+            if args[1] == "regulars":
+                self.setRegulars(args)
+
             if args[1] == "remove":
                 self.removeCommand(args)
 
@@ -121,3 +124,25 @@ class commands:
                 cmds += ", " + command["name"]
 
         self.bot.sendMessage("Available commands: " + cmds)
+
+    def setRegulars(self, args):
+        if len(args) < 4:
+            self.bot.sendMessage("Not enough arguments")
+            log("[COMMANDS] not enough arguments given to \"regulars\" command")
+            return
+
+        cmd = args[2]
+        if not self.existsCommand(cmd):
+            self.bot.sendMessage("No such command as: " + cmd)
+            log("[MODULES] tried to change the \"regulars\"-value on an invalid command")
+            return
+
+        value = args[3].lower()
+        if not (value == "on" or value == "off"):
+            self.bot.sendMessage("Invalid value for regulars: " + value)
+            log("[MODULES] Invalid value passed to set-regulars")
+            return
+        if value == "on":
+            self.bot.accessmanager.addGroupToAcl("commands.!" + cmd, "%all%")
+        if value == "off":
+            self.bot.accessmanager.removeGroupFromAcl("commands.!" + cmd, "%all%")
