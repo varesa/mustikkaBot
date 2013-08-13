@@ -48,6 +48,7 @@ class access:
             self.addGroup("%owner")
             self.addGroup("%operators")
             self.addGroup("%moderators")
+            self.addGroup("%all%")
             self.writeJSON()
 
         self.addToGroup("%owner", "Herramustikka")
@@ -313,6 +314,9 @@ class access:
         """
         if not acl in self.acls.keys():
             raise Exception("ACL does not exist")
+
+        if "%all%" in self.acls[acl]["groups"]:
+            return True
 
         if user in self.acls[acl]['members']:
             return True
