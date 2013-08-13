@@ -1,9 +1,6 @@
 Installation
 ============
 
-.. toctree::
-    Download
-    Install
 
 Download
 --------
