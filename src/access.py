@@ -231,6 +231,17 @@ class access:
             log("[ACCESS] group is already in acl")
         self.writeJSON()
 
+    def removeGroupFromAcl(self, acl, group):
+        """
+        :param acl: name of the acl
+        :type acl: str
+        :param group: name of the group
+        :type group: str
+
+        Remove a group from an acl if possible
+        """
+        self.acls[acl]['groups'].pop(group, None)
+
     def addUserToAcl(self, acl, user):
         """
         :param acl: name of the acl
@@ -243,6 +254,17 @@ class access:
         if not user in self.acls[acl]['members']:
             self.acls[acl]['members'].append(user)
             self.writeJSON()
+
+    def removeUserFromAcl(self, acl, user):
+        """
+        :param acl: name of the acl
+        :type acl: str
+        :param user: name of the user
+        :type user: str
+
+        Remove a user from an acl if possible
+        """
+        self.acls[acl]['members'].pop(group, None)
 
     def expandGroups(self, groups):
         """
