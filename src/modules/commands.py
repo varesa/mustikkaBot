@@ -27,11 +27,17 @@ class commands:
 
     def setupCommands(self, user, args):
         if len(args) > 1:
+            if args[1] == "list":
+                self.listCommands()
+
             if args[1] == "add":
-                self.addCommand(args[2])
+                self.addCommand(args)
 
             if args[1] == "set":
-                self.setCommand(args[2], ' '.join(args[3:]))
+                self.setCommand(args)
+
+            if args[1] == "remove":
+                self.removeCommand(args)
 
     def runCommands(self, user, args):
         for command in self.commands:
@@ -79,7 +85,9 @@ class commands:
                 return True
         return False
 
-    def addCommand(self, cmd):
+    def addCommand(self, args):
+        cmd = args[2]
+
         if not self.existsCommand(cmd):
             self.commands.append({"name": cmd})
             self.bot.accessmanager.registerAcl("commands.!" + cmd)
@@ -90,7 +98,10 @@ class commands:
             self.bot.sendMessage("Command " + cmd + " already exists")
             log("[ACCESS] Tried to create a command " + cmd + " that already exists")
 
-    def setCommand(self, cmd, text):
+    def setCommand(self, args):
+        cmd = args[2]
+        text = ' '.join(args[3:])
+
         for command in self.commands:
             if command['name'] == cmd:
                 command['value'] = text
@@ -100,3 +111,13 @@ class commands:
                 return
         self.bot.sendMessage("Command " + cmd + " not found")
         log("[COMMANDS] tried to change the text of a nonexisting command: " + cmd)
+
+    def listCommands(self):
+        cmds = ""
+        for command in self.commands:
+            if cmds is "":
+                cmds += command["name"]
+            else:
+                cmds += ", " + command["name"]
+
+        self.bot.sendMessage("Available commands: " + cmds)
