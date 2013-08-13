@@ -36,11 +36,12 @@ class commands:
     def runCommands(self, user, args):
         for command in self.commands:
             if "!" + command['name'] == args[0]:
-                self.runCommand(command, args)
+                self.runCommand(command, args, user)
 
-    def runCommand(self, command, args):
-        self.bot.sendMessage(command['value'])
-        log("[COMMANDS] Running command " + command['name'] + ": " + command['value'])
+    def runCommand(self, command, args, user):
+        if self.bot.accessmanager.isInAcl(user, "commands.!" + command['name']):
+            self.bot.sendMessage(command['value'])
+            log("[COMMANDS] Running command " + command['name'] + ": " + command['value'])
 
     def readJSON(self):
         jsondata = ""
@@ -57,7 +58,6 @@ class commands:
             self.commands = json.loads(jsondata)
         except ValueError:
             log("[COMMANDS] commands-file malformed")
-
 
     def writeJSON(self):
         file = open(self.jsonfile, "w")
