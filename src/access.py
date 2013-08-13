@@ -208,7 +208,7 @@ class access:
             else:
                 if defaultGroups:
                     for group in defaultGroups:
-                        self.addGroupToAcl(self,acl, group)
+                        self.addGroupToAcl(self.acl, group)
                 if defaultMembers:
                     for member in defaultMembers:
                         self.addUserToAcl(acl, member)
