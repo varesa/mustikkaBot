@@ -1,7 +1,7 @@
-core Module
-===========
+irc Module
+==========
 
-.. automodule:: core
+.. automodule:: irc
     :members:
     :undoc-members:
     :show-inheritance:

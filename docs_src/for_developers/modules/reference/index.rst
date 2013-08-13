@@ -4,7 +4,7 @@ Reference docs for Mustikkabot modules
 .. toctree::
     about
     commands
-    core
+    irc
     modules
     say
     test
