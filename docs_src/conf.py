@@ -12,7 +12,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys
+import os
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -20,6 +21,7 @@ import sys, os
 #sys.path.insert(0, os.path.abspath('.'))
 
 sys.path.insert(0, os.path.abspath('../src/'))
+sys.path.insert(0, os.path.abspath('../src/core_modules/'))
 sys.path.insert(0, os.path.abspath('../src/modules/'))
 # -- General configuration -----------------------------------------------------
 
