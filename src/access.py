@@ -248,7 +248,7 @@ class access:
         :param acl: name of the acl
         :type acl: str
         :param user: name of the user
-        :type user; str
+        :type user: str
 
         Add a user to the acl
         """
