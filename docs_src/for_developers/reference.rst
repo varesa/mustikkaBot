@@ -3,4 +3,4 @@ Reference docs for Mustikkabot
 
 .. toctree::
     core/reference/index
-    modules/reference/indexe
+    modules/reference/index
