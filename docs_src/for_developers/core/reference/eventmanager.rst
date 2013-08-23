@@ -1,4 +1,4 @@
-eventlistener Module
+eventmanager Module
 ====================
 
 .. automodule:: eventmanager

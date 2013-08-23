@@ -30,7 +30,7 @@ class modules:
         :param msg: the chat-message the user sent
 
         Look for any commands that the command-module should handle and handle any found commands.
-        Called by the eventlistener/dispatcher when a message is received
+        Called by the eventmanager/dispatcher when a message is received
         """
         msg = tools.stripPrefix(msg)
         args = msg.split()
