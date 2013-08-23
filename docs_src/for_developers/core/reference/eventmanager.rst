@@ -1,7 +1,7 @@
 eventlistener Module
 ====================
 
-.. automodule:: eventlistener
+.. automodule:: eventmanager
     :members:
     :undoc-members:
     :show-inheritance:

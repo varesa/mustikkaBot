@@ -1,7 +1,7 @@
 access Module
 =============
 
-.. automodule:: access
+.. automodule:: accessmanager
     :members:
     :undoc-members:
     :show-inheritance:

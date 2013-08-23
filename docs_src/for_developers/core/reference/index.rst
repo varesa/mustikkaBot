@@ -2,8 +2,8 @@ Reference docs for Mustikkabot core functionality
 =================================================
 
 .. toctree::
-    access
-    eventlistener
+    accessmanager
+    eventmanager
     log
     main
     modulemanager
