@@ -1,6 +1,9 @@
 import imp
 import os
 import re
+import sys
+
+from log import log
 
 
 class modulemanager:
@@ -69,6 +72,14 @@ class modulemanager:
         """
         Go through the enabled modules on disk importing them
         """
+        if not os.path.isdir(self.enabledModulesPath):
+            if not os.path.exists(self.enabledModulesPath):
+                log("[MODULEMANAGER] Directory for enabled modules does not exist, creating")
+                os.mkdir(self.enabledModulesPath)
+            else:
+                log("[MODULEMANAGER] There is something wrong with the enabled modules dir: " + self.enabledModulesPath + ", exiting")
+                sys.exit()
+
         files = os.listdir(self.enabledModulesPath)
         for file in files:
             result = re.search(r'(.*)\.py$', file)
