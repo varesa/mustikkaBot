@@ -14,9 +14,9 @@ import traceback
 
 from log import log
 
-from eventlistener import eventlistener
+from eventlistener import eventmanager
 from modulemanager import modulemanager
-from access import access
+from access import accessmanager
 
 
 class bot:
@@ -25,11 +25,11 @@ class bot:
     user = None
     channel = None
 
-    eventlistener = eventlistener()
+    eventlistener = eventmanager()
     """ :type: eventlistener"""
     modulemanager = modulemanager()
     """ :type: modulemanager"""
-    accessmanager = access()
+    accessmanager = accessmanager()
     """ :type: access"""
 
     run = True

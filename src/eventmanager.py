@@ -3,7 +3,7 @@ import re
 from log import log, d
 
 
-class eventlistener:
+class eventmanager:
     messageRegistered = []
     specialRegistered = []
 

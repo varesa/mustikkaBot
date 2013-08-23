@@ -20,7 +20,7 @@ class group:
         return self.accessm.groups[self.name]['members']
 
 
-class access:
+class accessmanager:
     bot = None
 
     groups = {}
