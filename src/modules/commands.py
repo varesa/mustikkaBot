@@ -10,6 +10,8 @@ class commands:
     commands = []
     jsonfile = "commands.json"
 
+    helpMessage = "Usage: !commands list | add <cmd> | remove <cmd> | set <cmd> <text> | regulars <cmd> <value>"
+
     def init(self, bot):
         self.bot = bot
         self.readJSON()
@@ -41,6 +43,8 @@ class commands:
 
             if args[1] == "remove":
                 self.removeCommand(args)
+        else:
+            self.bot.sendMessage(self.helpMessage)
 
     def runCommands(self, user, args):
         for command in self.commands:
