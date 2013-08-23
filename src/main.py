@@ -14,9 +14,9 @@ import traceback
 
 from log import log
 
-from eventlistener import eventmanager
+from eventmanager import eventmanager
 from modulemanager import modulemanager
-from access import accessmanager
+from accessmanager import accessmanager
 
 
 class bot:
