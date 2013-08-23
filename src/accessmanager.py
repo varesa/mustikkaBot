@@ -208,9 +208,13 @@ class accessmanager:
                 self.addGroupToAcl(acl, "%operators")
             else:
                 if defaultGroups:
+                    if type(defaultGroups) != type(list()):
+                        raise Exception("defaultGroups accepts only a list")
                     for group in defaultGroups:
-                        self.addGroupToAcl(self.acl, group)
+                        self.addGroupToAcl(acl, group)
                 if defaultMembers:
+                    if type(defaultMembers) != type(list()):
+                        raise Exception("defaultMembers accepts only a list")
                     for member in defaultMembers:
                         self.addUserToAcl(acl, member)
             self.writeJSON()

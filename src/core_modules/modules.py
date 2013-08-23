@@ -18,7 +18,7 @@ class modules:
         Called by the modulemanager when loading the module
         """
         self.bot = bot
-        bot.accessmanager.registerAcl(self.acl, defaultGroups="%operators")
+        bot.accessmanager.registerAcl(self.acl, defaultGroups=["%operators"])
         bot.eventlistener.registerMessage(self)
         log("[MODULES] Init complete")
 
