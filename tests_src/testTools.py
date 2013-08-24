@@ -1,7 +1,6 @@
 import tools
 
 def test_stripPrefix_cases():
-    """test?"""
     test1 = "!mustikkabot a"
     test2 = "!MustikkaBot a"
     test3 = "!Mustikkabot a"
