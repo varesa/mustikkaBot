@@ -96,7 +96,9 @@ class accessmanager:
         """
         if members is None:
             members = []
-        elif isinstance(members, list):
+        elif isinstance(members, tuple):
+            members = list(members)
+        elif not isinstance(members, list):
             tmp = members
             members = list()
             members.append(tmp)
