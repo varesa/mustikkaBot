@@ -5,14 +5,6 @@
 # Author: Esa Varemo
 #
 
-def printDebug(bool):
-    printDebugging = bool
-
-
-def logDebug(bool):
-    logDebugging = bool
-
-
 def d(str):
     print(str)
 
