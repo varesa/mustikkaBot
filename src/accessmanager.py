@@ -96,6 +96,10 @@ class accessmanager:
         """
         if members is None:
             members = []
+        elif isinstance(members, list):
+            tmp = members
+            members = list()
+            members.append(tmp)
         self.groups[name] = {"members": members}
         self.writeJSON()
 
