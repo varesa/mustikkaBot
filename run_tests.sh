@@ -1,3 +1,3 @@
 #!/bin/sh
 
-nosetests -v
+nosetests -v $1
