@@ -5,12 +5,6 @@
 # Author: Esa Varemo
 #
 
-
-# Store the state of debug messages
-logDebuggin = False
-printDebugging = False
-
-
 def printDebug(bool):
     printDebugging = bool
 
