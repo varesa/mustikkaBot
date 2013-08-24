@@ -64,9 +64,10 @@ class test_accessmanager():
         self.am.addGroup("grp1")
         assert self.am.groups == {'grp1': {'members': []}}
         self.am.addGroup("grp2", "member")
-        print(self.am.groups)
-        assert False
-
+        assert self.am.groups == {'grp2': {'members': ['member']}, 'grp1': {'members': []}}
+        self.am.addGroup("grp3", ["member1","member2"])
+        assert self.am.groups == {'grp3': {'members': ['member1', 'member2']},
+                                  'grp2': {'members': ['member']}, 'grp1': {'members': []}}
 
     def test_accessmanager_removegroup(self):
         pass
