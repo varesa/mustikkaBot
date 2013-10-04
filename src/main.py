@@ -60,7 +60,7 @@ class bot:
                 if line.find('user') != -1:
                     username = line.split(":")[1]
                 if line.find('pass') != -1:
-                    passwd = line.split(":")[1]
+                    passwd = ':'.join(line.split(":")[1:])
                 if line.find('chnl') != -1:
                     channel = line.split(":")[1]
         except IndexError:
@@ -70,6 +70,8 @@ class bot:
         settings_f.close()
 
         passwd_hidden = ""
+
+        print(passwd)
 
         i = 0
         while i < len(passwd):
@@ -96,6 +98,7 @@ class bot:
 
             self.sendData("PASS %s" % (params[2]), dontLog=True)
             self.sendData("NICK %s" % (params[1]))
+            self.sendData("USER %s mustikkaBot 127.0.0.1 :mustikkaBot" % (params[1]))
             self.sendData("JOIN %s" % (params[3]))
         except Exception as e:
             traceback.print_exc()
