@@ -1,5 +1,5 @@
 logutils Module
-==========
+===============
 
 .. automodule:: logutils
     :members:
