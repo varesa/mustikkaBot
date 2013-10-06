@@ -33,3 +33,10 @@ class Irc:
         if result is not None:
             self.log.info("Ping received")
             self.bot.send_data("PONG " + result.group(1))
+
+    def dispose(self):
+        """
+        Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
+        when the module gets disabled.
+        """
+        self.bot.eventlistener.unregister_special(self)

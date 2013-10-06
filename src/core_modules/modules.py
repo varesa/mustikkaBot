@@ -23,6 +23,13 @@ class Modules:
         bot.eventlistener.register_message(self)
         self.log.info("Init complete")
 
+    def dispose(self):
+        """
+        Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
+        when the module gets disabled.
+        """
+        self.bot.eventlistener.unregister_special(self)
+
 
     def handle_message(self, data, user, msg):
         """
