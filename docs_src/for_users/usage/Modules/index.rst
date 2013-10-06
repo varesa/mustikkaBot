@@ -4,6 +4,7 @@ Modules
 Available modules:
 
 .. toctree::
-   :maxdepth: 2
-   core/index
-   toggleable/index
+    :maxdepth: 2
+
+    core/index
+    toggleable/index
