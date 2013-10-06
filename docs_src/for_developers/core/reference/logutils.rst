@@ -1,7 +1,7 @@
-log Module
+logutils Module
 ==========
 
-.. automodule:: log
+.. automodule:: logutils
     :members:
     :undoc-members:
     :show-inheritance:
