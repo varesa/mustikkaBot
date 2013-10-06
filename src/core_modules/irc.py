@@ -1,11 +1,12 @@
 import re
-
-from log import log
+import logging
 
 class irc:
     """
     Irc is a core-module that responds to things like PING/PONG specified in the IRC specification
     """
+
+    log = logging.getLogger("mustikkabot.irc")
     bot = None
 
     def init(self, bot):
@@ -18,7 +19,7 @@ class irc:
         """
         self.bot = bot
         bot.eventlistener.registerSpecial(self)
-        log("[IRC] Init complete")
+        self.log.info("Init complete")
 
     def handleSpecial(self, msg):
         """
@@ -30,5 +31,5 @@ class irc:
         """
         result = re.search("PING (.*)", msg)
         if result is not None:
-            log("[IRC] Ping received")
+            self.log.info("Ping received")
             self.bot.sendData("PONG " + result.group(1))

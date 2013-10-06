@@ -11,15 +11,24 @@ import signal
 import errno
 from time import sleep
 import traceback
+import logging
 
-from log import log
+from log import logFormater
 
 from eventmanager import eventmanager
 from modulemanager import modulemanager
 from accessmanager import accessmanager
 
-
 class bot:
+
+    log = logging.getLogger("mustikkabot")
+
+    log.setLevel(logging.DEBUG)
+
+    sh = logging.StreamHandler()
+    sh.setFormatter(logFormater())
+    log.addHandler(sh)
+
     ircsock = None
 
     user = None
@@ -44,7 +53,7 @@ class bot:
         try:
             settings_f = open("config.txt")
         except IOError:
-            print("Config not found, please make a copy of \"config.txt.template\" as \"config.txt\"")
+            self.log.error("Config not found, please make a copy of \"config.txt.template\" as \"config.txt\"")
             sys.exit()
 
         host = None
@@ -64,7 +73,7 @@ class bot:
                 if line.find('chnl') != -1:
                     channel = line.split(":")[1]
         except IndexError:
-            print("Malformed config file, please fix")
+            self.log.error("Malformed config file, please fix")
             sys.exit()
 
         settings_f.close()
@@ -78,7 +87,7 @@ class bot:
             passwd_hidden += "*"
             i += 1
 
-        log("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" % (host, username, passwd_hidden, channel))
+        self.log.info("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" % (host, username, passwd_hidden, channel))
         return (host, username, passwd, channel)
 
 
@@ -119,7 +128,7 @@ class bot:
             data = self.ircsock.recv(1024)
             data = data.decode("UTF-8").strip('\r\n')
             if not len(data) == 0:
-                log("RECV: <>" + data + "<>")
+                self.log.debug("RECV: <>" + data + "<>")
             return data
         except socket.error as e:
             err = e.args[0]
@@ -137,7 +146,7 @@ class bot:
         """
         if not (data is "" or data is None):
             if not dontLog:
-                log("SEND: " + data)
+                self.log.debug("SEND: " + data)
             self.ircsock.send(bytes(data + "\n", "UTF-8"))
 
     def sendMessage(self, msg):
@@ -156,7 +165,7 @@ class bot:
 
         A signal handler to trap ^C
         """
-        log("^C received, stopping")
+        self.log.info("^C received, stopping")
         self.run = False;
 
     def main(self):

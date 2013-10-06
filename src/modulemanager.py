@@ -2,11 +2,12 @@ import imp
 import os
 import re
 import sys
-
-from log import log
-
+import logging
 
 class modulemanager:
+
+    log = logging.getLogger("mustikkabot.modulemanager")
+
     modules = {}
     bot = None
 
@@ -24,6 +25,8 @@ class modulemanager:
         self.bot = bot
         self.setupModules()
         self.initModules()
+
+        self.log.info("Started")
 
     def importModule(self, file):
         """
@@ -74,10 +77,10 @@ class modulemanager:
         """
         if not os.path.isdir(self.enabledModulesPath):
             if not os.path.exists(self.enabledModulesPath):
-                log("[MODULEMANAGER] Directory for enabled modules does not exist, creating")
+                self.log.info("Directory for enabled modules does not exist, creating")
                 os.mkdir(self.enabledModulesPath)
             else:
-                log("[MODULEMANAGER] There is something wrong with the enabled modules dir: " + self.enabledModulesPath + ", exiting")
+                self.log.error("There is something wrong with the enabled modules dir: " + self.enabledModulesPath + ", exiting")
                 sys.exit()
 
         files = os.listdir(self.enabledModulesPath)

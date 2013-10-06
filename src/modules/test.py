@@ -1,14 +1,16 @@
-from log import log
+import logging
 
 class test:
+    log = logging.getLogger("mustikkabot.test")
+
     def init(self, bot):
         bot.eventlistener.registerMessage(self)
         bot.eventlistener.registerSpecial(self)
-        log("[TEST] Init complete")
+        self.log.info("Init complete")
 
     def handleMessage(self, data, user, msg):
-        log("[TESTMODULE] " + user + " said: " + msg)
+        self.log.debug(user + " said: " + msg)
 
     def handleSpecial(self, data):
-        log("[TESTMODULE] Received special: " + data)
+        self.log.debug("Received special: " + data)
         

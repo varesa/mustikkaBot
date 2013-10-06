@@ -1,4 +1,4 @@
-from log import d,log
+import logging
 import tools
 
 class about:
@@ -7,6 +7,7 @@ class about:
     """
 
     bot = None
+    log = logging.getLogger("mustikkabot.about")
 
     def init(self, bot):
         """
@@ -17,7 +18,7 @@ class about:
         """
         self.bot = bot
         bot.eventlistener.registerMessage(self)
-        log("[ABOUT] Init complete")
+        self.log.info("Init complete")
 
     def handleMessage(self, data, user, msg):
         """
@@ -34,6 +35,6 @@ class about:
         args = msg.split()
 
         if args[0] == "!about" or args[0] == "!bot":
-            log("[ABOUT] Printing \"about\"")
+            self.log.info("Printing \"about\"")
             self.bot.sendMessage("MustikkaBot is a IRC/Twitch chatbot created in python " +
                             "for the awesome youtuber/streamer Mustikka. Author: Esa Varemo")

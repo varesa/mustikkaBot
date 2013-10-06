@@ -1,9 +1,10 @@
 import re
-
-from log import log, d
-
+import logging
 
 class eventmanager:
+
+    log = logging.getLogger("mustikkabot.eventmanager")
+
     messageRegistered = []
     specialRegistered = []
 
@@ -57,7 +58,7 @@ class eventmanager:
             user = result.group(1)
             msg = result.group(3)
         else:
-            log("[EVENTLISTENER] Received invalid message")
+            self.log.warning("Received invalid message")
             return # Invalid message
 
         for module in self.messageRegistered:

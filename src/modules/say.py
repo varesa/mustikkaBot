@@ -1,9 +1,11 @@
 import re
+import logging
 
-from log import log
 import tools
 
 class say:
+
+    log = logging.getLogger("mustikkabot.say")
     bot = None
     acl = "!say"
 
@@ -11,7 +13,7 @@ class say:
         self.bot = bot
         self.bot.eventlistener.registerMessage(self)
         self.bot.accessmanager.registerAcl(self.acl)
-        log("[SAY] Init complete")
+        self.log.info("Init complete")
 
     def handleMessage(self, data, user, msg):
         msg = tools.stripPrefix(msg)

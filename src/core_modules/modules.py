@@ -1,11 +1,12 @@
 import tools
-from log import log
+import logging
 
 class modules:
     """
     Modules is a core-module that handles the chat frontend to managing non-core modules.
     """
 
+    log = logging.getLogger("mustikkabot.modules")
     bot = None
     acl = "!modules"
 
@@ -20,7 +21,7 @@ class modules:
         self.bot = bot
         bot.accessmanager.registerAcl(self.acl, defaultGroups=["%operators"])
         bot.eventlistener.registerMessage(self)
-        log("[MODULES] Init complete")
+        self.log.info("Init complete")
 
 
     def handleMessage(self, data, user, msg):

@@ -1,10 +1,12 @@
 import json
 import errno
+import logging
 
 import tools
-from log import log
 
 class commands:
+
+    log = logging.getLogger("mustikkabot.commands")
     bot = None
 
     commands = []
@@ -16,7 +18,7 @@ class commands:
         self.bot = bot
         self.readJSON()
         bot.eventlistener.registerMessage(self)
-        log("[COMMANDS] Init complete")
+        self.log.info("Init complete")
 
     def handleMessage(self, data, user, msg):
         msg = tools.stripPrefix(msg)
@@ -54,7 +56,7 @@ class commands:
     def runCommand(self, command, args, user):
         if self.bot.accessmanager.isInAcl(user, "commands.!" + command['name']):
             self.bot.sendMessage(command['value'])
-            log("[COMMANDS] Running command " + command['name'] + ": " + command['value'])
+            self.log.info("Running command " + command['name'] + ": " + command['value'])
 
     def readJSON(self):
         jsondata = ""
@@ -64,13 +66,13 @@ class commands:
             file.close()
         except IOError as e:
             if e.errno == errno.ENOENT:
-                log("[COMMANDS] file does not exist, creating")
+                self.log.info("file does not exist, creating")
                 self.writeJSON()
 
         try:
             self.commands = json.loads(jsondata)
         except ValueError:
-            log("[COMMANDS] commands-file malformed")
+            self.log.error("commands-file malformed")
 
     def writeJSON(self):
         file = open(self.jsonfile, "w")
@@ -100,10 +102,10 @@ class commands:
             self.bot.accessmanager.registerAcl("commands.!" + cmd)
             self.writeJSON()
             self.bot.sendMessage("Added command " + cmd)
-            log("[ACCESS] Added new command:" + cmd)
+            self.log.info("Added new command:" + cmd)
         else:
             self.bot.sendMessage("Command " + cmd + " already exists")
-            log("[ACCESS] Tried to create a command " + cmd + " that already exists")
+            self.log.warning("Tried to create a command " + cmd + " that already exists")
 
     def setCommand(self, args):
         cmd = args[2]
@@ -114,10 +116,10 @@ class commands:
                 command['value'] = text
                 self.writeJSON()
                 self.bot.sendMessage("New message for command " + cmd + ": " + text)
-                log("[COMMANDS] Modified the value of command " + cmd + " to: " + text)
+                self.log.info("Modified the value of command " + cmd + " to: " + text)
                 return
         self.bot.sendMessage("Command " + cmd + " not found")
-        log("[COMMANDS] tried to change the text of a nonexisting command: " + cmd)
+        self.log.warning("Tried to change the text of a nonexisting command: " + cmd)
 
     def listCommands(self):
         cmds = ""
@@ -132,19 +134,19 @@ class commands:
     def setRegulars(self, args):
         if len(args) < 4:
             self.bot.sendMessage("Not enough arguments")
-            log("[COMMANDS] not enough arguments given to \"regulars\" command")
+            self.log.warning("Not enough arguments given to \"regulars\" command")
             return
 
         cmd = args[2]
         if not self.existsCommand(cmd):
             self.bot.sendMessage("No such command as: " + cmd)
-            log("[MODULES] tried to change the \"regulars\"-value on an invalid command")
+            self.log.warning("tried to change the \"regulars\"-value on an invalid command")
             return
 
         value = args[3].lower()
         if not (value == "on" or value == "off"):
             self.bot.sendMessage("Invalid value for regulars: " + value)
-            log("[MODULES] Invalid value passed to set-regulars")
+            self.log.warning("Invalid value passed to set-regulars")
             return
         if value == "on":
             self.bot.accessmanager.addGroupToAcl("commands.!" + cmd, "%all%")

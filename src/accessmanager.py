@@ -1,9 +1,7 @@
 import re
 import json
 import errno
-
-from log import log, d
-
+import logging
 
 class group:
     accessm = None
@@ -23,6 +21,8 @@ class group:
 class accessmanager:
     bot = None
 
+    log = logging.getLogger("mustikkabot.accessmanager")
+
     groups = {}
     acls = {}
 
@@ -36,13 +36,15 @@ class accessmanager:
         Initialize the access-module
         """
 
+
+
         self.bot = bot
 
         global accessmodule
         accessmodule = self
 
         self.readJSON()
-        log("[ACCESS] Init complete")
+        self.log.info("Init complete")
 
         if len(self.groups) is 0:
             self.addGroup("%owner")
@@ -65,7 +67,7 @@ class accessmanager:
             file.close()
         except IOError as e:
             if e.errno == errno.ENOENT:
-                log("[COMMANDS] file does not exist, creating")
+                self.log.info("file does not exist, creating")
                 self.writeJSON()
 
         try:
@@ -73,7 +75,7 @@ class accessmanager:
             self.groups = data['groups']
             self.acls = data['acls']
         except ValueError:
-            log("[COMMANDS] commands-file malformed")
+            self.log.error("[COMMANDS] commands-file malformed")
 
     def writeJSON(self):
         """
@@ -235,11 +237,11 @@ class accessmanager:
         Add a group to the acl
         """
         if not self.existsGroup(group):
-            log("[ACCESS] group does not exist")
+            self.log.warning("Called group does not exist")
             return
         if not group in self.acls[acl]['groups']:
             self.acls[acl]['groups'].append(group)
-            log("[ACCESS] group is already in acl")
+            self.log.warning("Called group is already in acl")
         self.writeJSON()
 
     def removeGroupFromAcl(self, acl, group):
