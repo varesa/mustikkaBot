@@ -1,9 +1,8 @@
-import re
 import json
 import errno
 import logging
 
-class group:
+class Group:
     accessm = None
 
     name = None
@@ -18,7 +17,7 @@ class group:
         return self.accessm.groups[self.name]['members']
 
 
-class accessmanager:
+class AccessManager:
     bot = None
 
     log = logging.getLogger("mustikkabot.accessmanager")
@@ -138,12 +137,12 @@ class accessmanager:
         :type name: str
 
         :return: An instance of the group specified
-        :rtype: group
+        :rtype: Group
 
         Return an instance of the :class:group describing the specified group
         """
         if self.existsGroup(name):
-            return group(name)
+            return Group(name)
         else:
             return None
 
@@ -277,7 +276,7 @@ class accessmanager:
 
         Remove a user from an acl if possible
         """
-        self.acls[acl]['members'].pop(group, None)
+        self.acls[acl]['members'].pop(Group, None)
 
     def expandGroups(self, groups):
         """

@@ -4,7 +4,7 @@ import re
 import sys
 import logging
 
-class modulemanager:
+class ModuleManager:
 
     log = logging.getLogger("mustikkabot.modulemanager")
 

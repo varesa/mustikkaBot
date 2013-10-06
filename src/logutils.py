@@ -7,7 +7,7 @@
 
 import logging
 
-class logFormater(logging.Formatter):
+class LogFormater(logging.Formatter):
 
     formatString1 = '%(asctime)s  [%(name)s]'
     formatString2 = '[%(levelname)s] %(message)s'

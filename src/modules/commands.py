@@ -4,7 +4,7 @@ import logging
 
 import tools
 
-class commands:
+class Commands:
 
     log = logging.getLogger("mustikkabot.commands")
     bot = None

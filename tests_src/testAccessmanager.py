@@ -1,6 +1,6 @@
 import os
 
-from accessmanager import accessmanager
+from accessmanager import AccessManager
 
 
 testjsonfile = "/tmp/mustikkabotacl_test.json"
@@ -16,7 +16,7 @@ class test_accessmanager():
         if os.path.exists(testjsonfile):
             os.remove(testjsonfile)
 
-        self.am = accessmanager()
+        self.am = AccessManager()
         self.am.jsonfile = testjsonfile
 
     def destroy(self):

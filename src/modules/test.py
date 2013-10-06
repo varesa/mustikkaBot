@@ -1,6 +1,6 @@
 import logging
 
-class test:
+class Test:
     log = logging.getLogger("mustikkabot.test")
 
     def init(self, bot):

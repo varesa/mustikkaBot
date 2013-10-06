@@ -1,7 +1,7 @@
 import tools
 import logging
 
-class modules:
+class Modules:
     """
     Modules is a core-module that handles the chat frontend to managing non-core modules.
     """

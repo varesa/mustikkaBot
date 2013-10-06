@@ -13,11 +13,11 @@ from time import sleep
 import traceback
 import logging
 
-from log import logFormater
+from logutils import LogFormater
 
-from eventmanager import eventmanager
-from modulemanager import modulemanager
-from accessmanager import accessmanager
+from eventmanager import EventManager
+from modulemanager import ModuleManager
+from accessmanager import AccessManager
 
 class bot:
 
@@ -26,7 +26,7 @@ class bot:
     log.setLevel(logging.DEBUG)
 
     sh = logging.StreamHandler()
-    sh.setFormatter(logFormater())
+    sh.setFormatter(LogFormater())
     log.addHandler(sh)
 
     ircsock = None
@@ -34,11 +34,11 @@ class bot:
     user = None
     channel = None
 
-    eventlistener = eventmanager()
+    eventlistener = EventManager()
     """ :type: eventlistener"""
-    modulemanager = modulemanager()
+    modulemanager = ModuleManager()
     """ :type: modulemanager"""
-    accessmanager = accessmanager()
+    accessmanager = AccessManager()
     """ :type: access"""
 
     run = True

@@ -3,7 +3,7 @@ import logging
 
 import tools
 
-class say:
+class Say:
 
     log = logging.getLogger("mustikkabot.say")
     bot = None

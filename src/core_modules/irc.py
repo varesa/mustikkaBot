@@ -1,7 +1,7 @@
 import re
 import logging
 
-class irc:
+class Irc:
     """
     Irc is a core-module that responds to things like PING/PONG specified in the IRC specification
     """

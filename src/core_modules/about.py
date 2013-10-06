@@ -1,7 +1,7 @@
 import logging
 import tools
 
-class about:
+class About:
     """
     About is a core-module that tells about the bot and it's author
     """
