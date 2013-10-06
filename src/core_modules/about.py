@@ -17,10 +17,10 @@ class About:
         Initialize the about-module. Called by the modulemanager when the module gets enabled
         """
         self.bot = bot
-        bot.eventlistener.registerMessage(self)
+        bot.eventlistener.register_message(self)
         self.log.info("Init complete")
 
-    def handleMessage(self, data, user, msg):
+    def handle_message(self, data, user, msg):
         """
         :param data: Full IRC command
         :type data: str
@@ -31,10 +31,10 @@ class About:
 
         Handle incoming chat-messages. Check if it contains either !about or !bot commmands
         """
-        msg = tools.stripPrefix(msg)
+        msg = tools.strip_prefix(msg)
         args = msg.split()
 
         if args[0] == "!about" or args[0] == "!bot":
             self.log.info("Printing \"about\"")
-            self.bot.sendMessage("MustikkaBot is a IRC/Twitch chatbot created in python " +
+            self.bot.send_message("MustikkaBot is a IRC/Twitch chatbot created in python " +
                             "for the awesome youtuber/streamer Mustikka. Author: Esa Varemo")

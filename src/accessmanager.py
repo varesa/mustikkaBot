@@ -13,7 +13,7 @@ class Group:
         global accessmodule
         self.accessm = accessmodule
 
-    def getMembers(self):
+    def get_members(self):
         return self.accessm.groups[self.name]['members']
 
 
@@ -42,20 +42,20 @@ class AccessManager:
         global accessmodule
         accessmodule = self
 
-        self.readJSON()
+        self.read_JSON()
         self.log.info("Init complete")
 
         if len(self.groups) is 0:
-            self.addGroup("%owner")
-            self.addGroup("%operators")
-            self.addGroup("%moderators")
-            self.addGroup("%all%")
-            self.writeJSON()
+            self.add_group("%owner")
+            self.add_group("%operators")
+            self.add_group("%moderators")
+            self.add_group("%all%")
+            self.write_JSON()
 
-        self.addToGroup("%owner", "Herramustikka")
-        self.addToGroup("%owner", "varesa")
+        self.add_to_group("%owner", "Herramustikka")
+        self.add_to_group("%owner", "varesa")
 
-    def readJSON(self):
+    def read_JSON(self):
         """
         Read the access-data from a JSON file
         """
@@ -67,7 +67,7 @@ class AccessManager:
         except IOError as e:
             if e.errno == errno.ENOENT:
                 self.log.info("file does not exist, creating")
-                self.writeJSON()
+                self.write_JSON()
 
         try:
             data = json.loads(jsondata)
@@ -76,7 +76,7 @@ class AccessManager:
         except ValueError:
             self.log.error("[COMMANDS] commands-file malformed")
 
-    def writeJSON(self):
+    def write_JSON(self):
         """
         Write the access-data to a JSON file
         """
@@ -86,7 +86,7 @@ class AccessManager:
         file.write(data)
         file.close()
 
-    def addGroup(self, name, members=None):
+    def add_group(self, name, members=None):
         """
         :param name: Name of the group to be created
         :type name: str
@@ -104,9 +104,9 @@ class AccessManager:
             members = list()
             members.append(tmp)
         self.groups[name] = {"members": members}
-        self.writeJSON()
+        self.write_JSON()
 
-    def removeGroup(self, name):
+    def remove_group(self, name):
         """
         :param name: Name of the group to be removed
         :type name: str
@@ -114,9 +114,9 @@ class AccessManager:
         Remove a group if it exists
         """
         self.groups.pop(name, None)
-        self.writeJSON()
+        self.write_JSON()
 
-    def existsGroup(self, name):
+    def exists_group(self, name):
         """
         :param name: Name of the group to check
         :type name: str
@@ -131,7 +131,7 @@ class AccessManager:
         else:
             return False
 
-    def getGroup(self, name):
+    def get_group(self, name):
         """
         :param name: Name of the group
         :type name: str
@@ -141,12 +141,12 @@ class AccessManager:
 
         Return an instance of the :class:group describing the specified group
         """
-        if self.existsGroup(name):
+        if self.exists_group(name):
             return Group(name)
         else:
             return None
 
-    def addToGroup(self, group, name):
+    def add_to_group(self, group, name):
         """
         :param group: Name of the group
         :type group: str
@@ -155,12 +155,12 @@ class AccessManager:
 
         Add a person to a group
         """
-        members = self.getGroup(group).getMembers()
+        members = self.get_group(group).get_members()
         if name not in members:
             members.append(name)
-            self.writeJSON()
+            self.write_JSON()
 
-    def removeFromGroup(self, group, name):
+    def remove_from_group(self, group, name):
         """
         :param group: Name of the group
         :type group: str
@@ -169,10 +169,10 @@ class AccessManager:
 
         Remove a person from a group
         """
-        self.getGroup(group).getMembers().pop(name, None)
-        self.writeJSON()
+        self.get_group(group).get_members().pop(name, None)
+        self.write_JSON()
 
-    def createAcl(self, acl):
+    def create_acl(self, acl):
         """
         :param acl: Name of the acl
         :type acl: str
@@ -180,9 +180,9 @@ class AccessManager:
         Create a new acl
         """
         self.acls[acl] = {"groups":[], "members":[]}
-        self.writeJSON()
+        self.write_JSON()
 
-    def existsAcl(self, acl):
+    def exists_acl(self, acl):
         """
         :param acl: Name of the ACL
         :type acl: str
@@ -197,36 +197,36 @@ class AccessManager:
         else:
             return False
 
-    def registerAcl(self, acl, defaultGroups=None,defaultMembers=None):
+    def register_acl(self, acl, default_groups=None,default_members=None):
         """
         :param acl: name of the acl
         :type acl: str
-        :param defaultGroups: optional list of groups to add to the acl
-        :type defaultGroups: list(str)
-        :param defaultMembers: optional list of members to add to the acl
-        :type defaultMembers: list(str)
+        :param default_groups: optional list of groups to add to the acl
+        :type default_groups: list(str)
+        :param default_members: optional list of members to add to the acl
+        :type default_members: list(str)
 
         Register an acl. Create a new one with the defaults if it does not exist
         """
-        if not self.existsAcl(acl):
-            self.createAcl(acl)
-            if defaultGroups is None and defaultMembers is None:
-                self.addGroupToAcl(acl, "%owner")
-                self.addGroupToAcl(acl, "%operators")
+        if not self.exists_acl(acl):
+            self.create_acl(acl)
+            if default_groups is None and default_members is None:
+                self.add_group_to_acl(acl, "%owner")
+                self.add_group_to_acl(acl, "%operators")
             else:
-                if defaultGroups:
-                    if type(defaultGroups) != type(list()):
+                if default_groups:
+                    if type(default_groups) != type(list()):
                         raise Exception("defaultGroups accepts only a list")
-                    for group in defaultGroups:
-                        self.addGroupToAcl(acl, group)
-                if defaultMembers:
-                    if type(defaultMembers) != type(list()):
+                    for group in default_groups:
+                        self.add_group_to_acl(acl, group)
+                if default_members:
+                    if type(default_members) != type(list()):
                         raise Exception("defaultMembers accepts only a list")
-                    for member in defaultMembers:
-                        self.addUserToAcl(acl, member)
-            self.writeJSON()
+                    for member in default_members:
+                        self.add_user_to_acl(acl, member)
+            self.write_JSON()
 
-    def addGroupToAcl(self, acl, group):
+    def add_group_to_acl(self, acl, group):
         """
         :param acl: name of the acl
         :type acl: str
@@ -235,15 +235,15 @@ class AccessManager:
 
         Add a group to the acl
         """
-        if not self.existsGroup(group):
+        if not self.exists_group(group):
             self.log.warning("Called group does not exist")
             return
         if not group in self.acls[acl]['groups']:
             self.acls[acl]['groups'].append(group)
             self.log.warning("Called group is already in acl")
-        self.writeJSON()
+        self.write_JSON()
 
-    def removeGroupFromAcl(self, acl, group):
+    def remove_group_from_acl(self, acl, group):
         """
         :param acl: name of the acl
         :type acl: str
@@ -254,7 +254,7 @@ class AccessManager:
         """
         self.acls[acl]['groups'].pop(group, None)
 
-    def addUserToAcl(self, acl, user):
+    def add_user_to_acl(self, acl, user):
         """
         :param acl: name of the acl
         :type acl: str
@@ -265,9 +265,9 @@ class AccessManager:
         """
         if not user in self.acls[acl]['members']:
             self.acls[acl]['members'].append(user)
-            self.writeJSON()
+            self.write_JSON()
 
-    def removeUserFromAcl(self, acl, user):
+    def remove_user_from_acl(self, acl, user):
         """
         :param acl: name of the acl
         :type acl: str
@@ -278,7 +278,7 @@ class AccessManager:
         """
         self.acls[acl]['members'].pop(Group, None)
 
-    def expandGroups(self, groups):
+    def expand_groups(self, groups):
         """
         :param groups: list of the groups
         :type groups: list(str)
@@ -311,7 +311,7 @@ class AccessManager:
 
         return expanded
 
-    def isInAcl(self, user, acl):
+    def is_in_acl(self, user, acl):
         """
         :param user: name of the user
         :type user: str
@@ -332,7 +332,7 @@ class AccessManager:
         if user in self.acls[acl]['members']:
             return True
 
-        groups = self.expandGroups(self.acls[acl]['groups'])
+        groups = self.expand_groups(self.acls[acl]['groups'])
         for group in groups:
             if user in self.groups[group]['members']:
                 return True

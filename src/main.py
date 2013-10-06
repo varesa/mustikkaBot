@@ -105,17 +105,17 @@ class bot:
 
             self.ircsock.setblocking(0)
 
-            self.sendData("PASS %s" % (params[2]), dontLog=True)
-            self.sendData("NICK %s" % (params[1]))
-            self.sendData("USER %s mustikkaBot 127.0.0.1 :mustikkaBot" % (params[1]))
-            self.sendData("JOIN %s" % (params[3]))
+            self.send_data("PASS %s" % (params[2]), dontLog=True)
+            self.send_data("NICK %s" % (params[1]))
+            self.send_data("USER %s mustikkaBot 127.0.0.1 :mustikkaBot" % (params[1]))
+            self.send_data("JOIN %s" % (params[3]))
         except Exception as e:
             traceback.print_exc()
 
             log("\n\nError connecting: %s" % e)
             sys.exit()
 
-    def getData(self):
+    def get_data(self):
         """
         :return: Data received from the socket
         :rtype: str
@@ -135,7 +135,7 @@ class bot:
             if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
                 return ""  # no data
 
-    def sendData(self, data, dontLog=False):
+    def send_data(self, data, dontLog=False):
         """
         :param data: String to be sent
         :type data: str
@@ -149,14 +149,14 @@ class bot:
                 self.log.debug("SEND: " + data)
             self.ircsock.send(bytes(data + "\n", "UTF-8"))
 
-    def sendMessage(self, msg):
+    def send_message(self, msg):
         """
         :param msg: Message to be sent
         :type msg: str
 
         Send a message to the channel
         """
-        self.sendData("PRIVMSG " + self.channel + " :" + msg)
+        self.send_data("PRIVMSG " + self.channel + " :" + msg)
 
     def sigint(self, signal, frame):
         """
@@ -187,15 +187,15 @@ class bot:
         sleep(1)
 
         while self.run:
-            ircmsg = self.getData()
+            ircmsg = self.get_data()
 
             if not ( ircmsg is None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
 
                     if line.find(' PRIVMSG ') != -1:
-                        self.eventlistener.handleMessage(line)
+                        self.eventlistener.handle_message(line)
                     else:
-                        self.eventlistener.handleSpecial(line)
+                        self.eventlistener.handle_special(line)
 
 if __name__ == "__main__": # Do not start on import
     b = bot()

@@ -18,10 +18,10 @@ class Irc:
         Called by modulemanager when starting up the module
         """
         self.bot = bot
-        bot.eventlistener.registerSpecial(self)
+        bot.eventlistener.register_special(self)
         self.log.info("Init complete")
 
-    def handleSpecial(self, msg):
+    def handle_special(self, msg):
         """
         :param msg: the irc command/message
         :type msg: str
@@ -32,4 +32,4 @@ class Irc:
         result = re.search("PING (.*)", msg)
         if result is not None:
             self.log.info("Ping received")
-            self.bot.sendData("PONG " + result.group(1))
+            self.bot.send_data("PONG " + result.group(1))

@@ -1,7 +1,7 @@
 import re
 
 
-def stripPrefix(text):
+def strip_prefix(text):
     """
     :param text: text to remove the prefix from
     :type text: str
