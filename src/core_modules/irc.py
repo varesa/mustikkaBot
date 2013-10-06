@@ -18,7 +18,7 @@ class Irc:
         Called by modulemanager when starting up the module
         """
         self.bot = bot
-        bot.eventlistener.register_special(self)
+        bot.eventmanager.register_special(self)
         self.log.info("Init complete")
 
     def handle_special(self, msg):
@@ -39,4 +39,4 @@ class Irc:
         Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
         when the module gets disabled.
         """
-        self.bot.eventlistener.unregister_special(self)
+        self.bot.eventmanager.unregister_special(self)

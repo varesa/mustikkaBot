@@ -29,7 +29,7 @@ class bot:
     user = None
     channel = None
 
-    eventlistener = EventManager()
+    eventmanager = EventManager()
     """ :type: eventlistener"""
     modulemanager = ModuleManager()
     """ :type: modulemanager"""
@@ -188,9 +188,9 @@ class bot:
                 for line in ircmsg.split('\n'):
 
                     if line.find(' PRIVMSG ') != -1:
-                        self.eventlistener.handle_message(line)
+                        self.eventmanager.handle_message(line)
                     else:
-                        self.eventlistener.handle_special(line)
+                        self.eventmanager.handle_special(line)
 
 if __name__ == "__main__": # Do not start on import
     b = bot()

@@ -17,7 +17,7 @@ class About:
         Initialize the about-module. Called by the modulemanager when the module gets enabled
         """
         self.bot = bot
-        bot.eventlistener.register_message(self)
+        bot.eventmanager.register_message(self)
         self.log.info("Init complete")
 
     def handle_message(self, data, user, msg):
@@ -43,4 +43,4 @@ class About:
         """
         Uninitialize the module. Unregisters messagelisteners when the module gets disabled.
         """
-        self.bot.eventlistener.unregister_message(self)
+        self.bot.eventmanager.unregister_message(self)
