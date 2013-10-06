@@ -7,6 +7,15 @@
 
 import logging
 
+def setup_logging(name):
+    log = logging.getLogger(name)
+
+    log.setLevel(logging.DEBUG)
+
+    sh = logging.StreamHandler()
+    sh.setFormatter(LogFormater())
+    log.addHandler(sh)
+
 class LogFormater(logging.Formatter):
 
     formatString1 = '%(asctime)s  [%(name)s]'
@@ -22,7 +31,7 @@ class LogFormater(logging.Formatter):
 
         spaces = 23 - len(record.name) - len(record.levelname) - 4
 
-        f1 = logging.Formatter(self.formatString1 + ' '*spaces + self.formatString2)
+        f1 = logging.Formatter(self.formatString1 + ' '*spaces + self.formatString2, "%Y-%m-%d %H:%M:%S")
         msg = f1.format(record)
 
         header = ']'.join(msg.split(']')[0:2]) + ']'

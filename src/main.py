@@ -13,7 +13,7 @@ from time import sleep
 import traceback
 import logging
 
-from logutils import LogFormater
+import logutils
 
 from eventmanager import EventManager
 from modulemanager import ModuleManager
@@ -21,13 +21,8 @@ from accessmanager import AccessManager
 
 class bot:
 
+    logutils.setup_logging("mustikkabot")
     log = logging.getLogger("mustikkabot")
-
-    log.setLevel(logging.DEBUG)
-
-    sh = logging.StreamHandler()
-    sh.setFormatter(LogFormater())
-    log.addHandler(sh)
 
     ircsock = None
 
