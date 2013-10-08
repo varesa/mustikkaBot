@@ -1,6 +1,6 @@
 import os
 
-from accessmanager import accessmanager
+from accessmanager import AccessManager
 
 
 testjsonfile = "/tmp/mustikkabotacl_test.json"
@@ -16,7 +16,7 @@ class test_accessmanager():
         if os.path.exists(testjsonfile):
             os.remove(testjsonfile)
 
-        self.am = accessmanager()
+        self.am = AccessManager()
         self.am.jsonfile = testjsonfile
 
     def destroy(self):
@@ -47,12 +47,12 @@ class test_accessmanager():
         self.am.acls = acls
         self.am.groups = groups
 
-        self.am.writeJSON()
+        self.am.write_JSON()
 
         self.am.acls = None
         self.am.groups = None
 
-        self.am.readJSON()
+        self.am.read_JSON()
 
         assert self.am.acls == acls
         assert self.am.groups == groups
@@ -61,11 +61,11 @@ class test_accessmanager():
         self.am.init(None)
 
         self.am.groups = {}
-        self.am.addGroup("grp1")
+        self.am.add_group("grp1")
         assert self.am.groups == {'grp1': {'members': []}}
-        self.am.addGroup("grp2", "member")
+        self.am.add_group("grp2", "member")
         assert self.am.groups == {'grp2': {'members': ['member']}, 'grp1': {'members': []}}
-        self.am.addGroup("grp3", ["member1","member2"])
+        self.am.add_group("grp3", ["member1","member2"])
         assert self.am.groups == {'grp3': {'members': ['member1', 'member2']},
                                   'grp2': {'members': ['member']}, 'grp1': {'members': []}}
 
@@ -73,21 +73,21 @@ class test_accessmanager():
         self.am.init(None)
 
         self.am.groups = {}
-        self.am.removeGroup("grp1")
+        self.am.remove_group("grp1")
         assert self.am.groups == {}
 
         self.am.groups = {'grp2': {'members': ['member']}, 'grp1': {'members': []}}
-        self.am.removeGroup("grp2")
+        self.am.remove_group("grp2")
         assert self.am.groups == {'grp1': {'members': []}}
 
     def test_accessmanager_existsgroup(self):
         self.am.init(None)
 
         self.am.groups = {}
-        self.am.addGroup("grp1")
+        self.am.add_group("grp1")
 
-        assert self.am.existsGroup("grp1")
-        assert not self.am.existsGroup("grp2")
+        assert self.am.exists_group("grp1")
+        assert not self.am.exists_group("grp2")
 
 
 

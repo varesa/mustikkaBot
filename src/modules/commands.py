@@ -1,10 +1,12 @@
 import json
 import errno
+import logging
 
 import tools
-from log import log
 
-class commands:
+class Commands:
+
+    log = logging.getLogger("mustikkabot.commands")
     bot = None
 
     commands = []
@@ -14,49 +16,56 @@ class commands:
 
     def init(self, bot):
         self.bot = bot
-        self.readJSON()
-        bot.eventlistener.registerMessage(self)
-        log("[COMMANDS] Init complete")
+        self.read_JSON()
+        bot.eventlistener.register_message(self)
+        self.log.info("Init complete")
 
-    def handleMessage(self, data, user, msg):
-        msg = tools.stripPrefix(msg)
+    def dispose(self):
+        """
+        Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
+        when the module gets disabled.
+        """
+        self.bot.eventlistener.unregister_special(self)
+        
+    def handle_message(self, data, user, msg):
+        msg = tools.strip_prefix(msg)
         args = msg.split()
 
         if args[0] == "!commands":
-            self.setupCommands(user, args)
+            self.setup_commands(user, args)
         else:
-            self.runCommands(user, args)
+            self.run_commands(user, args)
 
-    def setupCommands(self, user, args):
+    def setup_commands(self, user, args):
         if len(args) > 1:
             if args[1] == "list":
-                self.listCommands()
+                self.list_commands()
 
             if args[1] == "add":
-                self.addCommand(args)
+                self.add_command(args)
 
             if args[1] == "set":
-                self.setCommand(args)
+                self.set_command(args)
 
             if args[1] == "regulars":
-                self.setRegulars(args)
+                self.set_regulars(args)
 
             if args[1] == "remove":
                 self.removeCommand(args)
         else:
-            self.bot.sendMessage(self.helpMessage)
+            self.bot.send_message(self.helpMessage)
 
-    def runCommands(self, user, args):
+    def run_commands(self, user, args):
         for command in self.commands:
             if "!" + command['name'] == args[0]:
-                self.runCommand(command, args, user)
+                self.run_command(command, args, user)
 
-    def runCommand(self, command, args, user):
-        if self.bot.accessmanager.isInAcl(user, "commands.!" + command['name']):
-            self.bot.sendMessage(command['value'])
-            log("[COMMANDS] Running command " + command['name'] + ": " + command['value'])
+    def run_command(self, command, args, user):
+        if self.bot.accessmanager.is_in_acl(user, "commands.!" + command['name']):
+            self.bot.send_message(command['value'])
+            self.log.info("Running command " + command['name'] + ": " + command['value'])
 
-    def readJSON(self):
+    def read_JSON(self):
         jsondata = ""
         try:
             file = open(self.jsonfile, "r")
@@ -64,21 +73,21 @@ class commands:
             file.close()
         except IOError as e:
             if e.errno == errno.ENOENT:
-                log("[COMMANDS] file does not exist, creating")
-                self.writeJSON()
+                self.log.info("file does not exist, creating")
+                self.write_JSON()
 
         try:
             self.commands = json.loads(jsondata)
         except ValueError:
-            log("[COMMANDS] commands-file malformed")
+            self.log.error("commands-file malformed")
 
-    def writeJSON(self):
+    def write_JSON(self):
         file = open(self.jsonfile, "w")
         data = json.dumps(self.commands, sort_keys=True, indent=4, separators=(',', ': '))
         file.write(data)
         file.close()
 
-    def existsCommand(self, cmd):
+    def exists_command(self, cmd):
         """
         :param cmd: Name of a command
         :type cmd: str
@@ -92,34 +101,34 @@ class commands:
                 return True
         return False
 
-    def addCommand(self, args):
+    def add_command(self, args):
         cmd = args[2]
 
-        if not self.existsCommand(cmd):
+        if not self.exists_command(cmd):
             self.commands.append({"name": cmd})
-            self.bot.accessmanager.registerAcl("commands.!" + cmd)
-            self.writeJSON()
-            self.bot.sendMessage("Added command " + cmd)
-            log("[ACCESS] Added new command:" + cmd)
+            self.bot.accessmanager.register_acl("commands.!" + cmd)
+            self.write_JSON()
+            self.bot.send_message("Added command " + cmd)
+            self.log.info("Added new command:" + cmd)
         else:
-            self.bot.sendMessage("Command " + cmd + " already exists")
-            log("[ACCESS] Tried to create a command " + cmd + " that already exists")
+            self.bot.send_message("Command " + cmd + " already exists")
+            self.log.warning("Tried to create a command " + cmd + " that already exists")
 
-    def setCommand(self, args):
+    def set_command(self, args):
         cmd = args[2]
         text = ' '.join(args[3:])
 
         for command in self.commands:
             if command['name'] == cmd:
                 command['value'] = text
-                self.writeJSON()
-                self.bot.sendMessage("New message for command " + cmd + ": " + text)
-                log("[COMMANDS] Modified the value of command " + cmd + " to: " + text)
+                self.write_JSON()
+                self.bot.send_message("New message for command " + cmd + ": " + text)
+                self.log.info("Modified the value of command " + cmd + " to: " + text)
                 return
-        self.bot.sendMessage("Command " + cmd + " not found")
-        log("[COMMANDS] tried to change the text of a nonexisting command: " + cmd)
+        self.bot.send_message("Command " + cmd + " not found")
+        self.log.warning("Tried to change the text of a nonexisting command: " + cmd)
 
-    def listCommands(self):
+    def list_commands(self):
         cmds = ""
         for command in self.commands:
             if cmds is "":
@@ -127,26 +136,26 @@ class commands:
             else:
                 cmds += ", " + command["name"]
 
-        self.bot.sendMessage("Available commands: " + cmds)
+        self.bot.send_message("Available commands: " + cmds)
 
-    def setRegulars(self, args):
+    def set_regulars(self, args):
         if len(args) < 4:
-            self.bot.sendMessage("Not enough arguments")
-            log("[COMMANDS] not enough arguments given to \"regulars\" command")
+            self.bot.send_message("Not enough arguments")
+            self.log.warning("Not enough arguments given to \"regulars\" command")
             return
 
         cmd = args[2]
-        if not self.existsCommand(cmd):
-            self.bot.sendMessage("No such command as: " + cmd)
-            log("[MODULES] tried to change the \"regulars\"-value on an invalid command")
+        if not self.exists_command(cmd):
+            self.bot.send_message("No such command as: " + cmd)
+            self.log.warning("tried to change the \"regulars\"-value on an invalid command")
             return
 
         value = args[3].lower()
         if not (value == "on" or value == "off"):
-            self.bot.sendMessage("Invalid value for regulars: " + value)
-            log("[MODULES] Invalid value passed to set-regulars")
+            self.bot.send_message("Invalid value for regulars: " + value)
+            self.log.warning("Invalid value passed to set-regulars")
             return
         if value == "on":
-            self.bot.accessmanager.addGroupToAcl("commands.!" + cmd, "%all%")
+            self.bot.accessmanager.add_group_to_acl("commands.!" + cmd, "%all%")
         if value == "off":
-            self.bot.accessmanager.removeGroupFromAcl("commands.!" + cmd, "%all%")
+            self.bot.accessmanager.remove_group_from_acl("commands.!" + cmd, "%all%")

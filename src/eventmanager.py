@@ -1,13 +1,14 @@
 import re
+import logging
 
-from log import log, d
+class EventManager:
 
+    log = logging.getLogger("mustikkabot.eventmanager")
 
-class eventmanager:
     messageRegistered = []
     specialRegistered = []
 
-    def registerMessage(self, module):
+    def register_message(self, module):
         """
         :param module: instance of the module that will handle the event
 
@@ -16,7 +17,7 @@ class eventmanager:
         if not module in self.messageRegistered:
             self.messageRegistered.append(module)
 
-    def unregisterMessage(self, module):
+    def unregister_message(self, module):
         """
         :param module: instance of the module
 
@@ -24,7 +25,7 @@ class eventmanager:
         """
         self.messageRegistered.pop(module, default=None)
 
-    def registerSpecial(self, module):
+    def register_special(self, module):
         """
         :param module: instance of the module that will handle the event
 
@@ -33,7 +34,7 @@ class eventmanager:
         if not module in self.specialRegistered:
             self.specialRegistered.append(module)
 
-    def unregisterSpecial(self, module):
+    def unregister_special(self, module):
         """
         :param module: instance of the module
 
@@ -41,7 +42,7 @@ class eventmanager:
         """
         self.specialRegistered.pop(module, default=None)
 
-    def handleMessage(self, text):
+    def handle_message(self, text):
         """
         :param text: full IRC message to deliver as a text-message
         :type text: str
@@ -57,13 +58,13 @@ class eventmanager:
             user = result.group(1)
             msg = result.group(3)
         else:
-            log("[EVENTLISTENER] Received invalid message")
+            self.log.warning("Received invalid message")
             return # Invalid message
 
         for module in self.messageRegistered:
-            module.handleMessage(text, user, msg)
+            module.handle_message(text, user, msg)
 
-    def handleSpecial(self, text):
+    def handle_special(self, text):
         """
         :param text: full IRC message to deliver as special data
         :type text: str
@@ -71,4 +72,4 @@ class eventmanager:
         Parse the IRC data and deliver it to registered modules
         """
         for module in self.specialRegistered:
-            module.handleSpecial(text)
+            module.handle_special(text)

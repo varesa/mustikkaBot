@@ -11,25 +11,29 @@ import signal
 import errno
 from time import sleep
 import traceback
+import logging
 
-from log import log
+import logutils
 
-from eventmanager import eventmanager
-from modulemanager import modulemanager
-from accessmanager import accessmanager
-
+from eventmanager import EventManager
+from modulemanager import ModuleManager
+from accessmanager import AccessManager
 
 class bot:
+
+    logutils.setup_logging("mustikkabot")
+    log = logging.getLogger("mustikkabot")
+
     ircsock = None
 
     user = None
     channel = None
 
-    eventlistener = eventmanager()
+    eventmanager = EventManager()
     """ :type: eventlistener"""
-    modulemanager = modulemanager()
+    modulemanager = ModuleManager()
     """ :type: modulemanager"""
-    accessmanager = accessmanager()
+    accessmanager = AccessManager()
     """ :type: access"""
 
     run = True
@@ -44,7 +48,7 @@ class bot:
         try:
             settings_f = open("config.txt")
         except IOError:
-            print("Config not found, please make a copy of \"config.txt.template\" as \"config.txt\"")
+            self.log.error("Config not found, please make a copy of \"config.txt.template\" as \"config.txt\"")
             sys.exit()
 
         host = None
@@ -64,7 +68,7 @@ class bot:
                 if line.find('chnl') != -1:
                     channel = line.split(":")[1]
         except IndexError:
-            print("Malformed config file, please fix")
+            self.log.error("Malformed config file, please fix")
             sys.exit()
 
         settings_f.close()
@@ -78,7 +82,7 @@ class bot:
             passwd_hidden += "*"
             i += 1
 
-        log("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" % (host, username, passwd_hidden, channel))
+        self.log.info("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" % (host, username, passwd_hidden, channel))
         return (host, username, passwd, channel)
 
 
@@ -96,17 +100,17 @@ class bot:
 
             self.ircsock.setblocking(0)
 
-            self.sendData("PASS %s" % (params[2]), dontLog=True)
-            self.sendData("NICK %s" % (params[1]))
-            self.sendData("USER %s mustikkaBot 127.0.0.1 :mustikkaBot" % (params[1]))
-            self.sendData("JOIN %s" % (params[3]))
+            self.send_data("PASS %s" % (params[2]), dontLog=True)
+            self.send_data("NICK %s" % (params[1]))
+            self.send_data("USER %s mustikkaBot 127.0.0.1 :mustikkaBot" % (params[1]))
+            self.send_data("JOIN %s" % (params[3]))
         except Exception as e:
             traceback.print_exc()
 
             log("\n\nError connecting: %s" % e)
             sys.exit()
 
-    def getData(self):
+    def get_data(self):
         """
         :return: Data received from the socket
         :rtype: str
@@ -119,14 +123,14 @@ class bot:
             data = self.ircsock.recv(1024)
             data = data.decode("UTF-8").strip('\r\n')
             if not len(data) == 0:
-                log("RECV: <>" + data + "<>")
+                self.log.debug("RECV: <>" + data + "<>")
             return data
         except socket.error as e:
             err = e.args[0]
             if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
                 return ""  # no data
 
-    def sendData(self, data, dontLog=False):
+    def send_data(self, data, dontLog=False):
         """
         :param data: String to be sent
         :type data: str
@@ -137,17 +141,17 @@ class bot:
         """
         if not (data is "" or data is None):
             if not dontLog:
-                log("SEND: " + data)
+                self.log.debug("SEND: " + data)
             self.ircsock.send(bytes(data + "\n", "UTF-8"))
 
-    def sendMessage(self, msg):
+    def send_message(self, msg):
         """
         :param msg: Message to be sent
         :type msg: str
 
         Send a message to the channel
         """
-        self.sendData("PRIVMSG " + self.channel + " :" + msg)
+        self.send_data("PRIVMSG " + self.channel + " :" + msg)
 
     def sigint(self, signal, frame):
         """
@@ -156,7 +160,7 @@ class bot:
 
         A signal handler to trap ^C
         """
-        log("^C received, stopping")
+        self.log.info("^C received, stopping")
         self.run = False;
 
     def main(self):
@@ -178,15 +182,15 @@ class bot:
         sleep(1)
 
         while self.run:
-            ircmsg = self.getData()
+            ircmsg = self.get_data()
 
             if not ( ircmsg is None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
 
                     if line.find(' PRIVMSG ') != -1:
-                        self.eventlistener.handleMessage(line)
+                        self.eventmanager.handle_message(line)
                     else:
-                        self.eventlistener.handleSpecial(line)
+                        self.eventmanager.handle_special(line)
 
 if __name__ == "__main__": # Do not start on import
     b = bot()

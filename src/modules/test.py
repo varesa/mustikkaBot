@@ -1,14 +1,23 @@
-from log import log
+import logging
 
-class test:
+class Test:
+    log = logging.getLogger("mustikkabot.test")
+
     def init(self, bot):
-        bot.eventlistener.registerMessage(self)
-        bot.eventlistener.registerSpecial(self)
-        log("[TEST] Init complete")
+        bot.eventlistener.register_message(self)
+        bot.eventlistener.register_special(self)
+        self.log.info("Init complete")
 
-    def handleMessage(self, data, user, msg):
-        log("[TESTMODULE] " + user + " said: " + msg)
+    def dispose(self):
+        """
+        Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
+        when the module gets disabled.
+        """
+        self.bot.eventlistener.unregister_special(self)
 
-    def handleSpecial(self, data):
-        log("[TESTMODULE] Received special: " + data)
+    def handle_message(self, data, user, msg):
+        self.log.debug(user + " said: " + msg)
+
+    def handle_special(self, data):
+        self.log.debug("Received special: " + data)
         

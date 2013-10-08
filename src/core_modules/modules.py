@@ -1,11 +1,12 @@
 import tools
-from log import log
+import logging
 
-class modules:
+class Modules:
     """
     Modules is a core-module that handles the chat frontend to managing non-core modules.
     """
 
+    log = logging.getLogger("mustikkabot.modules")
     bot = None
     acl = "!modules"
 
@@ -18,12 +19,19 @@ class modules:
         Called by the modulemanager when loading the module
         """
         self.bot = bot
-        bot.accessmanager.registerAcl(self.acl, defaultGroups=["%operators"])
-        bot.eventlistener.registerMessage(self)
-        log("[MODULES] Init complete")
+        bot.accessmanager.register_acl(self.acl, default_groups=["%operators"])
+        bot.eventmanager.register_message(self)
+        self.log.info("Init complete")
+
+    def dispose(self):
+        """
+        Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
+        when the module gets disabled.
+        """
+        self.bot.eventmanager.unregister_special(self)
 
 
-    def handleMessage(self, data, user, msg):
+    def handle_message(self, data, user, msg):
         """
         :param data: full IRC command
         :param user: user that sent the message
@@ -32,7 +40,7 @@ class modules:
         Look for any commands that the command-module should handle and handle any found commands.
         Called by the eventmanager/dispatcher when a message is received
         """
-        msg = tools.stripPrefix(msg)
+        msg = tools.strip_prefix(msg)
         args = msg.split()
 
 
@@ -42,60 +50,60 @@ class modules:
         if not args[0].lower() == "!modules":
             return
 
-        if not self.bot.accessmanager.isInAcl(user, self.acl):
+        if not self.bot.accessmanager.is_in_acl(user, self.acl):
             return
 
         if len(args) == 1:
-            self.bot.sendMessage("Available commands for !modules are: list, enable, disable, reload")
+            self.bot.send_message("Available commands for !modules are: list, enable, disable, reload")
             return
 
         if args[1].lower() == "enable":
             if len(args) < 3:
-                self.bot.sendMessage("Name of the module is missing. Correct format: !modules enable <name>")
+                self.bot.send_message("Name of the module is missing. Correct format: !modules enable <name>")
                 return
-            if self.bot.modulemanager.isModuleEnabled(args[2]):
-                self.bot.sendMessage("Module " + args[2] + " is already enabled")
+            if self.bot._modulemanager.is_module_enabled(args[2]):
+                self.bot.send_message("_module " + args[2] + " is already _enabled")
                 return
-            if args[2] not in self.bot.modulemanager.getAvailableModules():
-                self.bot.sendMessage("Module does not exist")
+            if args[2] not in self.bot._modulemanager.getAvailable_modules():
+                self.bot.send_message("_module does not exist")
                 return
-            self.bot.modulemanager.enableModule(args[2])
-            self.bot.sendMessage("Module " + args[2] + " enabled")
+            self.bot._modulemanager._enable_module(args[2])
+            self.bot.send_message("_module " + args[2] + " _enabled")
 
         elif args[1].lower() == "disable":
             if len(args) < 3:
-                self.bot.sendMessage("Name of the module is missing. Correct format: !modules disable <name>")
+                self.bot.send_message("Name of the _module is missing. Correct format: !_modules disable <name>")
                 return
-            if not self.bot.modulemanager.isModuleEnabled(args[2]):
-                self.bot.sendMessage("Module " + args[2] + " is not enabled")
+            if not self.bot.modulemanager.is_module_enabled(args[2]):
+                self.bot.send_message("_module " + args[2] + " is not _enabled")
                 return
-            if args[2] not in self.bot.modulemanager.getAvailableModules():
-                self.bot.sendMessage("Module does not exist")
+            if args[2] not in self.bot.modulemanager.get_available_modules():
+                self.bot.send_message("_module does not exist")
                 return
-            self.bot.modulemanager.disableModule(args[2])
-            self.bot.sendMessage("Module " + args[2] + " disabled")
+            self.bot.modulemanager.disable_module(args[2])
+            self.bot.send_message("_module " + args[2] + " disabled")
 
         elif args[1].lower() == "list":
             enabled = list()
             disabled = list()
-            for module in self.bot.modulemanager.getAvailableModules():
-                if self.bot.modulemanager.isModuleEnabled(module):
-                    enabled.append(module)
+            for _module in self.bot.modulemanager.get_available_modules():
+                if self.bot.modulemanager.is_module_enabled(_module):
+                    enabled.append(_module)
                 else:
-                    disabled.append(module)
+                    disabled.append(_module)
             if len(enabled) == 0:
                 enabled.append("None")
             if len(disabled) == 0:
                 disabled.append("None")
-            self.bot.sendMessage("Currently enabled modules: " + ", ".join(enabled))
-            self.bot.sendMessage("Currently disabled modules: " + ", ".join(disabled))
+            self.bot.send_message("Currently enabled modules: " + ", ".join(enabled))
+            self.bot.send_message("Currently disabled modules: " + ", ".join(disabled))
 
         elif args[1].lower() == "reload":
             if len(args) < 3:
-                self.bot.sendMessage("Name of the module is missing. Correct format: !modules reload <name>")
+                self.bot.send_message("Name of the module is missing. Correct format: !modules reload <name>")
                 return
             if not self.bot.modulemanager.isModuleEnabled(args[2]):
-                self.bot.sendMessage("Module " + args[2] + " does not exists or is not enabled")
+                self.bot.send_message("Module " + args[2] + " does not exists or is not enabled")
                 return
             self.bot.modulemanager.reloadModule(args[2])
-            self.bot.sendMessage("Module " + args[2] + " reloaded")
+            self.bot.send_message("Module " + args[2] + " reloaded")

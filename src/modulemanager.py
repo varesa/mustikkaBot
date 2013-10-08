@@ -2,11 +2,12 @@ import imp
 import os
 import re
 import sys
+import logging
 
-from log import log
+class ModuleManager:
 
+    log = logging.getLogger("mustikkabot.modulemanager")
 
-class modulemanager:
     modules = {}
     bot = None
 
@@ -22,8 +23,10 @@ class modulemanager:
         Initialize the module manager
         """
         self.bot = bot
-        self.setupModules()
-        self.initModules()
+        self.setup_modules()
+        self.init_modules()
+
+        self.log.info("Started")
 
     def importModule(self, file):
         """
@@ -42,7 +45,7 @@ class modulemanager:
         (file, filename, data) = imp.find_module(mname, [dir])
         return imp.load_module(mname, file, filename, data)
 
-    def loadModule(self, name, path=None):
+    def load_module(self, name, path=None):
         """
         :param name: Name of the module
         :type name: str
@@ -56,9 +59,9 @@ class modulemanager:
             path = self.enabledModulesPath
 
         module = self.importModule(os.path.join(path, name + ".py"))
-        self.modules[name] = getattr(module, name)()
+        self.modules[name] = getattr(module, name.capitalize())()
 
-    def unloadModule(self,name):
+    def unload_module(self,name):
         """
         :param name: Name of the module
         :type name: str
@@ -68,93 +71,93 @@ class modulemanager:
         """
         self.modules.pop(name)
 
-    def setupModules(self):
+    def setup_modules(self):
         """
         Go through the enabled modules on disk importing them
         """
         if not os.path.isdir(self.enabledModulesPath):
             if not os.path.exists(self.enabledModulesPath):
-                log("[MODULEMANAGER] Directory for enabled modules does not exist, creating")
+                self.log.info("Directory for enabled modules does not exist, creating")
                 os.mkdir(self.enabledModulesPath)
             else:
-                log("[MODULEMANAGER] There is something wrong with the enabled modules dir: " + self.enabledModulesPath + ", exiting")
+                self.log.error("There is something wrong with the enabled modules dir: " + self.enabledModulesPath + ", exiting")
                 sys.exit()
 
         files = os.listdir(self.enabledModulesPath)
         for file in files:
             result = re.search(r'(.*)\.py$', file)
             if result is not None:
-                self.loadModule(result.group(1))
+                self.load_module(result.group(1))
         corefiles = os.listdir(self.coreModulesPath)
         for file in corefiles:
             result = re.search(r'(.*)\.py$', file)
             if result is not None:
-                self.loadModule(result.group(1), "core_modules/")
+                self.load_module(result.group(1), "core_modules/")
 
-    def enableModule(self, name):
+    def enable_module(self, name):
         """
         :param name: name of the module
         :type name: str
 
         Permanently enable a module
         """
-        if self.isModuleEnabled(name):
+        if self.is_module_enabled(name):
             return
 
-        modules = self.getAvailableModules()
+        modules = self.get_available_modules()
 
         if not name in modules:
             return
 
         os.symlink(os.path.abspath(os.path.join(self.availableModulesPath, name + ".py")),
                    os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
-        self.loadModule(name)
-        self.initModule(name)
+        self.load_module(name)
+        self.init_module(name)
 
-    def disableModule(self, name):
+    def disable_module(self, name):
         """
         :param name: name of the module
         :type name: str
 
         Permanently disable a module
         """
-        if not self.isModuleEnabled(name):
+        if not self.is_module_enabled(name):
             return
 
-        if self.isCoreModule(name):
+        if self.is_core_module(name):
             raise Exception("Cannot disable a core-module")
 
-        self.disposeModule(name)
-        self.unloadModule(name)
+        self.dispose_module(name)
+        self.unload_module(name)
 
 
         os.remove(os.path.join(self.enabledModulesPath, name + ".py"))
 
-    def reloadModule(self, name):
+    def reload_module(self, name):
         """
         :param name: name of the module
         :type name: str
 
         Reload a module. Same as :meth:enableModule() && :meth:disableModule()
         """
-        self.disableModule(name)
-        self.enableModule(name)
+        self.disable_module(name)
+        self.enable_module(name)
 
-    def initModules(self):
+    def init_modules(self):
         """
         Go through loaded modules initializing them. To be used for example when initially starting up the bot in order
         to allow the modules to do some preparations (like open files and load data), register callbacks and etc.
         """
         for module in self.modules:
-            self.initModule(module)
+            self.init_module(module)
 
-    def disposeModules(self):
+    def dispose_modules(self):
         """
         Go through loaded modules and dispose them. To be used for example when shutting down the bot in order to allow
         the modules to close any open resources, save data and etc.
         """
 
-    def initModule(self, name):
+    def init_module(self, name):
         """
         :param name: Name of module
         :type name: str
@@ -166,7 +169,7 @@ class modulemanager:
         except AttributeError:
             pass # Only call init if it is implemented
 
-    def disposeModule(self, name):
+    def dispose_module(self, name):
         """
         :param name: Name of module
         :type name: str
@@ -179,7 +182,7 @@ class modulemanager:
         except AttributeError:
             pass # Only call dispose if it is implemented
 
-    def getModule(self, name):
+    def get_module(self, name):
         """
         :param name: name of the module
         :type name: str
@@ -191,7 +194,7 @@ class modulemanager:
         """
         return self.modules[name]
 
-    def getEnabledModules(self):
+    def get_enabled_modules(self):
         """
         :return: A dict of all loaded modules
         :rtype: dict(str:module)
@@ -200,7 +203,7 @@ class modulemanager:
         """
         return self.modules
 
-    def getAvailableModules(self):
+    def get_available_modules(self):
         """
         :return: dictionary of available modules and their filenames
         :rtype: dictionary of strings
@@ -217,7 +220,7 @@ class modulemanager:
 
         return modules
 
-    def isModuleEnabled(self, module):
+    def is_module_enabled(self, module):
         """
         :param module: name of the module
         :type module: str
@@ -232,7 +235,7 @@ class modulemanager:
         else:
             return False
 
-    def isCoreModule(self, name):
+    def is_core_module(self, name):
         """
         :param name: name of the module
         :type name: str
