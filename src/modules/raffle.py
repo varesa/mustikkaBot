@@ -16,6 +16,9 @@ class raffle:
         self.bot.accessmanager.registerAcl(self.acl)
         log("[RAFFLE] Init complete")
 
+    def dispose(self):
+        self.bot.eventmanager.unregister_message(self)
+
     def handle_message(self, data, user, msg):
         msg = tools.stripPrefix(msg)
 
