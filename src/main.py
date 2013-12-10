@@ -30,11 +30,11 @@ class bot:
     channel = None
 
     eventmanager = EventManager()
-    """ :type: eventlistener"""
+    """ :type: EventListener"""
     modulemanager = ModuleManager()
-    """ :type: modulemanager"""
+    """ :type: ModuleManager"""
     accessmanager = AccessManager()
-    """ :type: access"""
+    """ :type: Access"""
 
     run = True
 
