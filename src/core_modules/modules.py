@@ -86,11 +86,11 @@ class Modules:
         elif args[1].lower() == "list":
             enabled = list()
             disabled = list()
-            for _module in self.bot.modulemanager.get_available_modules():
-                if self.bot.modulemanager.is_module_enabled(_module):
-                    enabled.append(_module)
+            for module in self.bot.modulemanager.get_available_modules():
+                if self.bot.modulemanager.is_module_enabled(module):
+                    enabled.append(module)
                 else:
-                    disabled.append(_module)
+                    disabled.append(module)
             if len(enabled) == 0:
                 enabled.append("None")
             if len(disabled) == 0:
