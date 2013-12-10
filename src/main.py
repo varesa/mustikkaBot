@@ -107,7 +107,7 @@ class bot:
         except Exception as e:
             traceback.print_exc()
 
-            log("\n\nError connecting: %s" % e)
+            self.log.error("\n\nError connecting: %s" % e)
             sys.exit()
 
     def get_data(self):
