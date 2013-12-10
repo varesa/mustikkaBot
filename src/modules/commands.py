@@ -17,7 +17,7 @@ class Commands:
     def init(self, bot):
         self.bot = bot
         self.read_JSON()
-        bot.eventlistener.register_message(self)
+        bot.eventmanager.register_message(self)
         self.log.info("Init complete")
 
     def dispose(self):
@@ -25,7 +25,7 @@ class Commands:
         Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
         when the module gets disabled.
         """
-        self.bot.eventlistener.unregister_special(self)
+        self.bot.eventmanager.unregister_special(self)
         
     def handle_message(self, data, user, msg):
         msg = tools.strip_prefix(msg)
