@@ -62,26 +62,26 @@ class Modules:
                 self.bot.send_message("Name of the module is missing. Correct format: !modules enable <name>")
                 return
             if self.bot.modulemanager.is_module_enabled(args[2]):
-                self.bot.send_message("_module " + args[2] + " is already _enabled")
+                self.bot.send_message("Module " + args[2] + " is already enabled")
                 return
             if args[2] not in self.bot.modulemanager.get_available_modules():
-                self.bot.send_message("_module does not exist")
+                self.bot.send_message("Module does not exist")
                 return
             self.bot.modulemanager.enable_module(args[2])
-            self.bot.send_message("_module " + args[2] + " _enabled")
+            self.bot.send_message("Module " + args[2] + " enabled")
 
         elif args[1].lower() == "disable":
             if len(args) < 3:
-                self.bot.send_message("Name of the _module is missing. Correct format: !_modules disable <name>")
+                self.bot.send_message("Name of the module is missing. Correct format: !modules disable <name>")
                 return
             if not self.bot.modulemanager.is_module_enabled(args[2]):
-                self.bot.send_message("_module " + args[2] + " is not _enabled")
+                self.bot.send_message("Module " + args[2] + " is not enabled")
                 return
             if args[2] not in self.bot.modulemanager.get_available_modules():
-                self.bot.send_message("_module does not exist")
+                self.bot.send_message("Module does not exist")
                 return
             self.bot.modulemanager.disable_module(args[2])
-            self.bot.send_message("_module " + args[2] + " disabled")
+            self.bot.send_message("Module " + args[2] + " disabled")
 
         elif args[1].lower() == "list":
             enabled = list()
