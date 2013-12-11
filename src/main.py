@@ -191,6 +191,7 @@ class bot:
                         self.eventmanager.handle_message(line)
                     else:
                         self.eventmanager.handle_special(line)
+            sleep(0.01)
 
 if __name__ == "__main__": # Do not start on import
     b = bot()
