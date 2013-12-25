@@ -31,7 +31,7 @@ class Commands:
         msg = tools.strip_prefix(msg)
         args = msg.split()
 
-        if args[0] == "!commands":
+        if args[0] == "!commands" or args[0] == "!comm":
             self.setup_commands(user, args)
         else:
             self.run_commands(user, args)
