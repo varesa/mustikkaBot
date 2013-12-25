@@ -110,11 +110,15 @@ class Commands:
             self.write_JSON()
             self.bot.send_message("Added command " + cmd)
             self.log.info("Added new command:" + cmd)
+
+            if len(args) > 3:
+                self.set_command(cmd, ' '.join(args[3:]))
+
         else:
             self.bot.send_message("Command " + cmd + " already exists")
             self.log.warning("Tried to create a command " + cmd + " that already exists")
 
-    def set_command(self, args):
+    def set_command(self, args, quiet=False):
         cmd = args[2]
         text = ' '.join(args[3:])
 
@@ -122,10 +126,12 @@ class Commands:
             if command['name'] == cmd:
                 command['value'] = text
                 self.write_JSON()
-                self.bot.send_message("New message for command " + cmd + ": " + text)
+                if not quiet:
+                    self.bot.send_message("New message for command " + cmd + ": " + text)
                 self.log.info("Modified the value of command " + cmd + " to: " + text)
                 return
-        self.bot.send_message("Command " + cmd + " not found")
+        if not quiet:
+            self.bot.send_message("Command " + cmd + " not found")
         self.log.warning("Tried to change the text of a nonexisting command: " + cmd)
 
     def list_commands(self):
