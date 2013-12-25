@@ -265,7 +265,7 @@ class AccessManager:
         Add a user to the acl
         """
         if not user in self.acls[acl]['members']:
-            self.acls[acl]['members'].append(user)
+            self.acls[acl]['members'].append(user.lower())
             self.write_JSON()
 
     def remove_user_from_acl(self, acl, user):
@@ -277,7 +277,7 @@ class AccessManager:
 
         Remove a user from an acl if possible
         """
-        self.acls[acl]['members'].pop(Group, None)
+        self.acls[acl]['members'].pop(user, None)
 
     def expand_groups(self, groups):
         """
@@ -335,7 +335,7 @@ class AccessManager:
 
         groups = self.expand_groups(self.acls[acl]['groups'])
         for group in groups:
-            if user in self.groups[group]['members']:
+            if user.lower() in self.groups[group]['members']:
                 return True
 
         return False
