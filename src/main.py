@@ -75,8 +75,6 @@ class bot:
 
         passwd_hidden = ""
 
-        print(passwd)
-
         i = 0
         while i < len(passwd):
             passwd_hidden += "*"
