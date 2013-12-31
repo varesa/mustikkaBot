@@ -30,7 +30,7 @@ class AccessManager:
     def init(self, bot):
         """
         :param bot: Reference to the main bot instance
-        :type bot: bot
+        :type bot: Bot
 
         Initialize the access-module
         """

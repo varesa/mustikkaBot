@@ -19,7 +19,8 @@ from eventmanager import EventManager
 from modulemanager import ModuleManager
 from accessmanager import AccessManager
 
-class bot:
+
+class Bot:
 
     logutils.setup_logging("mustikkabot")
     log = logging.getLogger("mustikkabot")
@@ -80,9 +81,10 @@ class bot:
             passwd_hidden += "*"
             i += 1
 
-        self.log.info("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" % (host, username, passwd_hidden, channel))
-        return (host, username, passwd, channel)
+        self.log.info("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" %
+                      (host, username, passwd_hidden, channel))
 
+        return host, username, passwd, channel
 
     def connect(self, params):
         """
@@ -159,7 +161,7 @@ class bot:
         A signal handler to trap ^C
         """
         self.log.info("^C received, stopping")
-        self.run = False;
+        self.run = False
 
     def main(self):
         """
@@ -191,6 +193,6 @@ class bot:
                         self.eventmanager.handle_special(line)
             sleep(0.01)
 
-if __name__ == "__main__": # Do not start on import
-    b = bot()
+if __name__ == "__main__":  # Do not start on import
+    b = Bot()
     b.main()

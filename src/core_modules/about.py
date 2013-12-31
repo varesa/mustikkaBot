@@ -12,7 +12,7 @@ class About:
     def init(self, bot):
         """
         :param bot: Reference to the main bot instance
-        :type bot: bot
+        :type bot: Bot
 
         Initialize the about-module. Called by the modulemanager when the module gets enabled
         """

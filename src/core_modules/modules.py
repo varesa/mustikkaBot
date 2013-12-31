@@ -13,7 +13,7 @@ class Modules:
     def init(self, bot):
         """
         :param bot: Reference to the main bot instance
-        :type bot: bot
+        :type bot: Bot
 
         Initialize the modules-module. Register callback to the message received event.
         Called by the modulemanager when loading the module

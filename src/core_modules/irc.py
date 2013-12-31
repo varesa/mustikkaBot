@@ -12,7 +12,7 @@ class Irc:
     def init(self, bot):
         """
         :param bot: Reference to the main bot instance
-        :type bot: bot
+        :type bot: Bot
 
         Initialize the irc-module and register the specialmsg-callback.
         Called by modulemanager when starting up the module
