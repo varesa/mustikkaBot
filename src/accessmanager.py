@@ -2,6 +2,7 @@ import json
 import errno
 import logging
 
+
 class Group:
     accessm = None
 
@@ -34,8 +35,6 @@ class AccessManager:
 
         Initialize the access-module
         """
-
-
 
         self.bot = bot
 
@@ -179,7 +178,7 @@ class AccessManager:
 
         Create a new acl
         """
-        self.acls[acl] = {"groups":[], "members":[]}
+        self.acls[acl] = {"groups": [], "members": []}
         self.write_JSON()
 
     def exists_acl(self, acl):

@@ -59,7 +59,7 @@ class EventManager:
             msg = result.group(3)
         else:
             self.log.warning("Received invalid message")
-            return # Invalid message
+            return  # Invalid message
 
         for module in self.messageRegistered:
             module.handle_message(text, user, msg)

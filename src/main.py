@@ -117,7 +117,6 @@ class Bot:
 
         Return any data that has been received
         """
-        data = None
 
         try:
             data = self.ircsock.recv(1024)
@@ -184,7 +183,7 @@ class Bot:
         while self.run:
             ircmsg = self.get_data()
 
-            if not ( ircmsg is None or len(ircmsg) == 0):
+            if not (ircmsg is None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
 
                     if line.find(' PRIVMSG ') != -1:

@@ -7,6 +7,7 @@
 
 import logging
 
+
 def setup_logging(name):
     log = logging.getLogger(name)
 
@@ -15,6 +16,7 @@ def setup_logging(name):
     sh = logging.StreamHandler()
     sh.setFormatter(LogFormater())
     log.addHandler(sh)
+
 
 class LogFormater(logging.Formatter):
 

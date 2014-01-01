@@ -20,4 +20,3 @@ class Test:
 
     def handle_special(self, data):
         self.log.debug("Received special: " + data)
-        

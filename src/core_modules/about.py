@@ -37,7 +37,7 @@ class About:
         if args[0] == "!about" or args[0] == "!bot":
             self.log.info("Printing \"about\"")
             self.bot.send_message("MustikkaBot is a IRC/Twitch chatbot created in python " +
-                                    "for the awesome youtuber/streamer Mustikka. Author: Esa Varemo")
+                                  "for the awesome youtuber/streamer Mustikka. Author: Esa Varemo")
 
     def dispose(self):
         """

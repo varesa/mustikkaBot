@@ -80,7 +80,8 @@ class ModuleManager:
                 self.log.info("Directory for enabled modules does not exist, creating")
                 os.mkdir(self.enabledModulesPath)
             else:
-                self.log.error("There is something wrong with the enabled modules dir: " + self.enabledModulesPath + ", exiting")
+                self.log.error("There is something wrong with the enabled modules dir: "
+                               + self.enabledModulesPath + ", exiting")
                 sys.exit()
 
         files = os.listdir(self.enabledModulesPath)
