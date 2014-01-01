@@ -181,6 +181,10 @@ class AccessManager:
         self.acls[acl] = {"groups": [], "members": []}
         self.write_JSON()
 
+    def remove_acl(self, acl):
+        self.acls.pop(acl, default=None)
+        self.log.info("Removed acl: " + acl)
+
     def exists_acl(self, acl):
         """
         :param acl: Name of the ACL
@@ -196,7 +200,7 @@ class AccessManager:
         else:
             return False
 
-    def register_acl(self, acl, default_groups=None,default_members=None):
+    def register_acl(self, acl, default_groups=None, default_members=None):
         """
         :param acl: name of the acl
         :type acl: str
