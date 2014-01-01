@@ -52,7 +52,7 @@ class Commands:
                 self.set_regulars(args)
 
             if args[1] == "remove":
-                self.removeCommand(args)
+                self.remove_command(args)
 
             if args[1] == "load":
                 self.read_JSON()
@@ -104,7 +104,7 @@ class Commands:
         Check if a command exists
         """
         for command in self.commands:
-            if command == cmd:
+            if command['name'] == cmd:
                 return True
         return False
 
@@ -140,6 +140,28 @@ class Commands:
         if not quiet:
             self.bot.send_message("Command " + cmd + " not found")
         self.log.warning("Tried to change the text of a nonexisting command: " + cmd)
+
+    def remove_command(self, args):
+        cmd = args[2]
+
+        if self.exists_command(cmd):
+            to_remove = None
+            for command in self.commands:
+                if command['name'] == cmd:
+                    to_remove = command
+            self.commands.pop(to_remove)  # Do not modify the loop variable on the go
+
+            self.bot.accessmanager.remove_acl("commands.!" + cmd)
+            self.write_JSON()
+            self.bot.send_message("Deleted command " + cmd)
+            self.log.info("Deleted command:" + cmd)
+
+            if len(args) > 3:
+                self.set_command(cmd, ' '.join(args[3:]))
+
+        else:
+            self.bot.send_message("Command " + cmd + " does not exist")
+            self.log.warning("Tried to delete a command " + cmd + " that does not exist")
 
     def list_commands(self):
         cmds = ""
