@@ -13,6 +13,7 @@ class Commands:
     jsonfile = "commands.json"
 
     helpMessage = "Usage: !commands list | add <cmd> | remove <cmd> | set <cmd> <text> | regulars <cmd> <value>"
+    # Hidden commands: '!commands save' and '!commands load' for managing the JSON
 
     def init(self, bot):
         self.bot = bot
@@ -52,6 +53,12 @@ class Commands:
 
             if args[1] == "remove":
                 self.removeCommand(args)
+
+            if args[1] == "load":
+                self.read_JSON()
+
+            if args[1] == "save":
+                self.write_JSON()
         else:
             self.bot.send_message(self.helpMessage)
 
