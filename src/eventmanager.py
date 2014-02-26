@@ -65,7 +65,7 @@ class EventManager:
             try:
                 module.handle_message(text, user, msg)
             except:
-                self.log.error("Error happened while module '" + module + "' was handling a message")
+                self.log.exception("Error happened while module '" + str(module) + "' was handling a message")
 
     def handle_special(self, text):
         """
@@ -78,4 +78,4 @@ class EventManager:
             try:
                 module.handle_special(text)
             except:
-                self.log.error("Error happened while module '" + module + "' was handling a special message")
+                self.log.exception("Error happened while module '" + module + "' was handling a special message")

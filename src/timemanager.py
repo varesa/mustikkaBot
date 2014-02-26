@@ -62,12 +62,15 @@ class TimeManager:
         Register an event to be executed at regular intervals
         """
         t = _TimeEvent()
-        t.type = "interval"
+        t.type = "periodic"
+
         if delay:
             t.next = datetime.datetime.now() + delay
         else:
             t.next = datetime.datetime.now() + interval
         t.interval = interval
+
+        t.action = action
 
         self.time_events.append(t)
 
@@ -99,8 +102,9 @@ class TimeManager:
                     for_removal.append(event)
                 try:
                     event.action()
+                    self.log.debug("called action")
                 except:
-                    self.log.error("Error happened in a timed event")
+                    self.log.exception("Error happened in a timed event")
 
         for item in for_removal:
             self.time_events.remove(item)

@@ -1,21 +1,24 @@
 import logging
 import datetime
 
-class Test:
+def test():
+    print("abc")
+
+class Follows:
 
     log = logging.getLogger("mustikkabot.follows")
     bot = None
     """ :type: bot"""
 
     def check_followers(self):
-        pass
+        self.log.debug("Interval!")
 
     def init(self, bot):
         """
         Initialize the module when added by eventmanager.
         """
         interval = datetime.timedelta(seconds=5)
-        bot.timemanager.register_interval(interval=interval, action=self.check_followers)
+        bot.timemanager.register_interval(interval=interval, action=test)
 
         self.log.info("Init complete")
 

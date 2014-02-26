@@ -26,7 +26,7 @@ class ModuleManager:
         self.setup_modules()
         self.init_modules()
 
-        self.log.info("Started")
+        self.log.info("Init complete")
 
     def importModule(self, file):
         """
@@ -111,7 +111,8 @@ class ModuleManager:
             return
 
         os.symlink(os.path.abspath(os.path.join(self.availableModulesPath, name + ".py")),
-                   os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
+               os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
+
         self.load_module(name)
         self.init_module(name)
 
