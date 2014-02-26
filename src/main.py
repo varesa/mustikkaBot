@@ -18,6 +18,7 @@ import logutils
 from eventmanager import EventManager
 from modulemanager import ModuleManager
 from accessmanager import AccessManager
+from timemanager import TimeManager
 
 
 class Bot:
@@ -31,11 +32,14 @@ class Bot:
     channel = None
 
     eventmanager = EventManager()
-    """ :type: EventListener"""
+    """ :type: EventManager"""
     modulemanager = ModuleManager()
     """ :type: ModuleManager"""
     accessmanager = AccessManager()
-    """ :type: Access"""
+    """ :type: AccessManager"""
+    timemanager = TimeManager()
+    """ :type: TimeManager"""
+
 
     run = True
 
@@ -190,6 +194,7 @@ class Bot:
                         self.eventmanager.handle_message(line)
                     else:
                         self.eventmanager.handle_special(line)
+            self.timemanager.handle_events()
             sleep(0.01)
 
 if __name__ == "__main__":  # Do not start on import
