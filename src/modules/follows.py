@@ -33,7 +33,7 @@ class Follows:
         Initialize the module when added by eventmanager.
         """
         interval = datetime.timedelta(seconds=5)
-        bot.timemanager.register_interval(interval=interval, action=test)
+        bot.timemanager.register_interval(interval=interval, action=self.check_followers)
 
         self.log.info("Init complete")
 
