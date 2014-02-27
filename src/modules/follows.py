@@ -22,12 +22,10 @@ class Follows:
             self.last_created_at = _ts2dt(data[0]['created_at'])
             return
 
-        #print(data[0])
-
         for follow in data[::-1]:
 
             if _ts2dt(follow['created_at']) > self.last_created_at:
-                print("New follower: " + follow['user']['display_name'])
+                self.bot.send_message("New follower: " + follow['user']['display_name'])
                 self.last_created_at = _ts2dt(follow['created_at'])
 
     def init(self, bot):
