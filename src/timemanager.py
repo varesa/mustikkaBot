@@ -102,7 +102,6 @@ class TimeManager:
                     for_removal.append(event)
                 try:
                     event.action()
-                    self.log.debug("called action")
                 except:
                     self.log.exception("Error happened in a timed event")
 
