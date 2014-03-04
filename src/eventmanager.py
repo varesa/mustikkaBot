@@ -23,7 +23,12 @@ class EventManager:
 
         Unregister a module to stop it from receiving events on incoming messages
         """
-        self.messageRegistered.pop(self.messageRegistered.index(module))
+        remove = None
+        for registered in self.messageRegistered:
+            if type(registered) == type(module):
+                remove = registered
+        if remove is not None:
+            self.messageRegistered.pop(self.messageRegistered.index(remove))
 
     def register_special(self, module):
         """
@@ -40,7 +45,12 @@ class EventManager:
 
         Unregister a module to stop it from receiving events on incoming "special" (non message) data
         """
-        self.specialRegistered.pop(self.messageRegistered.index(module))
+        remove = None
+        for registered in self.specialRegistered:
+            if type(registered) == type(module):
+                remove = registered
+        if remove is not None:
+            self.messageRegistered.pop(self.messageRegistered.index(remove))
 
     def handle_message(self, text):
         """
