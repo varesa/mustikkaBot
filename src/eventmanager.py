@@ -59,10 +59,13 @@ class EventManager:
             msg = result.group(3)
         else:
             self.log.warning("Received invalid message")
-            return # Invalid message
+            return  # Invalid message
 
         for module in self.messageRegistered:
-            module.handle_message(text, user, msg)
+            try:
+                module.handle_message(text, user, msg)
+            except:
+                self.log.exception("Error happened while module '" + str(module) + "' was handling a message")
 
     def handle_special(self, text):
         """
@@ -72,4 +75,7 @@ class EventManager:
         Parse the IRC data and deliver it to registered modules
         """
         for module in self.specialRegistered:
-            module.handle_special(text)
+            try:
+                module.handle_special(text)
+            except:
+                self.log.exception("Error happened while module '" + module + "' was handling a special message")

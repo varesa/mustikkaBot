@@ -1,0 +1,3 @@
+[submodule "src/TwitchAPI"]
+	path = src/TwitchAPI
+	url = git@github.com:varesa/TwitchAPI.git

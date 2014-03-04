@@ -12,9 +12,12 @@ class raffle:
 
     def init(self, bot):
         self.bot = bot
-        self.bot.eventlistener.registerMessage(self)
+        self.bot.eventmanager.registerMessage(self)
         self.bot.accessmanager.registerAcl(self.acl)
         log("[RAFFLE] Init complete")
+
+    def dispose(self):
+        self.bot.eventmanager.unregister_message(self)
 
     def handle_message(self, data, user, msg):
         msg = tools.stripPrefix(msg)

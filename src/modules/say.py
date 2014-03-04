@@ -11,7 +11,7 @@ class Say:
 
     def init(self, bot):
         self.bot = bot
-        self.bot.eventlistener.register_message(self)
+        self.bot.eventmanager.register_message(self)
         self.bot.accessmanager.register_acl(self.acl)
         self.log.info("Init complete")
 
@@ -20,7 +20,7 @@ class Say:
         Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
         when the module gets disabled.
         """
-        self.bot.eventlistener.unregister_special(self)
+        self.bot.eventmanager.unregister_special(self)
 
     def handle_message(self, data, user, msg):
         msg = tools.strip_prefix(msg)

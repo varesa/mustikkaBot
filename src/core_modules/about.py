@@ -12,7 +12,7 @@ class About:
     def init(self, bot):
         """
         :param bot: Reference to the main bot instance
-        :type bot: bot
+        :type bot: Bot
 
         Initialize the about-module. Called by the modulemanager when the module gets enabled
         """
@@ -37,7 +37,7 @@ class About:
         if args[0] == "!about" or args[0] == "!bot":
             self.log.info("Printing \"about\"")
             self.bot.send_message("MustikkaBot is a IRC/Twitch chatbot created in python " +
-                                    "for the awesome youtuber/streamer Mustikka. Author: Esa Varemo")
+                                  "for the awesome youtuber/streamer HerraMustikka. Author: Esa Varemo")
 
     def dispose(self):
         """

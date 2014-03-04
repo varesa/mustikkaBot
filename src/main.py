@@ -18,8 +18,10 @@ import logutils
 from eventmanager import EventManager
 from modulemanager import ModuleManager
 from accessmanager import AccessManager
+from timemanager import TimeManager
 
-class bot:
+
+class Bot:
 
     logutils.setup_logging("mustikkabot")
     log = logging.getLogger("mustikkabot")
@@ -30,11 +32,14 @@ class bot:
     channel = None
 
     eventmanager = EventManager()
-    """ :type: eventlistener"""
+    """ :type: EventManager"""
     modulemanager = ModuleManager()
-    """ :type: modulemanager"""
+    """ :type: ModuleManager"""
     accessmanager = AccessManager()
-    """ :type: access"""
+    """ :type: AccessManager"""
+    timemanager = TimeManager()
+    """ :type: TimeManager"""
+
 
     run = True
 
@@ -75,16 +80,15 @@ class bot:
 
         passwd_hidden = ""
 
-        print(passwd)
-
         i = 0
         while i < len(passwd):
             passwd_hidden += "*"
             i += 1
 
-        self.log.info("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" % (host, username, passwd_hidden, channel))
-        return (host, username, passwd, channel)
+        self.log.info("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" %
+                      (host, username, passwd_hidden, channel))
 
+        return host, username, passwd, channel
 
     def connect(self, params):
         """
@@ -107,7 +111,7 @@ class bot:
         except Exception as e:
             traceback.print_exc()
 
-            log("\n\nError connecting: %s" % e)
+            self.log.error("\n\nError connecting: %s" % e)
             sys.exit()
 
     def get_data(self):
@@ -117,7 +121,6 @@ class bot:
 
         Return any data that has been received
         """
-        data = None
 
         try:
             data = self.ircsock.recv(1024)
@@ -161,7 +164,7 @@ class bot:
         A signal handler to trap ^C
         """
         self.log.info("^C received, stopping")
-        self.run = False;
+        self.run = False
 
     def main(self):
         """
@@ -184,14 +187,16 @@ class bot:
         while self.run:
             ircmsg = self.get_data()
 
-            if not ( ircmsg is None or len(ircmsg) == 0):
+            if not (ircmsg is None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
 
                     if line.find(' PRIVMSG ') != -1:
                         self.eventmanager.handle_message(line)
                     else:
                         self.eventmanager.handle_special(line)
+            self.timemanager.handle_events()
+            sleep(0.01)
 
-if __name__ == "__main__": # Do not start on import
-    b = bot()
+if __name__ == "__main__":  # Do not start on import
+    b = Bot()
     b.main()

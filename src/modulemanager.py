@@ -18,7 +18,7 @@ class ModuleManager:
     def init(self, bot):
         """
         :param bot:  Reference to the main bot instance
-        :type bot: bot
+        :type bot: Bot
 
         Initialize the module manager
         """
@@ -26,7 +26,7 @@ class ModuleManager:
         self.setup_modules()
         self.init_modules()
 
-        self.log.info("Started")
+        self.log.info("Init complete")
 
     def importModule(self, file):
         """
@@ -80,7 +80,8 @@ class ModuleManager:
                 self.log.info("Directory for enabled modules does not exist, creating")
                 os.mkdir(self.enabledModulesPath)
             else:
-                self.log.error("There is something wrong with the enabled modules dir: " + self.enabledModulesPath + ", exiting")
+                self.log.error("There is something wrong with the enabled modules dir: "
+                               + self.enabledModulesPath + ", exiting")
                 sys.exit()
 
         files = os.listdir(self.enabledModulesPath)
@@ -110,7 +111,8 @@ class ModuleManager:
             return
 
         os.symlink(os.path.abspath(os.path.join(self.availableModulesPath, name + ".py")),
-                   os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
+               os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
+
         self.load_module(name)
         self.init_module(name)
 

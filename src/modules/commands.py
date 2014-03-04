@@ -13,11 +13,12 @@ class Commands:
     jsonfile = "commands.json"
 
     helpMessage = "Usage: !commands list | add <cmd> | remove <cmd> | set <cmd> <text> | regulars <cmd> <value>"
+    # Hidden commands: '!commands save' and '!commands load' for managing the JSON
 
     def init(self, bot):
         self.bot = bot
         self.read_JSON()
-        bot.eventlistener.register_message(self)
+        bot.eventmanager.register_message(self)
         self.log.info("Init complete")
 
     def dispose(self):
@@ -25,13 +26,13 @@ class Commands:
         Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
         when the module gets disabled.
         """
-        self.bot.eventlistener.unregister_special(self)
+        self.bot.eventmanager.unregister_special(self)
         
     def handle_message(self, data, user, msg):
         msg = tools.strip_prefix(msg)
         args = msg.split()
 
-        if args[0] == "!commands":
+        if args[0] == "!commands" or args[0] == "!comm":
             self.setup_commands(user, args)
         else:
             self.run_commands(user, args)
@@ -51,7 +52,13 @@ class Commands:
                 self.set_regulars(args)
 
             if args[1] == "remove":
-                self.removeCommand(args)
+                self.remove_command(args)
+
+            if args[1] == "load":
+                self.read_JSON()
+
+            if args[1] == "save":
+                self.write_JSON()
         else:
             self.bot.send_message(self.helpMessage)
 
@@ -97,7 +104,7 @@ class Commands:
         Check if a command exists
         """
         for command in self.commands:
-            if command == cmd:
+            if command['name'] == cmd:
                 return True
         return False
 
@@ -110,11 +117,15 @@ class Commands:
             self.write_JSON()
             self.bot.send_message("Added command " + cmd)
             self.log.info("Added new command:" + cmd)
+
+            if len(args) > 3:
+                self.set_command(cmd, ' '.join(args[3:]))
+
         else:
             self.bot.send_message("Command " + cmd + " already exists")
             self.log.warning("Tried to create a command " + cmd + " that already exists")
 
-    def set_command(self, args):
+    def set_command(self, args, quiet=False):
         cmd = args[2]
         text = ' '.join(args[3:])
 
@@ -122,11 +133,35 @@ class Commands:
             if command['name'] == cmd:
                 command['value'] = text
                 self.write_JSON()
-                self.bot.send_message("New message for command " + cmd + ": " + text)
+                if not quiet:
+                    self.bot.send_message("New message for command " + cmd + ": " + text)
                 self.log.info("Modified the value of command " + cmd + " to: " + text)
                 return
-        self.bot.send_message("Command " + cmd + " not found")
+        if not quiet:
+            self.bot.send_message("Command " + cmd + " not found")
         self.log.warning("Tried to change the text of a nonexisting command: " + cmd)
+
+    def remove_command(self, args):
+        cmd = args[2]
+
+        if self.exists_command(cmd):
+            to_remove = None
+            for command in self.commands:
+                if command['name'] == cmd:
+                    to_remove = command
+            self.commands.pop(to_remove)  # Do not modify the loop variable on the go
+
+            self.bot.accessmanager.remove_acl("commands.!" + cmd)
+            self.write_JSON()
+            self.bot.send_message("Deleted command " + cmd)
+            self.log.info("Deleted command:" + cmd)
+
+            if len(args) > 3:
+                self.set_command(cmd, ' '.join(args[3:]))
+
+        else:
+            self.bot.send_message("Command " + cmd + " does not exist")
+            self.log.warning("Tried to delete a command " + cmd + " that does not exist")
 
     def list_commands(self):
         cmds = ""

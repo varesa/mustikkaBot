@@ -2,6 +2,7 @@ import json
 import errno
 import logging
 
+
 class Group:
     accessm = None
 
@@ -30,12 +31,10 @@ class AccessManager:
     def init(self, bot):
         """
         :param bot: Reference to the main bot instance
-        :type bot: bot
+        :type bot: Bot
 
         Initialize the access-module
         """
-
-
 
         self.bot = bot
 
@@ -179,8 +178,12 @@ class AccessManager:
 
         Create a new acl
         """
-        self.acls[acl] = {"groups":[], "members":[]}
+        self.acls[acl] = {"groups": [], "members": []}
         self.write_JSON()
+
+    def remove_acl(self, acl):
+        self.acls.pop(acl, default=None)
+        self.log.info("Removed acl: " + acl)
 
     def exists_acl(self, acl):
         """
@@ -197,7 +200,7 @@ class AccessManager:
         else:
             return False
 
-    def register_acl(self, acl, default_groups=None,default_members=None):
+    def register_acl(self, acl, default_groups=None, default_members=None):
         """
         :param acl: name of the acl
         :type acl: str
@@ -211,8 +214,9 @@ class AccessManager:
         if not self.exists_acl(acl):
             self.create_acl(acl)
             if default_groups is None and default_members is None:
-                self.add_group_to_acl(acl, "%owner")
-                self.add_group_to_acl(acl, "%operators")
+                #self.add_group_to_acl(acl, "%owner")
+                #self.add_group_to_acl(acl, "%operators")
+                self.add_group_to_acl(acl, "%moderators")
             else:
                 if default_groups:
                     if type(default_groups) != type(list()):
@@ -264,7 +268,7 @@ class AccessManager:
         Add a user to the acl
         """
         if not user in self.acls[acl]['members']:
-            self.acls[acl]['members'].append(user)
+            self.acls[acl]['members'].append(user.lower())
             self.write_JSON()
 
     def remove_user_from_acl(self, acl, user):
@@ -276,7 +280,7 @@ class AccessManager:
 
         Remove a user from an acl if possible
         """
-        self.acls[acl]['members'].pop(Group, None)
+        self.acls[acl]['members'].pop(user, None)
 
     def expand_groups(self, groups):
         """
@@ -334,7 +338,7 @@ class AccessManager:
 
         groups = self.expand_groups(self.acls[acl]['groups'])
         for group in groups:
-            if user in self.groups[group]['members']:
+            if user.lower() in self.groups[group]['members']:
                 return True
 
         return False
