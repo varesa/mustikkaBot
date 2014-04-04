@@ -28,6 +28,10 @@ class AccessManager:
 
     jsonfile = "acls.json"
 
+    def __init__(self):
+        self.acls = dict()
+        self.groups = dict()
+
     def init(self, bot):
         """
         :param bot: Reference to the main bot instance
@@ -73,7 +77,7 @@ class AccessManager:
             self.groups = data['groups']
             self.acls = data['acls']
         except ValueError:
-            self.log.error("[COMMANDS] commands-file malformed")
+            self.log.error("acls-file malformed")
 
     def write_JSON(self):
         """
@@ -168,7 +172,7 @@ class AccessManager:
 
         Remove a person from a group
         """
-        self.get_group(group).get_members().pop(name, None)
+        self.get_group(group).get_members().remove(name)
         self.write_JSON()
 
     def create_acl(self, acl):
@@ -182,7 +186,7 @@ class AccessManager:
         self.write_JSON()
 
     def remove_acl(self, acl):
-        self.acls.pop(acl, default=None)
+        self.acls.pop(acl, None)
         self.log.info("Removed acl: " + acl)
 
     def exists_acl(self, acl):
@@ -219,13 +223,13 @@ class AccessManager:
                 self.add_group_to_acl(acl, "%moderators")
             else:
                 if default_groups:
-                    if type(default_groups) != type(list()):
-                        raise Exception("defaultGroups accepts only a list")
+                    if type(default_groups) != type(list()) and type(default_groups) != type(tuple()):
+                        default_groups = [default_groups]
                     for group in default_groups:
                         self.add_group_to_acl(acl, group)
                 if default_members:
-                    if type(default_members) != type(list()):
-                        raise Exception("defaultMembers accepts only a list")
+                    if type(default_members) != type(list()) and type(default_members) != type(tuple()):
+                        default_members = [default_members]
                     for member in default_members:
                         self.add_user_to_acl(acl, member)
             self.write_JSON()
@@ -244,6 +248,7 @@ class AccessManager:
             return
         if not group in self.acls[acl]['groups']:
             self.acls[acl]['groups'].append(group)
+        else:
             self.log.warning("Called group is already in acl")
         self.write_JSON()
 
@@ -256,7 +261,7 @@ class AccessManager:
 
         Remove a group from an acl if possible
         """
-        self.acls[acl]['groups'].pop(group, None)
+        self.acls[acl]['groups'].remove(group)
 
     def add_user_to_acl(self, acl, user):
         """
@@ -280,7 +285,7 @@ class AccessManager:
 
         Remove a user from an acl if possible
         """
-        self.acls[acl]['members'].pop(user, None)
+        self.acls[acl]['members'].remove(user)
 
     def expand_groups(self, groups):
         """
@@ -293,6 +298,10 @@ class AccessManager:
         Expand a list of groups, so that all groups with higher level of privileges get permissions,
         if a lower group has them
         """
+
+        if type(groups) != type(list()) and type(groups) != type(tuple()):
+            groups = [groups]
+
         expanded = []
         expanded += groups
 
@@ -305,7 +314,7 @@ class AccessManager:
                     expanded.append("%owner")
                 if "%operators" not in expanded:
                     expanded.append("%operators")
-            elif group is not "%owner":
+            elif group is "%all":
                 if "%owner" not in expanded:
                     expanded.append("%owner")
                 if "%operators" not in expanded:
@@ -330,15 +339,18 @@ class AccessManager:
         if not acl in self.acls.keys():
             raise Exception("ACL does not exist")
 
-        if "%all%" in self.acls[acl]["groups"]:
+        if user in self.get_group("%owner").get_members():          # Always allow owner
             return True
 
-        if user in self.acls[acl]['members']:
+        if "%all%" in self.acls[acl]["groups"]:                     # Acl allows everyone
+            return True
+
+        if user in self.acls[acl]['members']:                       # User is allowed
             return True
 
         groups = self.expand_groups(self.acls[acl]['groups'])
         for group in groups:
-            if user.lower() in self.groups[group]['members']:
+            if user.lower() in self.groups[group]['members']:       # User is member of allowed group
                 return True
 
         return False

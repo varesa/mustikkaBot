@@ -5,8 +5,12 @@ class EventManager:
 
     log = logging.getLogger("mustikkabot.eventmanager")
 
-    messageRegistered = []
-    specialRegistered = []
+    message_registered = []
+    special_registered = []
+
+    def __init__(self):
+        self.message_registered = list()
+        self.special_registered = list()
 
     def register_message(self, module):
         """
@@ -14,8 +18,8 @@ class EventManager:
 
         Registers a module to receive events on incoming messages
         """
-        if not module in self.messageRegistered:
-            self.messageRegistered.append(module)
+        if not module in self.message_registered:
+            self.message_registered.append(module)
 
     def unregister_message(self, module):
         """
@@ -24,11 +28,11 @@ class EventManager:
         Unregister a module to stop it from receiving events on incoming messages
         """
         remove = None
-        for registered in self.messageRegistered:
+        for registered in self.message_registered:
             if type(registered) == type(module):
                 remove = registered
         if remove is not None:
-            self.messageRegistered.pop(self.messageRegistered.index(remove))
+            self.message_registered.pop(self.message_registered.index(remove))
 
     def register_special(self, module):
         """
@@ -36,8 +40,8 @@ class EventManager:
 
         Registers a module to receive events on incoming "special" (non message) data
         """
-        if not module in self.specialRegistered:
-            self.specialRegistered.append(module)
+        if not module in self.special_registered:
+            self.special_registered.append(module)
 
     def unregister_special(self, module):
         """
@@ -46,11 +50,11 @@ class EventManager:
         Unregister a module to stop it from receiving events on incoming "special" (non message) data
         """
         remove = None
-        for registered in self.specialRegistered:
+        for registered in self.special_registered:
             if type(registered) == type(module):
                 remove = registered
         if remove is not None:
-            self.messageRegistered.pop(self.messageRegistered.index(remove))
+            self.message_registered.pop(self.message_registered.index(remove))
 
     def handle_message(self, text):
         """
@@ -71,7 +75,7 @@ class EventManager:
             self.log.warning("Received invalid message")
             return  # Invalid message
 
-        for module in self.messageRegistered:
+        for module in self.message_registered:
             try:
                 module.handle_message(text, user, msg)
             except:
@@ -84,7 +88,7 @@ class EventManager:
 
         Parse the IRC data and deliver it to registered modules
         """
-        for module in self.specialRegistered:
+        for module in self.special_registered:
             try:
                 module.handle_special(text)
             except:

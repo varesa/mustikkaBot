@@ -114,7 +114,7 @@ class test_accessmanager():
         self.am.remove_acl("a")
         self.am.remove_acl("c")
 
-        assert self.am.acls.keys() == ["b"]
+        assert list(self.am.acls.keys()) == ["b"]
 
     def test_accessmanager_existsacl(self):
         self.am.create_acl("a")
@@ -128,8 +128,11 @@ class test_accessmanager():
         self.am.register_acl("acl1")
 
         assert len(self.am.acls) == 1
-        assert "%moderators" in self.am.acls["acl1"]["groups"]
+        assert ["%moderators"] == self.am.acls["acl1"]["groups"]
         assert len(self.am.acls["acl1"]["members"]) == 0
+
+        self.am.add_group("a") # Make sure groups to test with exist
+        self.am.add_group("c")
 
         self.am.register_acl("acl2", "a", "b")
         self.am.register_acl("acl3", ["c"], ["d"])
@@ -141,12 +144,18 @@ class test_accessmanager():
         assert self.am.acls["acl3"]["members"] == ["d"]
 
     def test_accessmanager_addgrouptoacl(self):
+        self.am.add_group("a") # Make sure groups to test with exist
+        self.am.add_group("b")
+
         self.am.register_acl("acl", ["a"], [])
         self.am.add_group_to_acl("acl", "b")
 
         assert self.am.acls["acl"]["groups"] == ["a", "b"]
 
     def test_accessmanager_removegroupfromacl(self):
+        self.am.add_group("a") # Make sure groups to test with exist
+        self.am.add_group("b")
+
         self.am.register_acl("acl", ["a", "b"], [])
         self.am.remove_group_from_acl("acl", "a")
 
@@ -157,5 +166,22 @@ class test_accessmanager():
         self.am.add_user_to_acl("acl", "b")
 
         assert self.am.acls["acl"]["members"] == ["a", "b"]
+
+    def test_accessmanager_removeuserfromacl(self):
+        self.am.register_acl("acl1", [], ["a", "b", "c"])
+        self.am.remove_user_from_acl("acl1", "b")
+
+        assert self.am.acls["acl1"]["members"] == ["a", "c"]
+
+    def test_accessmanager_expandgroups(self):
+        assert self.am.expand_groups("%moderators").sort() == ["%moderators", "%operators", "%owner"].sort()
+        assert self.am.expand_groups("%operators").sort() == ["%operators", "%owner"].sort()
+        assert self.am.expand_groups("%owner") == ["%owner"]
+
+        assert self.am.expand_groups(["test", "%operators"]).sort() == ["test", "%operators", "%owner"].sort()
+
+    def test_accessmanager_isinacl(self):
+        pass #TODO: Write access tests
+
 
 

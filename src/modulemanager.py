@@ -15,6 +15,9 @@ class ModuleManager:
     enabledModulesPath = "modules_enabled/"
     availableModulesPath = "modules/"
 
+    def __init__(self):
+        self.modules = dict()
+
     def init(self, bot):
         """
         :param bot:  Reference to the main bot instance
