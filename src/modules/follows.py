@@ -13,6 +13,9 @@ class Follows:
     bot = None
     """ :type: bot"""
 
+    followed = []
+    """ :type: list"""
+
     last_created_at = 0
 
     def check_followers(self):
@@ -25,7 +28,12 @@ class Follows:
         for follow in data[::-1]:
 
             if _ts2dt(follow['created_at']) > self.last_created_at:
-                self.bot.send_message("New follower: " + follow['user']['display_name'])
+                if follow['user']['display_name'] not in self.followed:
+                    self.bot.send_message("New follower: " + follow['user']['display_name'])
+                    self.followed.append(follow['user']['display_name'])
+                    self.log.info("New follower: " + follow['user']['display_name'])
+                else:
+                    self.log.info("Follow spam: " + follow['user']['display_name'])
                 self.last_created_at = _ts2dt(follow['created_at'])
 
     def init(self, bot):
