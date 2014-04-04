@@ -149,7 +149,7 @@ class Commands:
             for command in self.commands:
                 if command['name'] == cmd:
                     to_remove = command
-            self.commands.remvoe(to_remove)  # Do not modify the loop variable on the go
+            self.commands.remove(to_remove)  # Do not modify the loop variable on the go
 
             self.bot.accessmanager.remove_acl("commands.!" + cmd)
             self.write_JSON()
