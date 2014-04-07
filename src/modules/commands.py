@@ -112,14 +112,18 @@ class Commands:
         cmd = args[2]
 
         if not self.exists_command(cmd):
-            self.commands.append({"name": cmd})
+            if len(args) > 3:
+                text = ' '.join(args[3:])
+            else:
+                text = ""
+
+            self.commands.append({"name": cmd, "value": text})
+
             self.bot.accessmanager.register_acl("commands.!" + cmd)
             self.write_JSON()
             self.bot.send_message("Added command " + cmd)
             self.log.info("Added new command:" + cmd)
 
-            if len(args) > 3:
-                self.set_command(cmd, ' '.join(args[3:]))
 
         else:
             self.bot.send_message("Command " + cmd + " already exists")
