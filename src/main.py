@@ -188,9 +188,11 @@ class Bot:
         while self.run:
             ircmsg = self.get_data()
 
-            cli = select.select([sys.stdin], [], [], 0)[0]
+            cli = select.select([sys.stdin], [], [], 0)[0]:
             if cli:
-                self.eventmanager.handle_message(":cli!cli@localhost PRIVMSG " + self.channel + " :" + sys.stdin.readline())
+                data = sys.stdin.readline().strip()
+                if len(data) > 0:
+                    self.eventmanager.handle_message(":cli!cli@localhost PRIVMSG " + self.channel + " :" + data)
 
             if not (ircmsg is None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
