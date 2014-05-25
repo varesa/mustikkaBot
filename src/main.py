@@ -190,7 +190,7 @@ class Bot:
 
             cli = select.select([sys.stdin], [], [], 0)[0]
             if cli:
-                print(cli)
+                print(sys.stdin.readline())
 
             if not (ircmsg is None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
