@@ -339,7 +339,7 @@ class AccessManager:
         if not acl in self.acls.keys():
             raise Exception("ACL does not exist")
 
-        if user is 'cli':
+        if user == 'cli':
             return True                                             # Give local users all permissions
 
         if user in self.get_group("%owner").get_members():          # Always allow owner
