@@ -63,14 +63,14 @@ class EventManager:
 
         Parse the IRC message and deliver it to registered modules
         """
-        result = re.search(":(.*?)!.* PRIVMSG (.*?) :(.*)", text)
+        result = re.search(":(.*?)!(.*) PRIVMSG (.*?) :(.*)", text)
 
         user = None
         msg = None
 
         if result is not None:
             user = result.group(1)
-            msg = result.group(3)
+            msg = result.group(4)
         else:
             self.log.warning("Received invalid message")
             return  # Invalid message
