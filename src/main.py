@@ -188,7 +188,7 @@ class Bot:
         while self.run:
             ircmsg = self.get_data()
 
-            cli = select.select([sys.stdin], [], [], 0)[0]:
+            cli = select.select([sys.stdin], [], [], 0)[0]
             if cli:
                 data = sys.stdin.readline().strip()
                 if len(data) > 0:
