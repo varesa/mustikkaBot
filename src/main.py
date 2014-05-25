@@ -6,6 +6,7 @@
 #
 
 import socket
+import select
 import sys
 import signal
 import errno
@@ -186,6 +187,10 @@ class Bot:
 
         while self.run:
             ircmsg = self.get_data()
+
+            cli = select.select([sys.stdin], [], [], 0)
+            if cli:
+                print(cli)
 
             if not (ircmsg is None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
