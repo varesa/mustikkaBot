@@ -18,6 +18,10 @@ class Commands:
     def init(self, bot):
         self.bot = bot
         self.read_JSON()
+
+        for command in self.commands:
+            bot.accessmanager.register_acl("commands.!" + command['name'], "%moderators%", "")
+
         bot.eventmanager.register_message(self)
         self.log.info("Init complete")
 
