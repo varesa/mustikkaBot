@@ -47,6 +47,18 @@ class AccessManager:
         accessmodule = self
 
         self.read_JSON()
+
+        changed = False
+        for group in self.groups:
+            for member in group['members']:
+                if member.lower() != member:
+                    group['members'].remove(member)
+                    group['members'].append(member.lower())
+                    changed = True
+
+        if changed:
+            self.write_JSON()
+
         self.log.info("Init complete")
 
         if len(self.groups) is 0:
