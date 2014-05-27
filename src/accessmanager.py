@@ -49,11 +49,19 @@ class AccessManager:
         self.read_JSON()
 
         changed = False
+
         for group in self.groups:
             for member in self.groups[group]['members']:
                 if member.lower() != member:
                     self.groups[group]['members'].remove(member)
                     self.groups[group]['members'].append(member.lower())
+                    changed = True
+
+        for acl in self.acls:
+            for member in self.acls[acl]['members']:
+                if member.lower() != member:
+                    self.acls[acl]['members'].remove(member)
+                    self.acls[acl]['members'].append(member.lower())
                     changed = True
 
         if changed:
