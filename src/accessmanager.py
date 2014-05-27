@@ -1,6 +1,7 @@
 import json
 import errno
 import logging
+import shutil
 
 
 class Group:
@@ -55,9 +56,6 @@ class AccessManager:
             self.add_group("%all%")
             self.write_JSON()
 
-        self.add_to_group("%owner", "Herramustikka")
-        self.add_to_group("%owner", "varesa")
-
     def read_JSON(self):
         """
         Read the access-data from a JSON file
@@ -78,6 +76,7 @@ class AccessManager:
             self.acls = data['acls']
         except ValueError:
             self.log.error("acls-file malformed")
+            shutil.copyfile(self.jsonfile, self.jsonfile + ".bak")
 
     def write_JSON(self):
         """
