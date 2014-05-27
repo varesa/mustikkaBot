@@ -50,10 +50,10 @@ class AccessManager:
 
         changed = False
         for group in self.groups:
-            for member in group['members']:
+            for member in self.groups[group]['members']:
                 if member.lower() != member:
-                    group['members'].remove(member)
-                    group['members'].append(member.lower())
+                    self.groups[group]['members'].remove(member)
+                    self.groups[group]['members'].append(member.lower())
                     changed = True
 
         if changed:
