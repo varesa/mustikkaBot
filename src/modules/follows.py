@@ -1,7 +1,8 @@
 import logging
 import datetime
-from TwitchAPI.Channel import Channel
 
+from TwitchAPI.Channel import Channel
+from urllib.error import HTTPError
 
 def _ts2dt(timestamp):
     return datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
@@ -19,7 +20,12 @@ class Follows:
     last_created_at = 0
 
     def check_followers(self):
-        data = Channel("herramustikka").get_followers()
+        data = None
+        try:
+            data = Channel("herramustikka").get_followers()
+        except HTTPError:
+            self.log.warning("Connectivity problem with twitch API")
+            return
 
         if self.last_created_at == 0:
             self.last_created_at = _ts2dt(data[0]['created_at'])
