@@ -25,7 +25,7 @@ class test_accessmanager():
         if os.path.exists(testjsonfile):
             os.remove(testjsonfile)
         if os.path.exists(testjsonfile + ".bak"):
-            os.remove(testjsonfile)
+            os.remove(testjsonfile + ".bak")
 
     def test_accessmanager_init(self):
         """assert self.am.acls == {}
