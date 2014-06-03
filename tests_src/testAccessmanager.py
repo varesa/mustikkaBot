@@ -24,6 +24,8 @@ class test_accessmanager():
     def teardown(self):
         if os.path.exists(testjsonfile):
             os.remove(testjsonfile)
+        if os.path.exists(testjsonfile + ".bak"):
+            os.remove(testjsonfile)
 
     def test_accessmanager_init(self):
         """assert self.am.acls == {}
