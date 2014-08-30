@@ -100,6 +100,7 @@ class Bot:
         """
         try:
             self.ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.ircsock.settimeout(30)
 
             self.ircsock.connect((params[0], 6667))
 
