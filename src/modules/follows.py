@@ -35,7 +35,7 @@ class Follows:
 
             if _ts2dt(follow['created_at']) > self.last_created_at:
                 if follow['user']['display_name'] not in self.followed:
-                    self.bot.send_message("New follower: " + follow['user']['display_name'])
+                    self.bot.send_message("Kiitos followista / Thank you for the follow: " + follow['user']['display_name'])
                     self.followed.append(follow['user']['display_name'])
                     self.log.info("New follower: " + follow['user']['display_name'])
                 else:
