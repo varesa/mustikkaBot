@@ -30,7 +30,7 @@ class Commands:
         Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
         when the module gets disabled.
         """
-        self.bot.eventmanager.unregister_special(self)
+        self.bot.eventmanager.unregister_message(self)
         
     def handle_message(self, data, user, msg):
         msg = tools.strip_prefix(msg)
