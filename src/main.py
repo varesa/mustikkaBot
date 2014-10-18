@@ -8,6 +8,7 @@
 import socket
 import select
 import sys
+import platform
 import signal
 import errno
 from time import sleep
@@ -189,7 +190,10 @@ class Bot:
         while self.run:
             ircmsg = self.get_data()
 
-            cli = select.select([sys.stdin], [], [], 0)[0]
+            if platform.system() != "Windows":
+                cli = select.select([sys.stdin], [], [], 0)[0]
+            else:
+                cli = False         # No cli on windows because you can't select stdin
             if cli:
                 data = sys.stdin.readline().strip()
                 if len(data) > 0:
