@@ -1,6 +1,7 @@
 import tools
 import logging
 
+
 class Modules:
     """
     Modules is a core-module that handles the chat frontend to managing non-core modules.
@@ -29,7 +30,6 @@ class Modules:
         when the module gets disabled.
         """
         self.bot.eventmanager.unregister_special(self)
-
 
     def handle_message(self, data, user, msg):
         """

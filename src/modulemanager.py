@@ -1,8 +1,21 @@
 import imp
 import os
+import platform
 import re
 import sys
 import logging
+
+if platform.system() == "Windows":
+    import ctypes
+
+
+def create_symlink(src, dst):
+    if platform.system() != "Windows":
+        os.symlink(src, dst)
+    else:
+        kdll = ctypes.windll.LoadLibrary("kernel32.dll")
+        kdll.CreateSymbolicLinkW(src, dst)
+
 
 class ModuleManager:
 
@@ -31,7 +44,7 @@ class ModuleManager:
 
         self.log.info("Init complete")
 
-    def importModule(self, file):
+    def import_module(self, file):
         """
         :param file: path to the module to be imported
         :type file: str
@@ -61,7 +74,7 @@ class ModuleManager:
         if path is None:
             path = self.enabledModulesPath
 
-        module = self.importModule(os.path.join(path, name + ".py"))
+        module = self.import_module(os.path.join(path, name + ".py"))
         self.modules[name] = getattr(module, name.capitalize())()
 
     def unload_module(self,name):
@@ -113,8 +126,8 @@ class ModuleManager:
         if not name in modules:
             return
 
-        os.symlink(os.path.abspath(os.path.join(self.availableModulesPath, name + ".py")),
-               os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
+        create_symlink(os.path.abspath(os.path.join(self.availableModulesPath, name + ".py")),
+                            os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
 
         self.load_module(name)
         self.init_module(name)
@@ -134,7 +147,6 @@ class ModuleManager:
 
         self.dispose_module(name)
         self.unload_module(name)
-
 
         os.remove(os.path.join(self.enabledModulesPath, name + ".py"))
 
@@ -161,6 +173,8 @@ class ModuleManager:
         Go through loaded modules and dispose them. To be used for example when shutting down the bot in order to allow
         the modules to close any open resources, save data and etc.
         """
+        for module in self.modules:
+            self.disable_module(module)
 
     def init_module(self, name):
         """
