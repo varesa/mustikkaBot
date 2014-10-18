@@ -9,13 +9,16 @@ import socket
 import select
 import sys
 import platform
+import os
 import signal
 import errno
 from time import sleep
 import traceback
 import logging
 
+import migrations
 import logutils
+import tools
 
 from eventmanager import EventManager
 from modulemanager import ModuleManager
@@ -24,26 +27,34 @@ from timemanager import TimeManager
 
 
 class Bot:
+    """
+    Mainclass for the application, everything goes through here
+    """
 
-    logutils.setup_logging("mustikkabot")
-    log = logging.getLogger("mustikkabot")
+    def __init__(self):
+        logutils.setup_logging("mustikkabot")
+        self.log = logging.getLogger("mustikkabot")
 
-    ircsock = None
+        self.basepath = tools.find_basepath()
+        self.confdir = os.path.join(self.basepath, "config")
 
-    user = None
-    channel = None
+        migrations.do_migrations(self)
 
-    eventmanager = EventManager()
-    """ :type: EventManager"""
-    modulemanager = ModuleManager()
-    """ :type: ModuleManager"""
-    accessmanager = AccessManager()
-    """ :type: AccessManager"""
-    timemanager = TimeManager()
-    """ :type: TimeManager"""
+        self.ircsock = None
 
+        self.user = None
+        self.channel = None
 
-    run = True
+        self.eventmanager = EventManager()
+        """ :type: EventManager"""
+        self.modulemanager = ModuleManager()
+        """ :type: ModuleManager"""
+        self.accessmanager = AccessManager()
+        """ :type: AccessManager"""
+        self.timemanager = TimeManager()
+        """ :type: TimeManager"""
+
+        self.run = True
 
     def parse_config(self):
         """
@@ -53,14 +64,15 @@ class Bot:
         Parse the config file, and read the different defined parameters. Return them as a list
         """
         try:
-            settings_f = open("config.txt")
+            settings_f = open(os.path.join(self.confdir, "config.txt"))
         except IOError:
-            self.log.error("Config not found, please make a copy of \"config.txt.template\" as \"config.txt\"")
+            self.log.error("Config not found, please make a copy of"
+                           " \"config/config.txt.template\" as \"config/config.txt\"")
             sys.exit()
 
         host = None
         username = None
-        passwd = None
+        password = None
         channel = None
 
         try:
@@ -71,7 +83,7 @@ class Bot:
                 if line.find('user') != -1:
                     username = line.split(":")[1]
                 if line.find('pass') != -1:
-                    passwd = ':'.join(line.split(":")[1:])
+                    password = ':'.join(line.split(":")[1:])
                 if line.find('chnl') != -1:
                     channel = line.split(":")[1]
         except IndexError:
@@ -82,13 +94,13 @@ class Bot:
 
         passwd_hidden = ""
 
-        for c in passwd:            # Hide auth token/password from log messages
+        for c in password:            # Hide auth token/password from log messages
             passwd_hidden += '*'
 
         self.log.info("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" %
                       (host, username, passwd_hidden, channel))
 
-        return host, username, passwd, channel
+        return host, username, password, channel
 
     def connect(self, params):
         """
