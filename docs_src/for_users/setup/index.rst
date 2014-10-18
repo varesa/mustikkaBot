@@ -23,6 +23,7 @@ Name of the channel to connect to, prefixed with '#, e.g. #varesa
 
 Example
 -------
+
 host:irc.twitch.tv
 user:mustikkabot
 pass:oauth:abc123
