@@ -82,10 +82,8 @@ class Bot:
 
         passwd_hidden = ""
 
-        i = 0
-        while i < len(passwd):
-            passwd_hidden += "*"
-            i += 1
+        for c in passwd:            # Hide auth token/password from log messages
+            passwd_hidden += '*'
 
         self.log.info("PARAMETERS: Host: %s, username: %s, password: %s, channel: %s" %
                       (host, username, passwd_hidden, channel))
