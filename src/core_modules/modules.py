@@ -43,7 +43,6 @@ class Modules:
         msg = tools.strip_prefix(msg)
         args = msg.split()
 
-
         if len(args) < 1:
             return
 
@@ -51,7 +50,7 @@ class Modules:
             return
 
         if not self.bot.accessmanager.is_in_acl(user, self.acl):
-            return
+            self.log.warning("User " + user + " tried to issue an module management command without permissions")
 
         if len(args) == 1:
             self.bot.send_message("Available commands for !modules are: list, enable, disable, reload")

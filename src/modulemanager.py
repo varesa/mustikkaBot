@@ -9,12 +9,13 @@ if platform.system() == "Windows":
     import ctypes
 
 
-def create_symlink(src, dst):
+def create_symlink(dst, src):
     if platform.system() != "Windows":
         os.symlink(src, dst)
     else:
-        kdll = ctypes.windll.LoadLibrary("kernel32.dll")
-        kdll.CreateSymbolicLinkW(src, dst)
+        ret = ctypes.windll.kernel32.CreateHardLinkW(src, dst, 0)
+        if ret == 0:
+            raise WindowsError()
 
 
 class ModuleManager:
@@ -127,7 +128,7 @@ class ModuleManager:
             return
 
         create_symlink(os.path.abspath(os.path.join(self.availableModulesPath, name + ".py")),
-                            os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
+                       os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
 
         self.load_module(name)
         self.init_module(name)
