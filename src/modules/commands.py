@@ -56,13 +56,13 @@ class Commands:
                     self.bot.send_message(command['value'])
                     self.log.info("Showed message for command " + command['name'] + " on repeat")
                     command['lastshown'] = datetime.datetime.now()
-                    return # Send only one command/cycle to prevent spam
+                    return  # Send only one command/cycle to prevent spam
                 else:
                     if (datetime.datetime.now() - command['lastshown']) > datetime.timedelta(minutes=command['repeattime']):
                         self.bot.send_message(command['value'])
                         self.log.info("Showed message for command " + command['name'] + " on repeat")
                         command['lastshown'] = datetime.datetime.now()
-                        return # Send only one command/cycle to prevent spam
+                        return  # Send only one command/cycle to prevent spam
         
     def handle_message(self, data, user, msg):
         msg = tools.strip_prefix(msg)
@@ -83,6 +83,9 @@ class Commands:
 
             if args[1] == "set":
                 self.set_command(args)
+
+            if args[1] == "setrepeat":
+                self.set_repeat(args)
 
             if args[1] == "regulars":
                 self.set_regulars(args)
@@ -261,7 +264,7 @@ class Commands:
             return
 
         try:
-            cmd = int(args[2])
+            cmd = args[2]
             time = int(args[3])
             if len(args) < 5:
                 lines = 0
