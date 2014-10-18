@@ -5,7 +5,7 @@ import re
 def find_basepath():
     if os.path.isfile("main.py"):
         return os.path.join(os.path.curdir, "..")
-    if os.path.isfile(os.path.join(os.path.curdir, "..", "main.py")):
+    if os.path.isfile(os.path.join(os.path.curdir, "src", "main.py")):
         return os.path.curdir
     raise Exception("Can't determine main program location")
 

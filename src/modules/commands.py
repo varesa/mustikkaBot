@@ -20,8 +20,6 @@ class Commands:
 
         # Array of the commands loaded
         self.commands = []
-        # Name of the JSON file
-        self.jsonfile = "commands.json"
 
         # Message to show when called without arguments
         self.helpMessage = "Usage: !commands list | add <cmd> | remove <cmd> | set <cmd> <text> | " \
@@ -30,6 +28,10 @@ class Commands:
 
     def init(self, bot):
         self.bot = bot
+
+        # Name of the JSON file
+        self.jsonpath = os.path.join(self.bot.datadir, "commands.json")
+
         self.read_JSON()
 
         for command in self.commands:
@@ -113,24 +115,24 @@ class Commands:
         :return: None
         """
 
-        if not os.path.isfile(os.path.join(self.bot.datadir, self.jsonfile)):
-            if os.path.isfile(os.path.join(self.bot.basepath, "src", self.jsonfile)):
+        if not os.path.isfile(self.jsonpath):
+            if os.path.isfile(os.path.join(self.bot.basepath, "src", "commands.json")):
                 self.log.info("Commands-datafile found at old location, moving")
                 if not os.path.isdir(self.bot.datadir):
                     os.mkdir(self.bot.datadir)
-                os.rename(os.path.join(self.bot.basepath, "src", self.jsonfile),
-                          os.path.join(self.bot.datadir, self.jsonfile))
+                os.rename(os.path.join(self.bot.basepath, "src", "commands.json"),
+                          self.jsonpath)
             else:
                 self.log.info("Commands-datafile does not exist, creating")
                 self.write_JSON()
 
         jsondata = ""
         try:
-            with open(self.jsonfile, "r") as file:
+            with open(self.jsonpath, "r") as file:
                 jsondata = file.read()
         except:
-            self.log.error("Could not open " + os.path.join(self.bot.datadir, self.jsonfile))
-            raise exceptions.FatalException("Could not open " + os.path.join(self.bot.datadir, self.jsonfile))
+            self.log.error("Could not open " + self.jsonpath)
+            raise exceptions.FatalException("Could not open " + self.jsonpath)
 
         try:
             self.commands = json.loads(jsondata)
@@ -143,7 +145,7 @@ class Commands:
         Write the loaded commands to disk in JSON format
         :return: None
         """
-        file = open(os.path.join(self.bot.datadir, self.jsonfile), "w")
+        file = open(self.jsonpath, "w")
         data = json.dumps(self.commands, sort_keys=True, indent=4, separators=(',', ': '))
         file.write(data)
         file.close()

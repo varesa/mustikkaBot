@@ -10,16 +10,13 @@ if platform.system() == "Windows":
 
 import exceptions
 
+
 class ModuleManager:
 
     log = logging.getLogger("mustikkabot.modulemanager")
 
     modules = {}
     bot = None
-
-    coreModulesPath = "core_modules/"
-    enabledModulesPath = "modules_enabled/"
-    availableModulesPath = "modules/"
 
     def __init__(self):
         self.modules = dict()
@@ -32,6 +29,11 @@ class ModuleManager:
         Initialize the module manager
         """
         self.bot = bot
+
+        self.coreModulesPath = os.path.join(self.bot.srcdir, "core_modules")
+        self.enabledModulesPath = os.path.join(self.bot.srcdir, "modules_enabled")
+        self.availableModulesPath = os.path.join(self.bot.srcdir, "modules")
+
         self.setup_modules()
         self.init_modules()
 
@@ -47,7 +49,7 @@ class ModuleManager:
 
         Load a single module from disk
         """
-        fpath = os.path.normpath(os.path.join(os.path.dirname(__file__), file))
+        fpath = os.path.abspath(file)
         dir, fname = os.path.split(fpath)
         mname, ext = os.path.splitext(fname)
 
@@ -102,7 +104,7 @@ class ModuleManager:
         for file in corefiles:
             result = re.search(r'(.*)\.py$', file)
             if result is not None:
-                self.load_module(result.group(1), "core_modules/")
+                self.load_module(result.group(1), self.coreModulesPath)
 
     def create_symlink(self, src, dst):
         if platform.system() != "Windows":
