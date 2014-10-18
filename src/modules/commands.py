@@ -21,6 +21,9 @@ class Commands:
         # Array of the commands loaded
         self.commands = []
 
+        # Message line counter for "execute every x lines"
+        self.lines_received = 0
+
         # Message to show when called without arguments
         self.helpMessage = "Usage: !commands list | add <cmd> | remove <cmd> | set <cmd> <text> | " \
                            "regulars <cmd> <value> | setrepeat <cmd> <time> [<lines>]"
@@ -36,6 +39,7 @@ class Commands:
 
         for command in self.commands:
             bot.accessmanager.register_acl("commands.!" + command['name'])
+            command['lastshownlines'] = 0
 
         bot.eventmanager.register_message(self)
         bot.timemanager.register_interval(self.check_repeats, datetime.timedelta(seconds=20), datetime.timedelta(seconds=10))
@@ -52,17 +56,37 @@ class Commands:
     def check_repeats(self):
         for command in self.commands:
             if 'repeat' in command.keys() and command['repeat']:
-                if not 'lastshown' in command.keys():
+                if not 'lastshowntime' in command.keys():
                     self.bot.send_message(command['value'])
                     self.log.info("Showed message for command " + command['name'] + " on repeat")
-                    command['lastshown'] = datetime.datetime.now()
+                    command['lastshowntime'] = datetime.datetime.now()
                     return  # Send only one command/cycle to prevent spam
+
+
+                if command['repeattime'] > 0:
+                    if (datetime.datetime.now() - command['lastshowntime']) > datetime.timedelta(minutes=command['repeattime']):
+                        timecondition = True
+                    else:
+                        timecondition = False
                 else:
-                    if (datetime.datetime.now() - command['lastshown']) > datetime.timedelta(minutes=command['repeattime']):
-                        self.bot.send_message(command['value'])
-                        self.log.info("Showed message for command " + command['name'] + " on repeat")
-                        command['lastshown'] = datetime.datetime.now()
-                        return  # Send only one command/cycle to prevent spam
+                    timecondition = True
+
+                if command['repeatlines'] > 0:
+                    if (self.lines_received - command['lastshownlines']) > command['repeatlines']:
+                        linecondition = True
+                    else:
+                        linecondition = False
+                else:
+                    linecondition = True
+
+                if timecondition and linecondition:
+                    self.bot.send_message(command['value'])
+                    self.log.info("Showed message for command " + command['name'] + " on repeat")
+                    command['lastshowntime'] = datetime.datetime.now()
+                    command['lastshownlines'] = self.lines_received
+                    return  # Send only one command/cycle to prevent spam
+
+
         
     def handle_message(self, data, user, msg):
         msg = tools.strip_prefix(msg)
@@ -72,6 +96,8 @@ class Commands:
             self.setup_commands(user, args)
         else:
             self.run_commands(user, args)
+
+        self.lines_received += 1
 
     def setup_commands(self, user, args):
         if len(args) > 1:
@@ -148,8 +174,16 @@ class Commands:
         Write the loaded commands to disk in JSON format
         :return: None
         """
+
+        tmp = []
+        for command in self.commands:
+            tmpcommand = command.copy()
+            tmpcommand.pop('lastshownlines', None)
+            tmpcommand.pop('lastshowntime', None)
+            tmp.append(tmpcommand)
+
         file = open(self.jsonpath, "w")
-        data = json.dumps(self.commands, sort_keys=True, indent=4, separators=(',', ': '))
+        data = json.dumps(tmp, sort_keys=True, indent=4, separators=(',', ': '))
         file.write(data)
         file.close()
 
@@ -253,8 +287,11 @@ class Commands:
             return
         if value == "on":
             self.bot.accessmanager.add_group_to_acl("commands.!" + cmd, "%all%")
+            self.bot.send_message("Allowed access for regular viewers to command " + cmd)
         if value == "off":
             self.bot.accessmanager.remove_group_from_acl("commands.!" + cmd, "%all%")
+            self.bot.send_message("Removed access for regular viewers to command " + cmd)
+        self.write_JSON()
 
     def set_repeat(self, args):
         #args: !commands setrepeat cmd time lines
@@ -276,18 +313,23 @@ class Commands:
         except ValueError:
             self.bot.send_message("Invalid arguments, <time> and <lines> must be numbers 0 or bigger")
             self.log.warning("Invalid non-integer arguments given to setrepeat")
+            return
 
         if not self.exists_command(cmd):
             self.bot.send_message("Invalid command name " + cmd)
             self.log.warning("Tried to modify repeat setting for invalid command " + cmd)
+            return
 
         if time == 0 and lines == 0:
             self.commands[cmd]['repeat'] = False
             self.bot.send_message("Repetition disabled for command " + cmd)
         else:
-            self.commands[cmd]['repeat'] = True
-            self.commands[cmd]['repeattime'] = time
-            self.commands[cmd]['repeatlines'] = lines
+            for command in self.commands:
+                if command['name'] == cmd:
+                    command['repeat'] = True
+                    command['repeattime'] = time
+                    command['repeatlines'] = lines
+                    self.write_JSON()
 
             msg = "Repetition enabled for command " + cmd + " every "
             if time:
