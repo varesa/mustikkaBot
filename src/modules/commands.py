@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import datetime
 
 import tools
 import exceptions
@@ -23,7 +24,8 @@ class Commands:
         self.jsonfile = "commands.json"
 
         # Message to show when called without arguments
-        self.helpMessage = "Usage: !commands list | add <cmd> | remove <cmd> | set <cmd> <text> | regulars <cmd> <value>"
+        self.helpMessage = "Usage: !commands list | add <cmd> | remove <cmd> | set <cmd> <text> | " \
+                           "regulars <cmd> <value> | setrepeat <cmd> <time> [<lines>]"
         # Hidden commands: '!commands save' and '!commands load' for managing the JSON
 
     def init(self, bot):
@@ -34,6 +36,8 @@ class Commands:
             bot.accessmanager.register_acl("commands.!" + command['name'])
 
         bot.eventmanager.register_message(self)
+        bot.timemanager.register_interval(self.check_repeats, datetime.timedelta(seconds=10), datetime.timedelta(seconds=10))
+
         self.log.info("Init complete")
 
     def dispose(self):
@@ -42,6 +46,9 @@ class Commands:
         when the module gets disabled.
         """
         self.bot.eventmanager.unregister_message(self)
+
+    def check_repeats(self):
+        pass
         
     def handle_message(self, data, user, msg):
         msg = tools.strip_prefix(msg)
@@ -143,6 +150,10 @@ class Commands:
                 return True
         return False
 
+    """
+    " User commands
+    """
+
     def add_command(self, args):
         cmd = args[2]
 
@@ -158,8 +169,6 @@ class Commands:
             self.write_JSON()
             self.bot.send_message("Added command " + cmd)
             self.log.info("Added new command:" + cmd)
-
-
         else:
             self.bot.send_message("Command " + cmd + " already exists")
             self.log.warning("Tried to create a command " + cmd + " that already exists")
@@ -194,10 +203,6 @@ class Commands:
             self.write_JSON()
             self.bot.send_message("Deleted command " + cmd)
             self.log.info("Deleted command:" + cmd)
-
-            if len(args) > 3:
-                self.set_command(cmd, ' '.join(args[3:]))
-
         else:
             self.bot.send_message("Command " + cmd + " does not exist")
             self.log.warning("Tried to delete a command " + cmd + " that does not exist")
@@ -233,3 +238,47 @@ class Commands:
             self.bot.accessmanager.add_group_to_acl("commands.!" + cmd, "%all%")
         if value == "off":
             self.bot.accessmanager.remove_group_from_acl("commands.!" + cmd, "%all%")
+
+    def set_repeat(self, args):
+        #args: !commands setrepeat cmd time lines
+        if len(args) < 4:
+            self.bot.send_message("Not enough arguments. Please use '!commands setrepeat <cmd> <time> [<lines>]'. Zero "
+                                  "<time> or <lines> means that the condition is ignored. Zeroing both removes repeat.")
+            return
+
+        try:
+            cmd = int(args[2])
+            time = int(args[3])
+            if len(args) < 5:
+                lines = 0
+            else:
+                lines = int(args[4])
+
+            if time < 0 or lines < 0:
+                raise ValueError
+        except ValueError:
+            self.bot.send_message("Invalid arguments, <time> and <lines> must be numbers 0 or bigger")
+            self.log.warning("Invalid non-integer arguments given to setrepeat")
+
+        if not self.exists_command(cmd):
+            self.bot.send_message("Invalid command name " + cmd)
+            self.log.warning("Tried to modify repeat setting for invalid command " + cmd)
+
+        if time == 0 and lines == 0:
+            self.commands[cmd]['repeat'] = False
+            self.bot.send_message("Repetition disabled for command " + cmd)
+        else:
+            self.commands[cmd]['repeat'] = True
+            self.commands[cmd]['repeattime'] = time
+            self.commands[cmd]['repeatlines'] = lines
+
+            msg = "Repetition enabled for command " + cmd + " every "
+            if time:
+                msg += str(time) + " minutes"
+            if time and lines:
+                msg += " and "
+            if lines:
+                msg += str(lines) + " lines"
+
+            self.bot.send_message(msg)
+            self.log.info(msg)
