@@ -36,7 +36,7 @@ class Commands:
             bot.accessmanager.register_acl("commands.!" + command['name'])
 
         bot.eventmanager.register_message(self)
-        bot.timemanager.register_interval(self.check_repeats, datetime.timedelta(seconds=10), datetime.timedelta(seconds=10))
+        bot.timemanager.register_interval(self.check_repeats, datetime.timedelta(seconds=20), datetime.timedelta(seconds=10))
 
         self.log.info("Init complete")
 
@@ -48,7 +48,19 @@ class Commands:
         self.bot.eventmanager.unregister_message(self)
 
     def check_repeats(self):
-        pass
+        for command in self.commands:
+            if command['repeat']:
+                if not 'lastshown' in command.keys():
+                    self.bot.send_message(command['value'])
+                    self.log.info("Showed message for command " + command['name'] + " on repeat")
+                    command['lastshown'] = datetime.datetime.now()
+                    return # Send only one command/cycle to prevent spam
+                else:
+                    if (datetime.datetime.now() - command['lastshown']) > datetime.timedelta(minutes=command['repeattime']):
+                        self.bot.send_message(command['value'])
+                        self.log.info("Showed message for command " + command['name'] + " on repeat")
+                        command['lastshown'] = datetime.datetime.now()
+                        return # Send only one command/cycle to prevent spam
         
     def handle_message(self, data, user, msg):
         msg = tools.strip_prefix(msg)
