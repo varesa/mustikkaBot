@@ -1,19 +1,30 @@
 import json
-import errno
 import logging
+import os
 
 import tools
+import exceptions
+
 
 class Commands:
+    """
+    Module to manage custom commands
+    """
 
-    log = logging.getLogger("mustikkabot.commands")
-    bot = None
+    def __init__(self):
+        # Logger instance for this module
+        self.log = logging.getLogger("mustikkabot.commands")
+        # Handle to the root instance
+        self.bot = None
 
-    commands = []
-    jsonfile = "commands.json"
+        # Array of the commands loaded
+        self.commands = []
+        # Name of the JSON file
+        self.jsonfile = "commands.json"
 
-    helpMessage = "Usage: !commands list | add <cmd> | remove <cmd> | set <cmd> <text> | regulars <cmd> <value>"
-    # Hidden commands: '!commands save' and '!commands load' for managing the JSON
+        # Message to show when called without arguments
+        self.helpMessage = "Usage: !commands list | add <cmd> | remove <cmd> | set <cmd> <text> | regulars <cmd> <value>"
+        # Hidden commands: '!commands save' and '!commands load' for managing the JSON
 
     def init(self, bot):
         self.bot = bot
@@ -76,24 +87,44 @@ class Commands:
             self.bot.send_message(command['value'])
             self.log.info("Running command " + command['name'] + ": " + command['value'])
 
+    # noinspection PyPep8Naming
     def read_JSON(self):
+        """
+        Read the JSON datafile from disk that contains all saved commands
+        :return: None
+        """
+
+        if not os.path.isfile(os.path.join(self.bot.datadir, self.jsonfile)):
+            if os.path.isfile(os.path.join(self.bot.basepath, "src", self.jsonfile)):
+                self.log.info("Commands-datafile found at old location, moving")
+                if not os.path.isdir(self.bot.datadir):
+                    os.mkdir(self.bot.datadir)
+                os.rename(os.path.join(self.bot.basepath, "src", self.jsonfile),
+                          os.path.join(self.bot.datadir, self.jsonfile))
+            else:
+                self.log.info("Commands-datafile does not exist, creating")
+                self.write_JSON()
+
         jsondata = ""
         try:
-            file = open(self.jsonfile, "r")
-            jsondata = file.read()
-            file.close()
-        except IOError as e:
-            if e.errno == errno.ENOENT:
-                self.log.info("file does not exist, creating")
-                self.write_JSON()
+            with open(self.jsonfile, "r") as file:
+                jsondata = file.read()
+        except:
+            self.log.error("Could not open " + os.path.join(self.bot.datadir, self.jsonfile))
+            raise exceptions.FatalException("Could not open " + os.path.join(self.bot.datadir, self.jsonfile))
 
         try:
             self.commands = json.loads(jsondata)
         except ValueError:
             self.log.error("commands-file malformed")
 
+    # noinspection PyPep8Naming
     def write_JSON(self):
-        file = open(self.jsonfile, "w")
+        """
+        Write the loaded commands to disk in JSON format
+        :return: None
+        """
+        file = open(os.path.join(self.bot.datadir, self.jsonfile), "w")
         data = json.dumps(self.commands, sort_keys=True, indent=4, separators=(',', ': '))
         file.write(data)
         file.close()

@@ -8,15 +8,7 @@ import logging
 if platform.system() == "Windows":
     import ctypes
 
-
-def create_symlink(dst, src):
-    if platform.system() != "Windows":
-        os.symlink(src, dst)
-    else:
-        ret = ctypes.windll.kernel32.CreateHardLinkW(src, dst, 0)
-        if ret == 0:
-            raise WindowsError()
-
+import exceptions
 
 class ModuleManager:
 
@@ -111,6 +103,16 @@ class ModuleManager:
             result = re.search(r'(.*)\.py$', file)
             if result is not None:
                 self.load_module(result.group(1), "core_modules/")
+
+    def create_symlink(self, src, dst):
+        if platform.system() != "Windows":
+            os.symlink(src, dst)
+        else:
+            ret = ctypes.windll.kernel32.CreateSymbolicLinkW(dst, src, 0)
+            if ret == 0:
+                self.log.error("Could not create symlink. NOTE: "
+                               "By default only the Administrator has permission to create symlinks")
+                raise exceptions.FatalException()
 
     def enable_module(self, name):
         """
