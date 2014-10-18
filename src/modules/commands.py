@@ -51,7 +51,7 @@ class Commands:
 
     def check_repeats(self):
         for command in self.commands:
-            if command['repeat']:
+            if 'repeat' in command.keys() and command['repeat']:
                 if not 'lastshown' in command.keys():
                     self.bot.send_message(command['value'])
                     self.log.info("Showed message for command " + command['name'] + " on repeat")
