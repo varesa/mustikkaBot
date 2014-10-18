@@ -2,4 +2,5 @@ Administration
 ==============
 
 ..  toctree::
+    starting
     access
