@@ -131,8 +131,8 @@ class ModuleManager:
         if not name in modules:
             return
 
-        create_symlink(os.path.abspath(os.path.join(self.availableModulesPath, name + ".py")),
-                       os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
+        self.create_symlink(os.path.abspath(os.path.join(self.availableModulesPath, name + ".py")),
+                            os.path.abspath(os.path.join(self.enabledModulesPath, name + ".py")))
 
         self.load_module(name)
         self.init_module(name)
