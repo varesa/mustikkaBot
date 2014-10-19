@@ -156,7 +156,7 @@ class Commands:
                     linecondition = True
 
                 if timecondition and linecondition:
-                    self.bot.send_message(command.value)(self.lines_received - command.lastshown_line)
+                    self.bot.send_message(command.value)
                     self.log.info("Showed message for command " + command.name + " on repeat")
                     command.lastshown_time = datetime.datetime.now()
                     command.lastshown_line = self.lines_received
