@@ -224,7 +224,7 @@ class Commands:
 
     def run_commands(self, user, args):
         if self.does_command_exist(args[0][1:]):
-            command = self.get_command_by_name(args[0])
+            command = self.get_command_by_name(args[0][1:])
             if self.bot.accessmanager.is_in_acl(user, "commands.!" + command.name):
                 self.bot.send_message(command.value)
                 self.log.info("Running command " + command.value + ": " + command.value)
