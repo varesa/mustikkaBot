@@ -223,7 +223,7 @@ class Commands:
             self.bot.send_message(self.helpMessage)
 
     def run_commands(self, user, args):
-        if self.does_command_exist(args[0]):
+        if self.does_command_exist(args[0][1:]):
             command = self.get_command_by_name(args[0])
             if self.bot.accessmanager.is_in_acl(user, "commands.!" + command.name):
                 self.bot.send_message(command.value)
