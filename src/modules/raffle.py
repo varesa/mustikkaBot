@@ -1,20 +1,27 @@
 import re
 
-from log import log
+import logging
 import tools
 
-class raffle:
-    bot = None
-    acl = "!raffle"
 
-    raffleName = None
-    participants = []
+class Raffle:
+
+    def __init__(self):
+        self.bot = None
+
+        self.aclManage = "!raffle.manage"
+        self.aclJoin = "!raffle.join"
+
+        self.raffleName = None
+        self.participants = []
 
     def init(self, bot):
+        self.log = logging.getLogger("mustikkabot.raffle")
         self.bot = bot
+
         self.bot.eventmanager.registerMessage(self)
         self.bot.accessmanager.registerAcl(self.acl)
-        log("[RAFFLE] Init complete")
+        self.log.info("Init complete")
 
     def dispose(self):
         self.bot.eventmanager.unregister_message(self)

@@ -424,6 +424,7 @@ class Commands:
         if time == 0 and lines == 0:
             self.get_command_by_name(cmd).repeat = False
             self.bot.send_message("Repetition disabled for command " + cmd)
+            self.write_JSON()
         else:
             command = self.get_command_by_name(cmd)
             command.repeat = True

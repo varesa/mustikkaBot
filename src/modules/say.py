@@ -3,6 +3,7 @@ import logging
 
 import tools
 
+
 class Say:
 
     log = logging.getLogger("mustikkabot.say")
