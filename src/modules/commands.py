@@ -148,7 +148,7 @@ class Commands:
                     timecondition = True
 
                 if command.repeat_lines > 0:
-                    if (self.lines_received - command.lastshown_line) > command.repeat_lines:
+                    if (self.lines_received - command.lastshown_line) >= command.repeat_lines:
                         linecondition = True
                     else:
                         linecondition = False
@@ -156,7 +156,7 @@ class Commands:
                     linecondition = True
 
                 if timecondition and linecondition:
-                    self.bot.send_message(command.value)
+                    self.bot.send_message(command.value)(self.lines_received - command.lastshown_line)
                     self.log.info("Showed message for command " + command.name + " on repeat")
                     command.lastshown_time = datetime.datetime.now()
                     command.lastshown_line = self.lines_received
