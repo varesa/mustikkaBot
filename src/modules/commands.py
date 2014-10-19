@@ -267,8 +267,14 @@ class Commands:
         try:
             tmp = json.loads(jsondata)
             for command in tmp:
-                self.commands.append(Command(name=command['name'], value=command['value'], repeat=command['repeat'],
-                                             repeat_lines=command['repeatlines'], repeat_minutes=command['repeattime']))
+                c = Command(name=command['name'], value=command['value'])
+                if 'repeat' in command.keys():
+                    c.repeat = command['repeat']
+                if 'repeatlines' in command.keys():
+                    c.repeat_lines = command['repeatlines']
+                if 'repeattime' in command.keys():
+                    c.repeat_minutes = command['repeattime']
+                self.commands.append(c)
             self.write_JSON()
         except ValueError:
             self.log.error("commands-file malformed")
