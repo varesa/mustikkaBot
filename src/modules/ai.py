@@ -1,12 +1,12 @@
-import re
 import logging
 
 from lib.chatter_bot_api import ChatterBotFactory, ChatterBotType
 
-import tools
-
 
 class Ai:
+    """
+    Main class for the AI module. The AI module is an interface to ChatterBotApi and through that to bots like cleverbot
+    """
 
     log = logging.getLogger("mustikkabot.ai")
     bot = None
@@ -15,6 +15,13 @@ class Ai:
     ai = None
 
     def init(self, bot):
+        """
+        Initializer method that will be called when the module is enabled.
+
+        :param bot: The main instance of the bot
+        :type bot: Bot
+        :rtype: None
+        """
         self.bot = bot
         self.bot.eventmanager.register_message(self)
         self.bot.accessmanager.register_acl(self.acl, default_groups="%all")
@@ -29,7 +36,7 @@ class Ai:
         Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
         when the module gets disabled.
         """
-        self.bot.eventmanager.unregister_special(self)
+        self.bot.eventmanager.unregister_message(self)
 
     def handle_message(self, data, user, msg):
         """

@@ -6,6 +6,7 @@ from math import floor
 
 import tools
 
+
 class Time:
 
     log = logging.getLogger("mustikkabot.time")

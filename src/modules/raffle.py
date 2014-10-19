@@ -7,6 +7,7 @@ import tools
 class Raffle:
 
     def __init__(self):
+        self.log = logging.getLogger("mustikkabot.raffle")
         self.bot = None
 
         self.aclManage = "!raffle.manage"
@@ -16,7 +17,6 @@ class Raffle:
         self.participants = []
 
     def init(self, bot):
-        self.log = logging.getLogger("mustikkabot.raffle")
         self.bot = bot
 
         self.bot.eventmanager.registerMessage(self)

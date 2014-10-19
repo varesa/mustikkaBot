@@ -4,6 +4,7 @@ import datetime
 from TwitchAPI.Channel import Channel
 from urllib.error import HTTPError
 
+
 def _ts2dt(timestamp):
     return datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
 
@@ -12,7 +13,7 @@ class Follows:
 
     log = logging.getLogger("mustikkabot.follows")
     bot = None
-    """ :type: bot"""
+    """ :type: Bot"""
 
     followed = []
     """ :type: list"""
@@ -20,7 +21,6 @@ class Follows:
     last_created_at = 0
 
     def check_followers(self):
-        data = None
         try:
             data = Channel("herramustikka").get_followers()
         except HTTPError:
