@@ -1,6 +1,7 @@
 import os
 
 from accessmanager import AccessManager
+import tools
 
 
 """
@@ -9,53 +10,55 @@ from accessmanager import AccessManager
 
 
 class DummyBot:
-    datadir = "test_data"
+    basedir = tools.find_basepath()
+    srcdir = os.path.join(basedir, "src")
+
+    datadir = os.path.join(basedir, "data_test")
+
+    def __init__(self):
+        if not os.path.isdir(self.datadir):
+            os.mkdir(self.datadir)
 
 
-
-class test_accessmanager():
+class TestAccessmanager():
 
     am = None
-    testjsonpath = None
+    jsonpath = None
 
     def get_jsonpath(self):
         am = AccessManager()
+        # noinspection PyTypeChecker
         am.init(DummyBot())   # Get variables like jsonpath
-        self.testjsonpath = am.jsonpath
+        path = am.jsonpath
         del am
+
+        return path
 
     # noinspection PyPep8Naming
     def delete_JSON_if_exists(self):
-        if os.path.exists(self.testjsonpath):
-            os.remove(self.testjsonpath)
+        if os.path.exists(self.jsonpath):
+            os.remove(self.jsonpath)
 
     def setup(self):
-        self.get_jsonpath()
+        self.jsonpath = self.get_jsonpath()
         self.delete_JSON_if_exists()
 
         self.am = AccessManager()
-        self.am.jsonfile = self.testjsonpath
+        self.am.jsonfile = self.am.jsonpath
+        # noinspection PyTypeChecker
         self.am.init(DummyBot())
 
     def teardown(self):
-        if os.path.exists(self.testjsonfile):
-            os.remove(self.testjsonfile)
-        if os.path.exists(self.testjsonfile + ".bak"):
-            os.remove(self.testjsonfile + ".bak")
+        if os.path.exists(self.am.jsonpath):
+            os.remove(self.am.jsonpath)
+        if os.path.exists(self.am.jsonpath + ".bak"):
+            os.remove(self.am.jsonpath + ".bak")
 
     def test_accessmanager_init(self):
-        pass
-        #assert self.am.acls == {}
-        #assert self.am.groups == {'%owner': {'members': ['Herramustikka', 'varesa']},
-        #                          '%moderators': {'members': []},
-        #                          '%all%': {'members': []},
-        #                          '%operators': {'members': []} }
+        assert self.am.jsonpath is not None
+        #TODO: something else to test?
 
-        #if os.path.exists(testjsonfile):
-        #    os.remove(testjsonfile)
-        #TODO: test something here?
-
-    """def test_accessmanager_json(self):
+    def test_accessmanager_json(self):
         acls = {"a": "b", "c": {"d": [1, 2 ,"3"]}}
         groups = {"A": "B", "C": {"D": [10, 20 ,"30"]}}
 
@@ -200,7 +203,7 @@ class test_accessmanager():
         assert self.am.expand_groups(["test", "%operators"]).sort() == ["test", "%operators", "%owner"].sort()
 
     def test_accessmanager_isinacl(self):
-        pass #TODO: Write access tests"""
+        pass #TODO: Write access tests
 
 
 

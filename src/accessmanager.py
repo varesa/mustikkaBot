@@ -27,6 +27,9 @@ class AccessManager:
 
     log = logging.getLogger("mustikkabot.accessmanager")
 
+    jsonname = "acls.json"
+    jsonpath = None
+
     groups = {}
     acls = {}
 
@@ -43,7 +46,7 @@ class AccessManager:
         """
         self.bot = bot
 
-        self.jsonpath = os.path.join(self.bot.datadir, "acls.json")
+        self.jsonpath = os.path.join(self.bot.datadir, self.jsonname)
 
         global accessmodule
         accessmodule = self
