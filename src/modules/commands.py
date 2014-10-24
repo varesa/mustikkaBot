@@ -175,7 +175,7 @@ class Commands:
         :type msg: str
         :rtype: None
         """
-        msg = tools.strip_prefix(msg)
+        msg = tools.strip_name(msg)
         args = msg.split()
 
         if args[0] == "!commands" or args[0] == "!comm":

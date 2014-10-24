@@ -40,7 +40,7 @@ class Modules:
         Look for any commands that the command-module should handle and handle any found commands.
         Called by the eventmanager/dispatcher when a message is received
         """
-        msg = tools.strip_prefix(msg)
+        msg = tools.strip_name(msg)
         args = msg.split()
 
         if len(args) < 1:

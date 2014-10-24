@@ -33,7 +33,7 @@ class Say:
 
     # noinspection PyUnusedLocal
     def handle_message(self, data, user, msg):
-        msg = tools.strip_prefix(msg)
+        msg = tools.strip_name(msg)
 
         result = re.search(r'^!say (.*)', msg)
         if result is not None:

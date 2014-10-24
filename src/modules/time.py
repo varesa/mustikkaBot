@@ -27,7 +27,7 @@ class Time:
         self.bot.eventmanager.unregister_message(self)
         
     def handle_message(self, data, user, msg):
-        msg = tools.strip_prefix(msg)
+        msg = tools.strip_name(msg)
         args = msg.split()
 
         if args[0] == "!time":
