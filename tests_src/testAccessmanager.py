@@ -3,29 +3,44 @@ import os
 from accessmanager import AccessManager
 
 
-testjsonfile = "mustikkabotacl_test.json"
 """
 :type : accessmanager
 """
 
+
+class DummyBot:
+    datadir = "testdir"
+
+
 class test_accessmanager():
 
     am = None
+    testjsonpath = None
+
+    def get_jsonpath(self):
+        am = AccessManager()
+        am.init(DummyBot())   # Get variables like jsonpath
+        self.testjsonpath = am.jsonpath
+        del am
+
+    # noinspection PyPep8Naming
+    def delete_JSON_if_exists(self):
+        if os.path.exists(self.testjsonpath):
+            os.remove(self.testjsonpath)
 
     def setup(self):
-        if os.path.exists(testjsonfile):
-            os.remove(testjsonfile)
+        self.get_jsonpath()
+        self.delete_JSON_if_exists()
 
         self.am = AccessManager()
-        self.am.jsonfile = testjsonfile
-        #self.am.log = None
-        self.am.init(None)
+        self.am.jsonfile = self.testjsonpath
+        self.am.init(DummyBot())
 
     def teardown(self):
-        if os.path.exists(testjsonfile):
-            os.remove(testjsonfile)
-        if os.path.exists(testjsonfile + ".bak"):
-            os.remove(testjsonfile + ".bak")
+        if os.path.exists(self.testjsonfile):
+            os.remove(self.testjsonfile)
+        if os.path.exists(self.testjsonfile + ".bak"):
+            os.remove(self.testjsonfile + ".bak")
 
     def test_accessmanager_init(self):
         """assert self.am.acls == {}
