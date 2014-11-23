@@ -5,7 +5,8 @@ Dependencies
 ------------
 
 - Twitch account for the bot
-- Computer with Python 3 and Linux (optional, but more functionality and more tested)
+- Python 3 + jsonpickle module
+- Linux (optional, but more functionality and more tested)
 
 Download
 --------
