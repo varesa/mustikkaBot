@@ -96,6 +96,7 @@ class Commands:
         :rtype: None
         """
         self.bot.eventmanager.unregister_message(self)
+        self.log.info("Disposed")
 
     def does_command_exist(self, name):
         """

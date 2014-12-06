@@ -30,6 +30,7 @@ class Say:
         Unregisters the messagelisteners
         """
         self.bot.eventmanager.unregister_message(self)
+        self.log.info("Disposed")
 
     # noinspection PyUnusedLocal
     def handle_message(self, data, user, msg):

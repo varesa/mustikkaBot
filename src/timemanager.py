@@ -1,6 +1,6 @@
-import re
 import logging
 import datetime
+
 
 class _TimeEvent:
     """

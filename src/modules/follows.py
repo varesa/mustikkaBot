@@ -58,4 +58,5 @@ class Follows:
         Uninitialize the module when called by the eventmanager. Unregisters the messagelisteners
         when the module gets disabled.
         """
-        self.bot.eventmanager.unregister_message(self)
+        self.bot.timemanager.unregister(self.check_followers)
+        self.log.info("Disposed")
