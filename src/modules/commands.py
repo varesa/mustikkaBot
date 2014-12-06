@@ -60,8 +60,8 @@ class Commands:
         ":type: int"
 
         # Message to show when called without arguments
-        self.helpMessage = "Usage: !commands list | add <cmd> | remove <cmd> | set <cmd> <text> | " \
-                           "regulars <cmd> <value> | setrepeat <cmd> <time> [<lines>]"
+        self.helpMessage = "Usage: !commands list | add {cmd} [text] | remove {cmd} | set {cmd} {text} | " \
+                           "regulars {cmd} {on|off} | setrepeat {cmd} {time} [lines]"
         ":type: str"
         # Hidden commands: '!commands save' and '!commands load' for managing the JSON
 
