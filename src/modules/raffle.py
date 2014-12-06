@@ -25,6 +25,7 @@ class Raffle:
 
     def dispose(self):
         self.bot.eventmanager.unregister_message(self)
+        self.log.info("Disposed")
 
     def handle_message(self, data, user, msg):
         msg = tools.stripPrefix(msg)

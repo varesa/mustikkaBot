@@ -26,6 +26,7 @@ class Test:
         """
         self.bot.eventmanager.unregister_message(self)
         self.bot.eventmanager.unregister_special(self)
+        self.log.info("Disposed")
 
     def handle_message(self, data, user, msg):
         self.log.debug(user + " said: " + msg)

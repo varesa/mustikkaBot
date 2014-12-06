@@ -25,6 +25,7 @@ class Time:
         when the module gets disabled.
         """
         self.bot.eventmanager.unregister_message(self)
+        self.log.info("Disposed")
         
     def handle_message(self, data, user, msg):
         msg = tools.strip_name(msg)
