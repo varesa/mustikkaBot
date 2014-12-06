@@ -36,6 +36,8 @@ class Commands:
     Module to manage custom commands
     """
 
+    acl = "!commands"
+
     def __init__(self):
         # Logger instance for this module
         self.log = logging.getLogger("mustikkabot.commands")
@@ -62,6 +64,8 @@ class Commands:
                            "regulars <cmd> <value> | setrepeat <cmd> <time> [<lines>]"
         ":type: str"
         # Hidden commands: '!commands save' and '!commands load' for managing the JSON
+
+        self.bot.accessmanager.register_acl(self.acl, default_groups=["%moderators"])
 
     def init(self, bot):
         """
@@ -196,6 +200,10 @@ class Commands:
         :type args: list of str
         :rtype: None
         """
+        if not self.bot.accessmanager.is_in_acl(user, self.acl):
+            self.log.warning("User " + user + " tried to issue a command management command without permissions")
+            return
+
         if len(args) > 1:
             if args[1] == "list":
                 self.list_commands()

@@ -18,7 +18,7 @@ class EventManager:
 
         Registers a module to receive events on incoming messages
         """
-        if not module in self.message_registered:
+        if module not in self.message_registered:
             self.message_registered.append(module)
 
     def unregister_message(self, module):
@@ -40,7 +40,7 @@ class EventManager:
 
         Registers a module to receive events on incoming "special" (non message) data
         """
-        if not module in self.special_registered:
+        if module not in self.special_registered:
             self.special_registered.append(module)
 
     def unregister_special(self, module):
