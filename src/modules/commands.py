@@ -65,8 +65,6 @@ class Commands:
         ":type: str"
         # Hidden commands: '!commands save' and '!commands load' for managing the JSON
 
-        self.bot.accessmanager.register_acl(self.acl, default_groups=["%moderators"])
-
     def init(self, bot):
         """
         Initialize the module when it it loaded. Called by the modulemanager. Registers listeners.
@@ -81,9 +79,9 @@ class Commands:
 
         self.read_JSON()
 
+        self.bot.accessmanager.register_acl(self.acl, default_groups=["%moderators"])
         for command in self.commands:
             bot.accessmanager.register_acl("commands.!" + command.name)
-
         bot.eventmanager.register_message(self)
         bot.timemanager.register_interval(self.check_repeats,
                                           datetime.timedelta(seconds=20), datetime.timedelta(seconds=10))
