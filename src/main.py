@@ -15,6 +15,7 @@ import errno
 from time import sleep
 import traceback
 import logging
+import datetime
 
 import migrations
 import logutils
@@ -43,6 +44,7 @@ class Bot:
         migrations.do_migrations(self)
 
         self.ircsock = None
+        self.lastReceived = None
 
         self.user = None
         self.channel = None
@@ -200,8 +202,10 @@ class Bot:
         sleep(1)
 
         while self.run:
+            # Get new data
             ircmsg = self.get_data()
 
+            # Process CLI
             if platform.system() != "Windows":
                 cli = select.select([sys.stdin], [], [], 0)[0]
             else:
@@ -211,14 +215,23 @@ class Bot:
                 if len(data) > 0:
                     self.eventmanager.handle_message(":cli!cli@localhost PRIVMSG " + self.channel + " :" + data)
 
+            # Handle data if received
             if not (ircmsg is None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
-
+                    self.lastReceived = datetime.datetime.now()
                     if line.find(' PRIVMSG ') != -1:
                         self.eventmanager.handle_message(line)
                     else:
                         self.eventmanager.handle_special(line)
+
+            # Provied timed events to timemanager
             self.timemanager.handle_events()
+
+            # Check "watchdog"
+            if datetime.datetime.now() - self.lastReceived > datetime.timedelta(hours=1):
+                self.connect(settings) # Reconnect
+                self.log.warning("No messages received within an hour, reconnecting")
+
             sleep(0.01)
 
         # Shut down
