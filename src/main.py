@@ -221,6 +221,11 @@ class Bot:
             self.timemanager.handle_events()
             sleep(0.01)
 
+        # Shut down
+        self.modulemanager.dispose()
+        self.accessmanager.dispose()
+
+
 if __name__ == "__main__":  # Do not start on import
     b = Bot()
     b.main()

@@ -81,6 +81,9 @@ class AccessManager:
             self.add_group("%all%")
             self.write_JSON()
 
+    def dispose(self):
+        self.log.info("Disposed")
+
     # noinspection PyPep8Naming
     def read_JSON(self):
         """

@@ -44,3 +44,4 @@ class About:
         Uninitialize the module. Unregisters messagelisteners when the module gets disabled.
         """
         self.bot.eventmanager.unregister_message(self)
+        self.log.info("Disposed")

@@ -39,6 +39,10 @@ class ModuleManager:
 
         self.log.info("Init complete")
 
+    def dispose(self):
+        self.dispose_modules()
+        self.log.info("Disposed")
+
     def import_module(self, file):
         """
         :param file: path to the module to be imported
@@ -178,8 +182,8 @@ class ModuleManager:
         Go through loaded modules and dispose them. To be used for example when shutting down the bot in order to allow
         the modules to close any open resources, save data and etc.
         """
-        for module in self.modules:
-            self.disable_module(module)
+        for module in self.modules.keys():
+            self.dispose_module(module)
 
     def init_module(self, name):
         """

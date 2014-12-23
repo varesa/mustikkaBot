@@ -54,7 +54,7 @@ class EventManager:
             if type(registered) == type(module):
                 remove = registered
         if remove is not None:
-            self.message_registered.pop(self.message_registered.index(remove))
+            self.special_registered.pop(self.special_registered.index(remove))
 
     def handle_message(self, text):
         """
