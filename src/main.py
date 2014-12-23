@@ -195,7 +195,12 @@ class Bot:
         self.accessmanager.init(self)
         self.modulemanager.init(self)
 
-        self.connect(settings)
+        try:
+            self.connect(settings)
+            self.lastReceived = datetime.datetime.now()
+        except:
+            self.log.error("Error connecting to IRC")
+            sleep(3)
 
         signal.signal(signal.SIGINT, self.sigint)
 
@@ -228,9 +233,14 @@ class Bot:
             self.timemanager.handle_events()
 
             # Check "watchdog"
-            if datetime.datetime.now() - self.lastReceived > datetime.timedelta(hours=1):
-                self.connect(settings) # Reconnect
-                self.log.warning("No messages received within an hour, reconnecting")
+            if self.lastReceived and datetime.datetime.now() - self.lastReceived > datetime.timedelta(minutes=15):
+                self.log.warning("No messages received within 15 minutesr, trying to reconnect")
+                try:
+                    self.connect(settings)  # Reconnect
+                    self.lastReceived = datetime.datetime.now()
+                except:
+                    self.log.error("Error connecting to IRC")
+                    sleep(3)
 
             sleep(0.01)
 
