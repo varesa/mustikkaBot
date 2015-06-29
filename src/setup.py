@@ -21,3 +21,14 @@ def do_migrations(bot):
             log.info("Config directory not found, creating")
             os.mkdir(new_conf_dir)
         os.rename(old_conf_path, new_conf_path)
+
+def setup(bot):
+    log = logging.getLogger("mustikkabot.setup")
+
+    if not os.path.isdir(bot.confdir):
+        os.mkdir(bot.confdir)
+        log.info("Created config directory")
+
+    if not os.path.isdir(bot.datadir):
+        os.mkdir(bot.datadir)
+        log.info("Created data directory")

@@ -16,7 +16,7 @@ from time import sleep
 import traceback
 import logging
 
-import migrations
+import setup
 import logutils
 import tools
 
@@ -37,8 +37,10 @@ class Bot:
 
         self.basepath = tools.find_basepath()
         self.confdir = os.path.join(self.basepath, "config")
+        self.datadir = os.path.join(self.basepath, "data")
 
-        migrations.do_migrations(self)
+        setup.do_migrations(self)
+        setup.setup(self)
 
         self.ircsock = None
 
