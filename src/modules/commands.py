@@ -8,7 +8,7 @@ import tools
 import exceptions
 
 
-class Command():
+class Command:
     """
     Class to represent a command and its properties
     """
@@ -246,7 +246,6 @@ class Commands:
         if not os.path.isfile(self.jsonpath):
             self.log.info("Commands-datafile does not exist, creating")
             self.write_JSON()
-
         try:
             with open(self.jsonpath, "r") as file:
                 jsondata = file.read()

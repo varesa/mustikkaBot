@@ -79,7 +79,7 @@ class ModuleManager:
         module = self.import_module(os.path.join(path, name + ".py"))
         self.modules[name] = getattr(module, name.capitalize())()
 
-    def unload_module(self,name):
+    def unload_module(self, name):
         """
         :param name: Name of the module
         :type name: str

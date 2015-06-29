@@ -18,6 +18,7 @@ class EventManager:
 
         Registers a module to receive events on incoming messages
         """
+        self.log.info("Module " + str(module) + " registering for messages")
         if module not in self.message_registered:
             self.message_registered.append(module)
 
@@ -27,6 +28,7 @@ class EventManager:
 
         Unregister a module to stop it from receiving events on incoming messages
         """
+        self.log.info("Module " + str(module) + " unregistering messages")
         remove = None
         for registered in self.message_registered:
             if type(registered) == type(module):
@@ -40,6 +42,7 @@ class EventManager:
 
         Registers a module to receive events on incoming "special" (non message) data
         """
+        self.log.info("Module " + str(module) + " registering for special messages")
         if module not in self.special_registered:
             self.special_registered.append(module)
 
@@ -49,6 +52,7 @@ class EventManager:
 
         Unregister a module to stop it from receiving events on incoming "special" (non message) data
         """
+        self.log.info("Module " + str(module) + " unregistering special messages")
         remove = None
         for registered in self.special_registered:
             if type(registered) == type(module):
