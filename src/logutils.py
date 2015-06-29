@@ -9,6 +9,13 @@ import logging
 
 
 def setup_logging(name):
+    """
+    Setup logging parameters
+    :param name: root logger name
+    :type name: string
+    :return: None
+    :rtype: None
+    """
     log = logging.getLogger(name)
 
     log.setLevel(logging.DEBUG)
@@ -19,14 +26,20 @@ def setup_logging(name):
 
 
 class LogFormater(logging.Formatter):
+    """
+    Custom log formater to get aligned messages and submodule-"tags"
+    """
 
     formatString1 = '%(asctime)s  [%(name)s]'
     formatString2 = '[%(levelname)s] %(message)s'
 
     def format(self, record):
         """
+        Format an log message for printing
         :param record: log record to format
         :type record: logging.LogRecord
+        :return: formated log message
+        :rtype: str
         """
 
         record.name = record.name.split('.')[-1].upper()

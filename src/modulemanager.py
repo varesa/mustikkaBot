@@ -11,6 +11,9 @@ if platform.system() == "Windows":
 import exceptions
 
 class ModuleManager:
+    """
+    A primary module that manages enabling/disabling/loading of pluggable modules
+    """
 
     log = logging.getLogger("mustikkabot.modulemanager")
 
@@ -105,6 +108,15 @@ class ModuleManager:
                 self.load_module(result.group(1), "core_modules/")
 
     def create_symlink(self, src, dst):
+        """
+        Platform independent symlink creation
+        :param src: symlink source
+        :type src: str
+        :param dst: symlink destination
+        :type dst: str
+        :return: None
+        :rtype: None
+        """
         if platform.system() != "Windows":
             os.symlink(src, dst)
         else:
