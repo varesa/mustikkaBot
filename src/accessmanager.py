@@ -2,6 +2,9 @@ import json
 import errno
 import logging
 import shutil
+import os
+
+import exceptions
 
 
 class Group:
@@ -24,10 +27,11 @@ class AccessManager:
 
     log = logging.getLogger("mustikkabot.accessmanager")
 
+    jsonname = "acls.json"
+    jsonpath = None
+
     groups = {}
     acls = {}
-
-    jsonfile = "acls.json"
 
     def __init__(self):
         self.acls = dict()
@@ -40,8 +44,9 @@ class AccessManager:
 
         Initialize the access-module
         """
-
         self.bot = bot
+
+        self.jsonpath = os.path.join(self.bot.datadir, self.jsonname)
 
         global accessmodule
         accessmodule = self
@@ -76,19 +81,29 @@ class AccessManager:
             self.add_group("%all%")
             self.write_JSON()
 
+    def dispose(self):
+        self.log.info("Disposed")
+
+    # noinspection PyPep8Naming
     def read_JSON(self):
         """
         Read the access-data from a JSON file
         """
+        if not os.path.isfile(self.jsonpath):
+            if os.path.isfile(os.path.join(self.bot.srcdir, "acls.json")):
+                self.log.info("ACL-datafile found at old location, moving")
+                os.rename(os.path.join(self.bot.srcdir, "acls.json"),self.jsonpath)
+            else:
+                self.log.info("ACL-datafile does not exist, creating")
+                self.write_JSON()
+
         jsondata = ""
         try:
-            file = open(self.jsonfile, "r")
+            file = open(self.jsonpath, "r")
             jsondata = file.read()
             file.close()
-        except IOError as e:
-            if e.errno == errno.ENOENT:
-                self.log.info("file does not exist, creating")
-                self.write_JSON()
+        except:
+            raise exceptions.FatalException
 
         try:
             data = json.loads(jsondata)
@@ -98,25 +113,27 @@ class AccessManager:
             self.log.error("acls-file malformed")
             shutil.copyfile(self.jsonfile, self.jsonfile + ".bak")
 
+    # noinspection PyPep8Naming
     def write_JSON(self):
         """
         Write the access-data to a JSON file
         """
         jsondata = {"groups": self.groups, "acls": self.acls}
-        file = open(self.jsonfile, "w")
+        file = open(self.jsonpath, "w")
         data = json.dumps(jsondata, sort_keys=True, indent=4, separators=(',', ': '))
         file.write(data)
         file.close()
 
-    def add_group(self, name, members=None):
+    def add_group(self, group, members=None):
         """
-        :param name: Name of the group to be created
-        :type name: str
+        :param group: Name of the group to be created
+        :type group: str
         :param members: Optional list of members to initialize the group with
         :type members: list(str)
 
         Create a new group and optionally add members to it
         """
+        group = group.lower()
         if members is None:
             members = []
         elif isinstance(members, tuple):
@@ -125,35 +142,38 @@ class AccessManager:
             tmp = members
             members = list()
             members.append(tmp)
-        self.groups[name] = {"members": members}
+        members = [member.lower() for member in members]
+        self.groups[group] = {"members": members}
         self.write_JSON()
 
-    def remove_group(self, name):
+    def remove_group(self, group):
         """
-        :param name: Name of the group to be removed
-        :type name: str
+        :param group: Name of the group to be removed
+        :type group: str
 
         Remove a group if it exists
         """
-        self.groups.pop(name, None)
+        group = group.lower()
+        self.groups.pop(group, None)
         self.write_JSON()
 
-    def exists_group(self, name):
+    def exists_group(self, group):
         """
-        :param name: Name of the group to check
-        :type name: str
+        :param group: Name of the group to check
+        :type group: str
 
         :return: Does the group exists
         :rtype: bool
 
         Check if a group exists
         """
-        if name in self.groups.keys():
+        group = group.lower()
+        if group in self.groups.keys():
             return True
         else:
             return False
 
-    def get_group(self, name):
+    def get_group(self, group):
         """
         :param name: Name of the group
         :type name: str
@@ -163,8 +183,9 @@ class AccessManager:
 
         Return an instance of the :class:group describing the specified group
         """
-        if self.exists_group(name):
-            return Group(name)
+        group = group.lower()
+        if self.exists_group(group):
+            return Group(group)
         else:
             return None
 
@@ -177,6 +198,8 @@ class AccessManager:
 
         Add a person to a group
         """
+        group = group.lower()
+        name = name.lower()
         members = self.get_group(group).get_members()
         if name not in members:
             members.append(name)
@@ -191,6 +214,9 @@ class AccessManager:
 
         Remove a person from a group
         """
+        group = group.lower()
+        name = name.lower()
+
         self.get_group(group).get_members().remove(name)
         self.write_JSON()
 
@@ -262,6 +288,8 @@ class AccessManager:
 
         Add a group to the acl
         """
+        group = group.lower()
+
         if not self.exists_group(group):
             self.log.warning("Called group does not exist")
             return
@@ -280,6 +308,7 @@ class AccessManager:
 
         Remove a group from an acl if possible
         """
+        group = group.lower()
         self.acls[acl]['groups'].remove(group)
 
     def add_user_to_acl(self, acl, user):
@@ -291,8 +320,9 @@ class AccessManager:
 
         Add a user to the acl
         """
+        user = user.lower()
         if not user in self.acls[acl]['members']:
-            self.acls[acl]['members'].append(user.lower())
+            self.acls[acl]['members'].append(user)
             self.write_JSON()
 
     def remove_user_from_acl(self, acl, user):
@@ -304,6 +334,7 @@ class AccessManager:
 
         Remove a user from an acl if possible
         """
+        user = user.lower()
         self.acls[acl]['members'].remove(user)
 
     def expand_groups(self, groups):
@@ -357,6 +388,8 @@ class AccessManager:
         """
         if not acl in self.acls.keys():
             raise Exception("ACL does not exist")
+
+        user = user.lower()
 
         if user == 'cli':
             return True                                             # Give local users all permissions

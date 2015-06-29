@@ -1,42 +1,62 @@
 import os
 
 from accessmanager import AccessManager
+import tools
 
 
-testjsonfile = "mustikkabotacl_test.json"
 """
 :type : accessmanager
 """
 
-class test_accessmanager():
+
+class DummyBot:
+    basedir = tools.find_basepath()
+    srcdir = os.path.join(basedir, "src")
+
+    datadir = os.path.join(basedir, "data_test")
+
+    def __init__(self):
+        if not os.path.isdir(self.datadir):
+            os.mkdir(self.datadir)
+
+
+class TestAccessmanager():
 
     am = None
+    jsonpath = None
+
+    def get_jsonpath(self):
+        am = AccessManager()
+        # noinspection PyTypeChecker
+        am.init(DummyBot())   # Get variables like jsonpath
+        path = am.jsonpath
+        del am
+
+        return path
+
+    # noinspection PyPep8Naming
+    def delete_JSON_if_exists(self):
+        if os.path.exists(self.jsonpath):
+            os.remove(self.jsonpath)
 
     def setup(self):
-        if os.path.exists(testjsonfile):
-            os.remove(testjsonfile)
+        self.jsonpath = self.get_jsonpath()
+        self.delete_JSON_if_exists()
 
         self.am = AccessManager()
-        self.am.jsonfile = testjsonfile
-        #self.am.log = None
-        self.am.init(None)
+        self.am.jsonfile = self.am.jsonpath
+        # noinspection PyTypeChecker
+        self.am.init(DummyBot())
 
     def teardown(self):
-        if os.path.exists(testjsonfile):
-            os.remove(testjsonfile)
-        if os.path.exists(testjsonfile + ".bak"):
-            os.remove(testjsonfile + ".bak")
+        if os.path.exists(self.am.jsonpath):
+            os.remove(self.am.jsonpath)
+        if os.path.exists(self.am.jsonpath + ".bak"):
+            os.remove(self.am.jsonpath + ".bak")
 
     def test_accessmanager_init(self):
-        """assert self.am.acls == {}
-        assert self.am.groups == {'%owner': {'members': ['Herramustikka', 'varesa']},
-                                  '%moderators': {'members': []},
-                                  '%all%': {'members': []},
-                                  '%operators': {'members': []} }
-
-        if os.path.exists(testjsonfile):
-            os.remove(testjsonfile)"""
-        #TODO: test something here?
+        assert self.am.jsonpath is not None
+        #TODO: something else to test?
 
     def test_accessmanager_json(self):
         acls = {"a": "b", "c": {"d": [1, 2 ,"3"]}}

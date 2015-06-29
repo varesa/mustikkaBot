@@ -31,7 +31,7 @@ class About:
 
         Handle incoming chat-messages. Check if it contains either !about or !bot commmands
         """
-        msg = tools.strip_prefix(msg)
+        msg = tools.strip_name(msg)
         args = msg.split()
 
         if args[0] == "!about" or args[0] == "!bot":
@@ -44,3 +44,4 @@ class About:
         Uninitialize the module. Unregisters messagelisteners when the module gets disabled.
         """
         self.bot.eventmanager.unregister_message(self)
+        self.log.info("Disposed")

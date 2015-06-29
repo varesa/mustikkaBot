@@ -30,6 +30,7 @@ class Modules:
         when the module gets disabled.
         """
         self.bot.eventmanager.unregister_special(self)
+        self.log.info("Disposed")
 
     def handle_message(self, data, user, msg):
         """
@@ -40,7 +41,7 @@ class Modules:
         Look for any commands that the command-module should handle and handle any found commands.
         Called by the eventmanager/dispatcher when a message is received
         """
-        msg = tools.strip_prefix(msg)
+        msg = tools.strip_name(msg)
         args = msg.split()
 
         if len(args) < 1:
@@ -51,6 +52,7 @@ class Modules:
 
         if not self.bot.accessmanager.is_in_acl(user, self.acl):
             self.log.warning("User " + user + " tried to issue an module management command without permissions")
+            return
 
         if len(args) == 1:
             self.bot.send_message("Available commands for !modules are: list, enable, disable, reload")

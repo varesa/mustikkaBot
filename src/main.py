@@ -15,8 +15,9 @@ import errno
 from time import sleep
 import traceback
 import logging
+import datetime
 
-import setup
+import migrations
 import logutils
 import tools
 
@@ -38,11 +39,13 @@ class Bot:
         self.basepath = tools.find_basepath()
         self.confdir = os.path.join(self.basepath, "config")
         self.datadir = os.path.join(self.basepath, "data")
+        self.srcdir = os.path.join(self.basepath, "src")
 
         setup.do_migrations(self)
         setup.setup(self)
 
         self.ircsock = None
+        self.lastReceived = None
 
         self.user = None
         self.channel = None
@@ -193,15 +196,22 @@ class Bot:
         self.accessmanager.init(self)
         self.modulemanager.init(self)
 
-        self.connect(settings)
+        try:
+            self.connect(settings)
+            self.lastReceived = datetime.datetime.now()
+        except:
+            self.log.error("Error connecting to IRC")
+            sleep(3)
 
         signal.signal(signal.SIGINT, self.sigint)
 
         sleep(1)
 
         while self.run:
+            # Get new data
             ircmsg = self.get_data()
 
+            # Process CLI
             if platform.system() != "Windows":
                 cli = select.select([sys.stdin], [], [], 0)[0]
             else:
@@ -211,15 +221,34 @@ class Bot:
                 if len(data) > 0:
                     self.eventmanager.handle_message(":cli!cli@localhost PRIVMSG " + self.channel + " :" + data)
 
+            # Handle data if received
             if not (ircmsg is None or len(ircmsg) == 0):
                 for line in ircmsg.split('\n'):
-
+                    self.lastReceived = datetime.datetime.now()
                     if line.find(' PRIVMSG ') != -1:
                         self.eventmanager.handle_message(line)
                     else:
                         self.eventmanager.handle_special(line)
+
+            # Provied timed events to timemanager
             self.timemanager.handle_events()
+
+            # Check "watchdog"
+            if self.lastReceived and datetime.datetime.now() - self.lastReceived > datetime.timedelta(minutes=15):
+                self.log.warning("No messages received within 15 minutesr, trying to reconnect")
+                try:
+                    self.connect(settings)  # Reconnect
+                    self.lastReceived = datetime.datetime.now()
+                except:
+                    self.log.error("Error connecting to IRC")
+                    sleep(3)
+
             sleep(0.01)
+
+        # Shut down
+        self.modulemanager.dispose()
+        self.accessmanager.dispose()
+
 
 if __name__ == "__main__":  # Do not start on import
     b = Bot()
