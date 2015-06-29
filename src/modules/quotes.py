@@ -89,7 +89,7 @@ class Quotes:
 
     def quote_remove(self, id):
         for quote in self.quotes:
-            if quote.id == id:
+            if quote.id == int(id):
                 self.log.info("Removing quote #" + str(id) + ": " + quote.format())
                 self.quotes.remove(quote)
                 self.write_JSON()
