@@ -141,6 +141,7 @@ class Quotes:
             self.bot.send_message("Not implemented")
     
     def command_show(self, user, args):
+        id = None
         if len(args) > 1:
             id = int(args[1])
             quote = self.quote_fetch(id)
@@ -151,9 +152,12 @@ class Quotes:
                 options.remove(self.last_shown)
             quote = random.choice(options)
             self.log.info("Requested random quote")
-        self.bot.send_message(quote.format())
-        self.log.info("Showed quote: " + quote.format())
-        self.last_shown = quote
+        if quote:
+            self.bot.send_message(quote.format())
+            self.log.info("Showed quote: " + quote.format())
+            self.last_shown = quote
+        else:
+            self.bot.send_message("Quote #" + str(id) + " does not exist")
 
     def handle_message(self, data, user, msg):
         args = msg.split(' ')
