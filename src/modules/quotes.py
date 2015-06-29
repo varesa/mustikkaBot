@@ -81,7 +81,7 @@ class Quotes:
             file.write(data)
 
     def quote_add(self, date, user, text):
-        quote_id = sorted(self.quotes, key=lambda quote: quote.id)[-1].id+1 if len(self.quotes) else 0
+        quote_id = sorted(self.quotes, key=lambda quote: quote.id)[-1].id+1 if len(self.quotes) else 1
         self.quotes.append(Quote(id=quote_id, date=date, user=user, text=text))
         self.log.info("Adding quote #" + str(quote_id) + ": \"" + text + "\" -" + user + " " + str(date.year))
         self.write_JSON()
