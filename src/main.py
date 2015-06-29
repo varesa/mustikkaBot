@@ -17,7 +17,7 @@ import traceback
 import logging
 import datetime
 
-import migrations
+import setup
 import logutils
 import tools
 
