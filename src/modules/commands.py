@@ -244,14 +244,8 @@ class Commands:
         """
 
         if not os.path.isfile(self.jsonpath):
-            if os.path.isfile(os.path.join(self.bot.basepath, "src", "commands.json")):
-                self.log.info("Commands-datafile found at old location, moving")
-                if not os.path.isdir(self.bot.datadir):
-                    os.mkdir(self.bot.datadir)
-                os.rename(os.path.join(self.bot.basepath, "src", "commands.json"), self.jsonpath)
-            else:
-                self.log.info("Commands-datafile does not exist, creating")
-                self.write_JSON()
+            self.log.info("Commands-datafile does not exist, creating")
+            self.write_JSON()
 
         try:
             with open(self.jsonpath, "r") as file:

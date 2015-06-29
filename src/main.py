@@ -41,8 +41,8 @@ class Bot:
         self.datadir = os.path.join(self.basepath, "data")
         self.srcdir = os.path.join(self.basepath, "src")
 
-        setup.do_migrations(self)
         setup.setup(self)
+        setup.do_migrations(self)
 
         self.ircsock = None
         self.lastReceived = None
