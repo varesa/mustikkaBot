@@ -27,7 +27,7 @@ class Quote:
         self.text = text
 
     def format(self):
-        return "\"" + self.text + "\" -" + self.user + " " + str(self.date.year)
+        return "\"" + self.text + "\" - " + self.user + " " + str(self.date.year)
 
 class Quotes:
     def __init__(self):
