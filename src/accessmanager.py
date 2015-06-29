@@ -111,7 +111,7 @@ class AccessManager:
             self.acls = data['acls']
         except ValueError:
             self.log.error("acls-file malformed")
-            shutil.copyfile(self.jsonfile, self.jsonfile + ".bak")
+            shutil.copyfile(self.jsonpath, self.jsonpath + ".bak")
 
     # noinspection PyPep8Naming
     def write_JSON(self):
