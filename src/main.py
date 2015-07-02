@@ -142,7 +142,7 @@ class Bot:
 
         try:
             data = self.ircsock.recv(1024)
-            data = data.decode("UTF-8").strip('\r\n')
+            data = data.decode("utf-8", "replace").strip('\r\n')
             if not len(data) == 0:
                 self.log.debug("RECV: <>" + data + "<>")
             return data
