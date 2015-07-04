@@ -356,15 +356,15 @@ class AccessManager:
         expanded += groups
 
         for group in groups:
-            if group is "%operators":
+            if group == "%operators":
                 if "%owner" not in expanded:
                     expanded.append("%owner")
-            elif group is "%moderators":
+            elif group == "%moderators":
                 if "%owner" not in expanded:
                     expanded.append("%owner")
                 if "%operators" not in expanded:
                     expanded.append("%operators")
-            elif group is "%all":
+            elif group == "%all":
                 if "%owner" not in expanded:
                     expanded.append("%owner")
                 if "%operators" not in expanded:
