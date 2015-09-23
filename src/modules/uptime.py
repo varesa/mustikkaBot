@@ -1,6 +1,6 @@
 import jsonpickle
-import os
 import exceptions
+import os
 import logging
 import datetime
 from math import floor
@@ -13,10 +13,11 @@ class TimerData:
     target = None
 
 
-class Time:
+class Uptime:
 
-    log = logging.getLogger("mustikkabot.time")
+    log = logging.getLogger("mustikkabot.uptime")
     bot = None
+    juoksee = 0
 
     jsonpath = None
 
@@ -32,11 +33,11 @@ class Time:
         """
         self.bot = bot
 
-        self.jsonpath = os.path.join(self.bot.datadir, "time.json")
+        self.jsonpath = os.path.join(self.bot.datadir, "uptime.json")
         self.read_JSON()
 
-        bot.accessmanager.register_acl("!time.print")
-        bot.accessmanager.register_acl("!time.set")
+        bot.accessmanager.register_acl("!uptime.print")
+        bot.accessmanager.register_acl("!uptime.set")
         bot.eventmanager.register_message(self)
 
         self.log.info("Init complete")
@@ -88,56 +89,33 @@ class Time:
         msg = tools.strip_name(msg)
         args = msg.split()
 
-        if args[0] == "!time":
+        if args[0] == "!uptime":
             if len(args) > 1:
-                self.time_set(args)
+                if args[1] == "reset":
+                    self.uptime_reset(args)
+                else:
+                    pass
             else:
-                self.time_print()
+                self.uptime_print()
         else:
             pass
 
-    def time_set(self, args):
+    def uptime_reset(self, args):
+
         now = datetime.datetime.now()
-        year = now.year
-        month = now.month
-        day = now.day
 
-        if args[1] == "msg":
-            if len(args) > 2:
-                self.data.msg = ' '.join(args[2:])
-                self.write_JSON()
-        elif args[1] == "target":
-            if len(args) == 5:
-                day = int(args[2])
-                hour = int(args[3])
-                minute = int(args[4])
-
-                self.data.target = datetime.datetime(year=year, month=month, day=day, hour=hour, minute=minute)
-                self.write_JSON()
-                self.bot.send_message("Ajan rakenne muutettu.")
-            if len(args) == 4:
-                hour = int(args[2])
-                minute = int(args[3])
-
-                self.data.target = datetime.datetime(year=year, month=month, day=day, hour=hour, minute=minute)
-                self.write_JSON()
-                self.bot.send_message("Minuutin rakenne muutettu.")
-            elif len(args) == 3:
-                hour = int(args[2])
-
-                self.data.target = datetime.datetime(year=year, month=month, day=day, hour=hour, minute=0)
-                self.write_JSON()
-                self.bot.send_message("Tunnin rakenne muutettu.")
+        self.data.target = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour, minute=now.minute, second=now.second)
+        self.write_JSON()
+        self.bot.send_message("Timeri resetattu.")
 
 
-    def time_print(self):
+    def uptime_print(self):
 
-            now = datetime.datetime.now()
-            target = self.data.target
-            delta = target - now
-            hours = floor(delta.seconds / 3600)
-            minutes = floor( (delta.seconds - 3600*hours) / 60)
-            hours = hours+(delta.days*24)
+            uptime_now = datetime.datetime.now()
+            uptime_target = self.data.target
+            uptime_delta = uptime_now - uptime_target
+            delta_hours = floor(uptime_delta.seconds / 3600)
+            delta_minutes = floor( (uptime_delta.seconds - 3600*delta_hours) / 60)
+            delta_seconds = floor(uptime_delta.seconds - (60*delta_minutes + 3600*delta_hours))
 
-
-            self.bot.send_message(self.data.msg + " " + str(hours) + " tuntia ja " + str(minutes) + " minuuttia")
+            self.bot.send_message("Striimiä on kulunut " + str(delta_hours) + " Tuntia,  " + str(delta_minutes) + " Minuuttia ja " + str(delta_seconds) + " Sekunttia. musCasual")
