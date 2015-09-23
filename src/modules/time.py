@@ -83,7 +83,7 @@ class Time:
         with open(self.jsonpath, "w") as file:
             data = jsonpickle.encode(self.data)
             file.write(data)
-        
+
     def handle_message(self, data, user, msg):
         msg = tools.strip_name(msg)
         args = msg.split()
@@ -97,19 +97,38 @@ class Time:
             pass
 
     def time_set(self, args):
+        now = datetime.datetime.now()
+        year = now.year
+        month = now.month
+        day = now.day
+
         if args[1] == "msg":
             if len(args) > 2:
                 self.data.msg = ' '.join(args[2:])
                 self.write_JSON()
         elif args[1] == "target":
+            if len(args) == 5:
+                day = int(args[2])
+                hour = int(args[3])
+                minute = int(args[4])
+
+                self.data.target = datetime.datetime(year=year, month=month, day=day, hour=hour, minute=minute)
+                self.write_JSON()
+                self.bot.send_message("Ajan rakenne muutettu.")
             if len(args) == 4:
                 hour = int(args[2])
                 minute = int(args[3])
 
-                self.data.target = datetime.datetime(year=2000, month=1, day=1, hour=hour, minute=minute)
+                self.data.target = datetime.datetime(year=year, month=month, day=day, hour=hour, minute=minute)
                 self.write_JSON()
+                self.bot.send_message("Minuutin rakenne muutettu.")
+            elif len(args) == 3:
+                hour = int(args[2])
 
-            self.bot.send_message("Uusi alku on alkunut")
+                self.data.target = datetime.datetime(year=year, month=month, day=day, hour=hour, minute=0)
+                self.write_JSON()
+                self.bot.send_message("Tunnin rakenne muutettu.")
+
 
     def time_print(self):
 
@@ -118,6 +137,7 @@ class Time:
             delta = target - now
             hours = floor(delta.seconds / 3600)
             minutes = floor( (delta.seconds - 3600*hours) / 60)
+            hours = hours+(delta.days*24)
+
+
             self.bot.send_message(self.data.msg + " " + str(hours) + " tuntia ja " + str(minutes) + " minuuttia")
-
-
