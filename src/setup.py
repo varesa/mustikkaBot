@@ -22,6 +22,7 @@ def do_migrations(bot):
         log.info("Commands-datafile found at old location, moving")
         os.rename(os.path.join(bot.basepath, "src", "commands.json"), os.path.join(bot.datadir, "commands.json"))
 
+
 def setup(bot):
     log = logging.getLogger("mustikkabot.setup")
 

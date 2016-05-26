@@ -1,5 +1,7 @@
 import os
 import re
+import pytz
+import datetime
 
 
 def find_basepath():
@@ -24,3 +26,7 @@ def strip_name(text):
     """
     text = re.sub(r'![Mm]ustikka[Bb]ot (.*)', r'!\1', text)
     return text
+
+
+def tz_now():
+    return pytz.timezone("Europe/Helsinki").localize(datetime.datetime.now())

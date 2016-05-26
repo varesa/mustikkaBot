@@ -1,28 +1,27 @@
-import jsonpickle
-import exceptions
-import os
 import logging
 import datetime
+import dateutil.parser
+import requests
+
 from math import floor
 
 import tools
-
-
-class TimerData:
-    msg = ""
-    target = None
 
 
 class Uptime:
 
     log = logging.getLogger("mustikkabot.uptime")
     bot = None
-    juoksee = 0
 
-    jsonpath = None
+    restart_threshold = datetime.timedelta(minutes=15)
 
-    data = None
-    """:type: TimerData"""
+    STATE_OFFLINE = 0
+    STATE_ONLINE  = 1
+
+    # State
+    started = None
+    state   = STATE_OFFLINE
+    state_last_changed = None
 
     def init(self, bot):
         """
@@ -33,12 +32,9 @@ class Uptime:
         """
         self.bot = bot
 
-        self.jsonpath = os.path.join(self.bot.datadir, "uptime.json")
-        self.read_JSON()
-
-        bot.accessmanager.register_acl("!uptime.print")
-        bot.accessmanager.register_acl("!uptime.set")
+        bot.accessmanager.register_acl("!uptime", default_groups="%all%")
         bot.eventmanager.register_message(self)
+        bot.timemanager.register_interval(self.timer_callback, datetime.timedelta(seconds=30))
 
         self.log.info("Init complete")
 
@@ -49,73 +45,50 @@ class Uptime:
         :rtype: None
         """
         self.bot.eventmanager.unregister_message(self)
+        self.bot.timemanager.unregister(self.timer_callback)
         self.log.info("Disposed")
 
-    # noinspection PyPep8Naming
-    def read_JSON(self):
-        """
-        Read the JSON datafile from disk that contains the last time
-        :rtype: None
-        """
+    def timer_callback(self):
+        r = requests.get("https://api.twitch.tv/kraken/streams/" + self.bot.channel[1:])  # Strip leading '#'
+        if r.json()['stream'] is None:
+            self.offline(r.json())
+        else:
+            self.online(r.json())
 
-        if not os.path.isfile(self.jsonpath):
-            self.log.info("Time-datafile does not exist, creating")
-            self.data = TimerData()
-            self.data.msg = "Aikaa puoleenyöhön"
-            self.data.target = datetime.datetime(year=2000, month=1, day=1, hour=0, minute=0)
-            self.write_JSON()
+    def offline(self, data):
+        if self.state == self.STATE_ONLINE:
+            #self.bot.send_message("Stream ended")
+            self.state = self.STATE_OFFLINE
+            self.state_last_changed = tools.tz_now()
+            self.log.info("Detected offline transition")
 
-        try:
-            with open(self.jsonpath, "r") as file:
-                jsondata = file.read()
-        except:
-            self.log.error("Could not open " + self.jsonpath)
-            raise exceptions.FatalException("Could not open " + self.jsonpath)
-
-        self.data = jsonpickle.decode(jsondata)
-
-    # noinspection PyPep8Naming
-    def write_JSON(self):
-        """
-        Write the loaded commands to disk in JSON format
-        :rtype: None
-        """
-
-        with open(self.jsonpath, "w") as file:
-            data = jsonpickle.encode(self.data)
-            file.write(data)
+    def online(self, data):
+        if self.state == self.STATE_OFFLINE:
+            if self.state_last_changed and tools.tz_now() - self.state_last_changed < self.restart_threshold:
+                #self.bot.send_message("Continuing")
+                self.log.info("Detected online transition, continuing")
+            else:
+                #self.bot.send_message("New stream")
+                self.started = dateutil.parser.parse(data['stream']['created_at'])
+                self.log.info("Detected online transition, starting new")
+            self.state = self.STATE_ONLINE
+            self.state_last_changed = tools.tz_now()
 
     def handle_message(self, data, user, msg):
         msg = tools.strip_name(msg)
         args = msg.split()
 
         if args[0] == "!uptime":
-            if len(args) > 1:
-                if args[1] == "reset":
-                    self.uptime_reset(args)
-                else:
-                    pass
+            if self.state == self.STATE_ONLINE:
+                uptime = tools.tz_now() - self.started
+                msg = "Up for: "
             else:
-                self.uptime_print()
-        else:
-            pass
+                uptime = self.state_last_changed - self.started
+                msg = "Was up for: "
 
-    def uptime_reset(self, args):
+            total_seconds = uptime.total_seconds()
+            total_minutes = floor(total_seconds / 60)
+            hours = floor(total_minutes / 60)
+            minutes = total_minutes - 60*hours
 
-        now = datetime.datetime.now()
-
-        self.data.target = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour, minute=now.minute, second=now.second)
-        self.write_JSON()
-        self.bot.send_message("Timeri resetattu.")
-
-
-    def uptime_print(self):
-
-            uptime_now = datetime.datetime.now()
-            uptime_target = self.data.target
-            uptime_delta = uptime_now - uptime_target
-            delta_hours = floor(uptime_delta.seconds / 3600)
-            delta_minutes = floor( (uptime_delta.seconds - 3600*delta_hours) / 60)
-            delta_seconds = floor(uptime_delta.seconds - (60*delta_minutes + 3600*delta_hours))
-
-            self.bot.send_message("Striimiä on kulunut " + str(delta_hours) + " Tuntia,  " + str(delta_minutes) + " Minuuttia ja " + str(delta_seconds) + " Sekunttia. musCasual")
+            self.bot.send_message(msg  + str(hours) + " h, " + str(minutes) + " min")

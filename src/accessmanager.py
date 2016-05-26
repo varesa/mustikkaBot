@@ -263,8 +263,6 @@ class AccessManager:
         if not self.exists_acl(acl):
             self.create_acl(acl)
             if default_groups is None and default_members is None:
-                #self.add_group_to_acl(acl, "%owner")
-                #self.add_group_to_acl(acl, "%operators")
                 self.add_group_to_acl(acl, "%moderators")
             else:
                 if default_groups:

@@ -1,6 +1,7 @@
 import re
 import logging
 
+
 class EventManager:
 
     log = logging.getLogger("mustikkabot.eventmanager")
