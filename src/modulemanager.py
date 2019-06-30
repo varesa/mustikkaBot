@@ -34,7 +34,7 @@ class ModuleManager:
         self.bot = bot
 
         self.coreModulesPath = os.path.join(self.bot.srcdir, "core_modules")
-        self.enabledModulesPath = os.path.join(self.bot.srcdir, "modules_enabled")
+        self.enabledModulesPath = os.path.join(self.bot.datadir, "modules_enabled")
         self.availableModulesPath = os.path.join(self.bot.srcdir, "modules")
 
         self.setup_modules()
