@@ -1,21 +1,16 @@
-FROM registry.esav.fi/base/python3
+FROM python:3
 MAINTAINER Esa Varemo <esa@kuivanto.fi>
 
-RUN pip3 install jsonpickle python-dateutil pytz requests
+COPY requirements.txt /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt
 
-ENV APP_GIT=https://github.com/varesa/mustikkaBot.git
+COPY . /app
 
-ENV APP=mustikkabot
+RUN chown 974 /app/data /app/config -R
+USER 974
 
-RUN useradd $APP
-RUN mkdir /$APP && chown $APP:$APP /$APP
-USER $APP
+WORKDIR /app/src
+CMD ["/usr/bin/env", "python3", "main.py"]
 
-ENV GIT_COMMITTER_NAME=$APP  GIT_COMMITTER_EMAIL=$APP@localhost
-RUN git clone $APP_GIT /$APP
-
-WORKDIR /$APP/src
-CMD ["/usr/bin/python3", "main.py"]
-
-VOLUME /$APP/config
-VOLUME /$APP/data
+VOLUME /app/config
+VOLUME /app/data
