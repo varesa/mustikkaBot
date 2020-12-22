@@ -36,8 +36,8 @@ class About:
 
         if args[0] == "!about" or args[0] == "!bot":
             self.log.info("Printing \"about\"")
-            self.bot.send_message("MustikkaBot is a Twitch bot written in python " +
-                                  "for the great streamer HerraMustikka. Author: Esa Varemo")
+            self.bot.send_message("MustikkaBot (2013-2020) is a Twitch bot written in python " +
+                                  "for the great streamer HerraMustikka. Author: varesa")
 
     def dispose(self):
         """
